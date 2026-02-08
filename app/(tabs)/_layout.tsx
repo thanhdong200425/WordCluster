@@ -1,12 +1,52 @@
-import { Text } from "@/components/ui/text";
-import { View } from "react-native";
+import { HapticTab } from "@/components/haptic-tab";
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const HomeScreen = () => {
+export default function TabLayout() {
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text variant={"h1"}>Hello NativeWind!</Text>
-    </View>
+    <SafeAreaView style={{ flex: 1 }} className="bg-[#121318]">
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: "#5b6cff",
+          tabBarInactiveTintColor: "#a0a4b8",
+          tabBarButton: HapticTab,
+          tabBarStyle: {
+            backgroundColor: "#1c1e26",
+            borderTopColor: "#2c2e3a",
+            borderTopWidth: 1,
+          },
+        }}
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Home",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="home" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="create"
+          options={{
+            title: "Create",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="add-circle-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="sets"
+          options={{
+            title: "Sets",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="folder-outline" size={size} color={color} />
+            ),
+          }}
+        />
+      </Tabs>
+    </SafeAreaView>
   );
-};
-
-export default HomeScreen;
+}

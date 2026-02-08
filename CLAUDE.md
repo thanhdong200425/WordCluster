@@ -50,3 +50,5 @@ Strict mode is enabled. The project uses TypeScript ~5.9.
 ### Rules
 
 Use yarn by default, if commands require to use npx, use npx, don't use npm
+Use components from react-native-reusables if possible
+Define reusable components and avoid to make a file contains too much code
