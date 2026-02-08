@@ -1,5 +1,5 @@
 import { HapticTab } from "@/components/haptic-tab";
-import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { Tabs } from "expo-router";
 
 export default function TabLayout() {
@@ -22,7 +22,12 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <Image
+              source={require("@/icons/home.svg")}
+              style={{ width: size, height: size }}
+              contentFit="contain"
+              tintColor={color}
+            />
           ),
         }}
       />
@@ -31,7 +36,12 @@ export default function TabLayout() {
         options={{
           title: "Sets",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="library-outline" size={size} color={color} />
+            <Image
+              source={require("@/icons/sets.svg")}
+              style={{ width: size, height: size }}
+              contentFit="contain"
+              tintColor={color}
+            />
           ),
         }}
       />
