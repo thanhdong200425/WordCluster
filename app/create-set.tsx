@@ -19,8 +19,10 @@ export default function CreateSetScreen() {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
+    watch,
   } = useForm<CreateSetFormData>({
+    mode: "onSubmit",
     resolver: zodResolver(createSetSchema),
     defaultValues: {
       title: "",
@@ -38,9 +40,11 @@ export default function CreateSetScreen() {
   });
 
   const onSubmit = (data: CreateSetFormData) => {
-    console.log("Form submitted:", data);
+    if (!isValid) return;
     router.back();
   };
+
+  console.log("Form items values", watch("items"));
 
   return (
     <View className="flex-1 bg-[#121318]">
@@ -50,8 +54,18 @@ export default function CreateSetScreen() {
           <Ionicons name="chevron-back" size={24} color="white" />
         </Pressable>
         <Text className="text-lg font-bold text-white">Create set</Text>
-        <Pressable onPress={handleSubmit(onSubmit)} hitSlop={8}>
-          <Ionicons name="checkmark" size={28} color="white" />
+        <Pressable
+          onPress={handleSubmit(onSubmit)}
+          hitSlop={8}
+          disabled={!isValid}
+        >
+          <Pressable onPress={handleSubmit(onSubmit)} hitSlop={8}>
+            <Ionicons
+              name="checkmark"
+              size={28}
+              color={isValid ? "white" : "#94a3b8"}
+            />
+          </Pressable>
         </Pressable>
       </View>
 
