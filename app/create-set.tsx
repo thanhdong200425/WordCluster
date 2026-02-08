@@ -20,7 +20,6 @@ export default function CreateSetScreen() {
     control,
     handleSubmit,
     formState: { errors, isValid },
-    watch,
   } = useForm<CreateSetFormData>({
     mode: "onSubmit",
     resolver: zodResolver(createSetSchema),
@@ -43,8 +42,6 @@ export default function CreateSetScreen() {
     if (!isValid) return;
     router.back();
   };
-
-  console.log("Form items values", watch("items"));
 
   return (
     <View className="flex-1 bg-[#121318]">
