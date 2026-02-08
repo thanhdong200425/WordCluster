@@ -1,47 +1,46 @@
+import DescriptionSection from "@/components/create-set/DescriptionSection";
 import { TermCard } from "@/components/create-set/TermCard";
 import { TitleSection } from "@/components/create-set/TitleSection";
 import { Text } from "@/components/ui/text";
+import {
+  CreateSetFormData,
+  createSetSchema,
+} from "@/schemas/create-set-schema";
 import { Ionicons } from "@expo/vector-icons";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
-import { useCallback, useState } from "react";
+import { useState } from "react";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Pressable, ScrollView, View } from "react-native";
 
-interface TermItem {
-  id: string;
-  term: string;
-  definition: string;
-}
-
-function createEmptyItem(): TermItem {
-  return { id: Date.now().toString(), term: "", definition: "" };
-}
-
 export default function CreateSetScreen() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [showDescription, setShowDescription] = useState(false);
-  const [items, setItems] = useState<TermItem[]>([
-    createEmptyItem(),
-    createEmptyItem(),
-  ]);
+  const [showDescription, setShowDescription] = useState<boolean>(true);
 
-  const handleAddCard = useCallback(() => {
-    setItems((prev) => [...prev, createEmptyItem()]);
-  }, []);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateSetFormData>({
+    resolver: zodResolver(createSetSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      items: [
+        { term: "", definition: "" },
+        { term: "", definition: "" },
+      ],
+    },
+  });
 
-  const handleTermChange = useCallback((id: string, text: string) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, term: text } : item)),
-    );
-  }, []);
+  const { fields, append } = useFieldArray({
+    control,
+    name: "items",
+  });
 
-  const handleDefinitionChange = useCallback((id: string, text: string) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, definition: text } : item,
-      ),
-    );
-  }, []);
+  const onSubmit = (data: CreateSetFormData) => {
+    console.log("Form submitted:", data);
+    router.back();
+  };
 
   return (
     <View className="flex-1 bg-[#121318]">
@@ -51,41 +50,61 @@ export default function CreateSetScreen() {
           <Ionicons name="chevron-back" size={24} color="white" />
         </Pressable>
         <Text className="text-lg font-bold text-white">Create set</Text>
-        <Pressable hitSlop={8}>
+        <Pressable onPress={handleSubmit(onSubmit)} hitSlop={8}>
           <Ionicons name="checkmark" size={28} color="white" />
         </Pressable>
       </View>
 
       {/* Content */}
       <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">
-        <TitleSection
-          title={title}
-          onTitleChange={setTitle}
-          description={description}
-          onDescriptionChange={setDescription}
-          showDescription={showDescription}
-          onToggleDescription={() => setShowDescription(true)}
+        <Controller
+          control={control}
+          name="title"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TitleSection
+              errors={errors}
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="description"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <DescriptionSection
+              compactMode={showDescription}
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              onToggleCompactMode={() => setShowDescription(!showDescription)}
+            />
+          )}
         />
 
         <View className="mt-4">
-          {items.map((item, index) => (
+          {fields.map((field, index) => (
             <TermCard
-              key={item.id + Math.random()}
-              index={index + 1}
-              term={item.term}
-              onTermChange={(text) => handleTermChange(item.id, text)}
-              definition={item.definition}
-              onDefinitionChange={(text) =>
-                handleDefinitionChange(item.id, text)
-              }
+              key={field.id}
+              index={index}
+              control={control}
+              errors={errors.items?.[index]}
             />
           ))}
         </View>
+
+        {errors.items?.root && (
+          <Text className="mx-5 mb-4 text-sm text-red-500">
+            {errors.items.root.message}
+          </Text>
+        )}
       </ScrollView>
 
       {/* FAB */}
       <Pressable
-        onPress={handleAddCard}
+        onPress={() => append({ term: "", definition: "" })}
         className="absolute bottom-6 right-6 h-14 w-14 items-center justify-center rounded-full bg-[#4255ff] shadow-lg"
       >
         <Ionicons name="add" size={28} color="white" />
