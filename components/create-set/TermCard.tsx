@@ -55,9 +55,7 @@ export function TermCard({ index, control, errors }: TermCardProps) {
   return (
     <View className="mx-5 mb-4 rounded-lg bg-[#282b37] p-5 shadow-sm flex">
       <Text className="mb-4 text-sm font-bold text-white">{index + 1}</Text>
-
-
-        <CustomInput
+      <CustomInput
         control={control}
         index={index}
         name="term"
