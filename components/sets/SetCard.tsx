@@ -1,5 +1,5 @@
 import { Text } from "@/components/ui/text";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 
 interface SetCardProps {
   title: string;
@@ -7,6 +7,7 @@ interface SetCardProps {
   wordCount: number;
   progress?: number;
   isNew?: boolean;
+  onPress?: () => void;
 }
 
 export function SetCard({
@@ -15,12 +16,13 @@ export function SetCard({
   wordCount,
   progress,
   isNew,
+  onPress,
 }: SetCardProps) {
   const hasProgress = progress !== undefined;
   const barColor = hasProgress && progress >= 50 ? "#5b6cff" : "#fb923c";
 
   return (
-    <View className="mx-5 mb-3 flex-row rounded-2xl border border-white/5 bg-[#1c1e26] p-4">
+    <Pressable onPress={onPress} className="mx-5 mb-3 flex-row rounded-2xl border border-white/5 bg-[#1c1e26] p-4">
       <View className="flex-1 justify-between">
         <View>
           <View className="flex-row items-center gap-2">
@@ -61,6 +63,6 @@ export function SetCard({
           </View>
         )}
       </View>
-    </View>
+    </Pressable>
   );
 }

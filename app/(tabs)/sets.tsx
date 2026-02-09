@@ -2,12 +2,13 @@ import { SearchBar } from "@/components/home/SearchBar";
 import { SetCard } from "@/components/sets/SetCard";
 import { SetsHeader } from "@/components/sets/SetsHeader";
 import { useSets } from "@/hooks/use-sets";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback } from "react";
 import { ScrollView } from "react-native";
 
 export default function SetsScreen() {
   const { sets, refreshSets } = useSets();
+  const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
@@ -26,6 +27,7 @@ export default function SetsScreen() {
           meaning={set.description}
           wordCount={set.items.length}
           isNew
+          onPress={() => router.push(`/set-detail/${set.id}`)}
         />
       ))}
     </ScrollView>
