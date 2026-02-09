@@ -16,6 +16,8 @@ import { Pressable, ScrollView, View } from "react-native";
 export default function CreateSetScreen() {
   const [showDescription, setShowDescription] = useState<boolean>(true);
 
+  // TODO: Save the form data to the AsyncStorage
+
   const {
     control,
     handleSubmit,
