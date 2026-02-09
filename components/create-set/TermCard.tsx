@@ -53,80 +53,37 @@ export function TermCard({ index, control, errors }: TermCardProps) {
     visibleFields.has("example") && visibleFields.has("type");
 
   return (
-    <View className="mx-5 mb-4 rounded-lg bg-[#282b37] p-5 shadow-sm">
+    <View className="mx-5 mb-4 rounded-lg bg-[#282b37] p-5 shadow-sm flex">
       <Text className="mb-4 text-sm font-bold text-white">{index + 1}</Text>
 
-      {/* TODO: Use the CustomInput component */}
-      <View className="mb-1 rounded-[14px] border-2 border-white px-4 py-2.5">
-        <Controller
-          control={control}
-          name={`items.${index}.term`}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter term"
-              placeholderTextColor="#a0a4b8"
-              className="text-[18px] text-[#e8eaf0]"
-            />
-          )}
-        />
-      </View>
-      <Text className="mb-1 text-[10px] font-bold uppercase tracking-widest text-[#e8eaf0]">
-        TERM
-      </Text>
-      {errors?.term && (
-        <Text className="mb-2 text-xs text-red-500">{errors.term.message}</Text>
-      )}
 
-      <View className="mb-1 rounded-[14px] border-2 border-white px-4 py-2.5">
-        <Controller
-          control={control}
-          name={`items.${index}.definition`}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter definition"
-              placeholderTextColor="#a0a4b8"
-              className="text-[18px] text-[#e8eaf0]"
-            />
-          )}
-        />
-      </View>
-      <Text className="mb-1 text-[10px] font-bold uppercase tracking-widest text-[#e8eaf0]">
-        DEFINITION
-      </Text>
-      {errors?.definition && (
-        <Text className="mb-2 text-xs text-red-500">
-          {errors.definition.message}
-        </Text>
-      )}
+        <CustomInput
+        control={control}
+        index={index}
+        name="term"
+        placeholder="Enter term"
+        label="TERM"
+        error={errors?.term?.message ?? ""}
+      />
+
+      <CustomInput
+        control={control}
+        index={index}
+        name="definition"
+        placeholder="Enter definition"
+        label="DEFINITION"
+        error={errors?.definition?.message ?? ""}
+      />
 
       {visibleFields.has("example") && (
-        <>
-          <View className="mb-1 rounded-[14px] border-2 border-white px-4 py-2.5">
-            <Controller
-              control={control}
-              name={`items.${index}.example`}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  value={value ?? ""}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="Enter example"
-                  placeholderTextColor="#a0a4b8"
-                  className="text-[18px] text-[#e8eaf0]"
-                />
-              )}
-            />
-          </View>
-          <Text className="mb-1 text-[10px] font-bold uppercase tracking-widest text-[#e8eaf0]">
-            EXAMPLE
-          </Text>
-        </>
+        <CustomInput
+          control={control}
+          index={index}
+          name="example"
+          placeholder="Enter example"
+          label="EXAMPLE"
+          error=""
+        />
       )}
 
       {visibleFields.has("type") && (
@@ -238,7 +195,7 @@ const CustomInput = ({
   error: string;
 }) => {
   return (
-    <View>
+    <View className="mb-2">
       <View
         className={cn(
           "mb-1 rounded-[14px] border-2 border-white px-4 py-2.5",

@@ -1,5 +1,5 @@
 import { Text } from "@/components/ui/text";
-import { Image, View } from "react-native";
+import { View } from "react-native";
 
 interface SetCardProps {
   title: string;
@@ -7,7 +7,6 @@ interface SetCardProps {
   wordCount: number;
   progress?: number;
   isNew?: boolean;
-  imageUrl: string;
 }
 
 export function SetCard({
@@ -16,18 +15,12 @@ export function SetCard({
   wordCount,
   progress,
   isNew,
-  imageUrl,
 }: SetCardProps) {
   const hasProgress = progress !== undefined;
   const barColor = hasProgress && progress >= 50 ? "#5b6cff" : "#fb923c";
 
   return (
     <View className="mx-5 mb-3 flex-row rounded-2xl border border-white/5 bg-[#1c1e26] p-4">
-      <Image
-        source={{ uri: imageUrl }}
-        className="mr-4 h-24 w-24 rounded-[14px]"
-        resizeMode="cover"
-      />
       <View className="flex-1 justify-between">
         <View>
           <View className="flex-row items-center gap-2">

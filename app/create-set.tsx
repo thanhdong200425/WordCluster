@@ -2,6 +2,7 @@ import DescriptionSection from "@/components/create-set/DescriptionSection";
 import { TermCard } from "@/components/create-set/TermCard";
 import { TitleSection } from "@/components/create-set/TitleSection";
 import { Text } from "@/components/ui/text";
+import { useSets } from "@/hooks/use-sets";
 import {
   CreateSetFormData,
   createSetSchema,
@@ -15,8 +16,7 @@ import { Pressable, ScrollView, View } from "react-native";
 
 export default function CreateSetScreen() {
   const [showDescription, setShowDescription] = useState<boolean>(true);
-
-  // TODO: Save the form data to the AsyncStorage
+  const { createSet } = useSets();
 
   const {
     control,
@@ -40,8 +40,9 @@ export default function CreateSetScreen() {
     name: "items",
   });
 
-  const onSubmit = (data: CreateSetFormData) => {
+  const onSubmit = async (data: CreateSetFormData) => {
     if (!isValid) return;
+    await createSet(data);
     router.back();
   };
 
