@@ -68,6 +68,7 @@ export default function SetDetailScreen() {
           iconName="school-outline"
           iconColor="#ad46ff"
           iconBgColor="rgba(173,70,255,0.1)"
+          onPress={() => router.push(`/learn/${id}`)}
         />
         <StudyModeCard
           title="Test"
