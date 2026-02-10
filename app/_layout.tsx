@@ -6,6 +6,7 @@ import {
 import { PortalHost } from "@rn-primitives/portal";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import "../global.css";
 
@@ -21,13 +22,15 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <SafeAreaView style={{ flex: 1 }} className="bg-[#121318]">
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="create-set" options={{ headerShown: false }} />
-          <Stack.Screen name="set-detail/[id]" options={{ headerShown: false }} />
-        </Stack>
-      </SafeAreaView>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1 }} className="bg-[#121318]">
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="create-set" options={{ headerShown: false }} />
+            <Stack.Screen name="set-detail/[id]" options={{ headerShown: false }} />
+          </Stack>
+        </SafeAreaView>
+      </GestureHandlerRootView>
       <StatusBar style="light" />
       <PortalHost />
     </ThemeProvider>

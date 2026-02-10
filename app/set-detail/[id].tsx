@@ -1,4 +1,4 @@
-import { DefinitionCard } from "@/components/set-detail/DefinitionCard";
+import { FlashCardDeck } from "@/components/set-detail/FlashCardDeck";
 import { StudyModeCard } from "@/components/set-detail/StudyModeCard";
 import { Text } from "@/components/ui/text";
 import { useSets } from "@/hooks/use-sets";
@@ -21,9 +21,6 @@ export default function SetDetailScreen() {
     );
   }
 
-  const firstDefinition =
-    set.items[0]?.definition ?? set.description ?? "No definition available";
-
   return (
     <ScrollView className="flex-1 bg-[#121318]">
       {/* Header */}
@@ -43,9 +40,9 @@ export default function SetDetailScreen() {
         <View className="w-10" />
       </View>
 
-      {/* Definition Card */}
+      {/* Flashcard Deck */}
       <View className="mb-8 mt-4">
-        <DefinitionCard definition={firstDefinition} />
+        <FlashCardDeck items={set.items} />
       </View>
 
       {/* Study Mode Section */}
