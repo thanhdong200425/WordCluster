@@ -1,3 +1,4 @@
+import { CompletionScreen } from "@/components/flashcard/CompletionScreen";
 import { FlipCard } from "@/components/flashcard/FlipCard";
 import { Text } from "@/components/ui/text";
 import { useSets } from "@/hooks/use-sets";
@@ -27,6 +28,7 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
   const translateX = useSharedValue(0);
 
   const cardAnimatedStyle = useAnimatedStyle(() => ({
@@ -55,12 +57,21 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
 
   const cardHeight = screenHeight * 0.65;
   const isFirst = currentIndex === 0;
-  const isLast = currentIndex === items.length - 1;
 
   const goToNext = () => {
-    setCurrentIndex((prev) => Math.min(prev + 1, items.length - 1));
+    if (currentIndex === items.length - 1) {
+      setIsCompleted(true);
+      return;
+    }
+    setCurrentIndex((prev) => prev + 1);
     setIsFlipped(false);
     translateX.value = 0;
+  };
+
+  const handleRestart = () => {
+    setCurrentIndex(0);
+    setIsFlipped(false);
+    setIsCompleted(false);
   };
 
   const goToPrevious = () => {
@@ -76,7 +87,7 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
       translateX.value = event.translationX;
     })
     .onEnd((event) => {
-      if (event.translationX < -SWIPE_THRESHOLD && !isLast) {
+      if (event.translationX < -SWIPE_THRESHOLD) {
         translateX.value = withTiming(-screenWidth, { duration: 200 }, () => {
           runOnJS(goToNext)();
         });
@@ -88,6 +99,16 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
         translateX.value = withSpring(0, { damping: 20, stiffness: 200 });
       }
     });
+
+  if (isCompleted) {
+    return (
+      <CompletionScreen
+        totalCards={items.length}
+        onRestart={handleRestart}
+        onBack={() => router.back()}
+      />
+    );
+  }
 
   return (
     <View className="flex-1 bg-[#121318]">
@@ -131,10 +152,7 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
           {currentIndex + 1} / {items.length}
         </Text>
 
-        <Pressable
-          onPress={isLast ? undefined : goToNext}
-          style={{ opacity: isLast ? 0.3 : 1 }}
-        >
+        <Pressable onPress={goToNext}>
           <Ionicons name="chevron-forward" size={28} color="#e8eaf0" />
         </Pressable>
       </View>
