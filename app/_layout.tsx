@@ -28,6 +28,7 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="create-set" options={{ headerShown: false }} />
             <Stack.Screen name="set-detail/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="flashcard/[id]" options={{ headerShown: false }} />
           </Stack>
         </SafeAreaView>
       </GestureHandlerRootView>

@@ -60,6 +60,7 @@ export default function SetDetailScreen() {
           iconName="albums-outline"
           iconColor="#5b6cff"
           iconBgColor="rgba(91,108,255,0.1)"
+          onPress={() => router.push(`/flashcard/${id}`)}
         />
         <StudyModeCard
           title="Learn"
