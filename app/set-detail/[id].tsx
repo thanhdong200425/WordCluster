@@ -76,6 +76,7 @@ export default function SetDetailScreen() {
           iconName="checkmark-circle-outline"
           iconColor="#00bc7d"
           iconBgColor="rgba(0,188,125,0.1)"
+          onPress={() => router.push(`/test/${id}`)}
         />
       </View>
     </ScrollView>

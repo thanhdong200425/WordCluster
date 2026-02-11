@@ -30,6 +30,7 @@ export default function RootLayout() {
             <Stack.Screen name="set-detail/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="flashcard/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="learn/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="test/[id]" options={{ headerShown: false }} />
           </Stack>
         </SafeAreaView>
       </GestureHandlerRootView>
