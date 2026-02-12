@@ -1,3 +1,4 @@
+import RightDeleteAction from "@/components/common/RightDeleteAction";
 import DescriptionSection from "@/components/create-set/DescriptionSection";
 import { TermCard } from "@/components/create-set/TermCard";
 import { TitleSection } from "@/components/create-set/TitleSection";
@@ -12,7 +13,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import Toast from "react-native-toast-message";
 
 export default function CreateSetScreen() {
   const [showDescription, setShowDescription] = useState<boolean>(true);
@@ -35,10 +38,21 @@ export default function CreateSetScreen() {
     },
   });
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "items",
   });
+
+  const handleDeleteTerm = (index: number) => {
+    if (fields.length === 1) {
+      Toast.show({
+        type: "error",
+        text1: "At least 1 term is required",
+      });
+      return;
+    }
+    remove(index);
+  };
 
   const onSubmit = async (data: CreateSetFormData) => {
     if (!isValid) return;
@@ -100,12 +114,26 @@ export default function CreateSetScreen() {
 
         <View className="mt-4">
           {fields.map((field, index) => (
-            <TermCard
+            <ReanimatedSwipeable
               key={field.id}
-              index={index}
-              control={control}
-              errors={errors.items?.[index]}
-            />
+              renderRightActions={(prog, drag) =>
+                RightDeleteAction({
+                  progress: prog,
+                  drag,
+                  setId: field.id,
+                  onDelete: () => handleDeleteTerm(index),
+                  containerStyle: styles.actionContainer,
+                  buttonClassName: "h-1/3 bg-red-500 rounded-3xl",
+                })
+              }
+            >
+              <TermCard
+                key={field.id}
+                index={index}
+                control={control}
+                errors={errors.items?.[index]}
+              />
+            </ReanimatedSwipeable>
           ))}
         </View>
 
@@ -126,3 +154,9 @@ export default function CreateSetScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  actionContainer: {
+    backgroundColor: undefined,
+  },
+});
