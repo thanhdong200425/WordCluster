@@ -1,28 +1,27 @@
 import { Text } from "@/components/ui/text";
+import { differenceInHours } from "date-fns";
 import { Pressable, View } from "react-native";
 
 interface SetCardProps {
   title: string;
-  meaning: string;
   wordCount: number;
-  progress?: number;
-  isNew?: boolean;
+  createdAt: string;
   onPress?: () => void;
 }
 
 export function SetCard({
   title,
-  meaning,
   wordCount,
-  progress,
-  isNew,
+  createdAt,
   onPress,
 }: SetCardProps) {
-  const hasProgress = progress !== undefined;
-  const barColor = hasProgress && progress >= 50 ? "#5b6cff" : "#fb923c";
+  const isNew = differenceInHours(new Date(), new Date(createdAt)) < 24;
 
   return (
-    <Pressable onPress={onPress} className="mx-5 mb-3 flex-row rounded-2xl border border-white/5 bg-[#1c1e26] p-4">
+    <Pressable
+      onPress={onPress}
+      className="mx-5 mb-3 flex-row rounded-2xl border border-white/5 bg-[#1c1e26] p-4"
+    >
       <View className="flex-1 justify-between">
         <View>
           <View className="flex-row items-center gap-2">
@@ -35,33 +34,15 @@ export function SetCard({
               </View>
             )}
           </View>
-          <Text
-            className="mt-1 text-sm"
-            style={{ color: "rgba(255,255,255,0.4)" }}
-          >
-            {meaning} · {wordCount}
-          </Text>
-        </View>
-
-        {hasProgress && (
-          <View>
+          {wordCount ? (
             <Text
-              className="mb-1.5 text-[10px] font-bold uppercase tracking-wide"
-              style={{ color: "rgba(255,255,255,0.6)" }}
+              className="mt-1 text-sm"
+              style={{ color: "rgba(255,255,255,0.4)" }}
             >
-              {progress}% LEARNED
+              {wordCount} words
             </Text>
-            <View className="h-1.5 rounded-full bg-white/10">
-              <View
-                className="h-1.5 rounded-full"
-                style={{
-                  width: `${progress}%`,
-                  backgroundColor: barColor,
-                }}
-              />
-            </View>
-          </View>
-        )}
+          ) : null}
+        </View>
       </View>
     </Pressable>
   );

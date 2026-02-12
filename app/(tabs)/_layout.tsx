@@ -1,4 +1,5 @@
 import { HapticTab } from "@/components/haptic-tab";
+import "@/lib/nativewind-inteprop";
 import { Image } from "expo-image";
 import { Tabs } from "expo-router";
 
