@@ -27,15 +27,21 @@ export default function RootLayout() {
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="create-set" options={{ headerShown: false }} />
-            <Stack.Screen name="set-detail/[id]" options={{ headerShown: false }} />
-            <Stack.Screen name="flashcard/[id]" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="set-detail/[id]"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="flashcard/[id]"
+              options={{ headerShown: false }}
+            />
             <Stack.Screen name="learn/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="test/[id]" options={{ headerShown: false }} />
           </Stack>
         </SafeAreaView>
+        <PortalHost />
       </GestureHandlerRootView>
       <StatusBar style="light" />
-      <PortalHost />
     </ThemeProvider>
   );
 }
