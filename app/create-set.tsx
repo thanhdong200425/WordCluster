@@ -31,10 +31,7 @@ export default function CreateSetScreen() {
     defaultValues: {
       title: "",
       description: "",
-      items: [
-        { term: "", definition: "" },
-        { term: "", definition: "" },
-      ],
+      items: [{ term: "", definition: "" }],
     },
   });
 
