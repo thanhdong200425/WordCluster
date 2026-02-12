@@ -14,6 +14,7 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import Toast from "react-native-toast-message";
 
 const RightAction = (
   progress: SharedValue<number>,
@@ -64,6 +65,10 @@ export default function SetsScreen() {
   const handleDeleteSet = (id: string) => {
     deleteSet(id);
     setSelectedSetId(null);
+    Toast.show({
+      type: "success",
+      text1: "Set deleted successfully",
+    });
   };
 
   useFocusEffect(

@@ -8,6 +8,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
+import Toast from "react-native-toast-message";
 import "../global.css";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -38,6 +39,7 @@ export default function RootLayout() {
             <Stack.Screen name="learn/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="test/[id]" options={{ headerShown: false }} />
           </Stack>
+          <Toast />
         </SafeAreaView>
         <PortalHost />
       </GestureHandlerRootView>
