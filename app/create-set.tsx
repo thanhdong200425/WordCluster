@@ -14,7 +14,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import Toast from "react-native-toast-message";
 import NotFoundScreen from "./+not-found";
@@ -31,9 +37,10 @@ export default function CreateSetScreen({
   const [showDescription, setShowDescription] = useState<boolean>(true);
   const [currentSetData, setCurrentSetData] = useState<StoredSet | null>(null);
   const [isMissingSet, setIsMissingSet] = useState<boolean>(false);
-  const { createSet, getSet, updateSet } = useSets();
+  const { createSet, getSet, updateSet, isLoading } = useSets();
 
   useEffect(() => {
+    if (!isEditMode && isLoading) return;
     if (isEditMode && setId) {
       const set = getSet(setId);
       if (set) {
@@ -49,7 +56,9 @@ export default function CreateSetScreen({
             type: item.type,
           })),
         });
-      } else setIsMissingSet(true);
+      } else if (!isLoading && !set) {
+        setIsMissingSet(true);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditMode, setId, getSet]);
@@ -79,6 +88,10 @@ export default function CreateSetScreen({
     name: "items",
   });
 
+  if (isEditMode && isLoading) {
+    return <ActivityIndicator size="large" color="#94a3b8" />;
+  }
+
   if (isEditMode && isMissingSet) {
     return <NotFoundScreen />;
   }
@@ -97,7 +110,8 @@ export default function CreateSetScreen({
   const onSubmit = async (data: CreateSetFormData) => {
     if (isEditMode ? !isDirty : !isValid) return;
 
-    if (isEditMode && setId) {
+    if (isEditMode) {
+      if (!setId) return;
       await updateSet(setId, data);
     } else {
       await createSet(data);
