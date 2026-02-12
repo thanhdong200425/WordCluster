@@ -49,6 +49,10 @@ export function TermCard({ index, control, errors }: TermCardProps) {
     setVisibleFields((prev) => new Set(prev).add(type));
   };
 
+  const handleDeleteField = (type: AddFieldType) => {
+    setVisibleFields((prev) => new Set([...prev].filter((t) => t !== type)));
+  };
+
   const hasAllFields =
     visibleFields.has("example") && visibleFields.has("type");
 
@@ -81,6 +85,8 @@ export function TermCard({ index, control, errors }: TermCardProps) {
           placeholder="Enter example"
           label="EXAMPLE"
           error=""
+          isDeletable
+          onDelete={() => handleDeleteField("example")}
         />
       )}
 
@@ -117,16 +123,25 @@ export function TermCard({ index, control, errors }: TermCardProps) {
               </Select>
             )}
           />
-          <Text className="mb-1 text-[10px] font-bold uppercase tracking-widest text-[#e8eaf0]">
-            TYPE
-          </Text>
+          <View className="flex-row items-center justify-between">
+            <Text className="mb-1 text-[10px] font-bold uppercase tracking-widest text-[#e8eaf0]">
+              TYPE
+            </Text>
+            <Pressable
+              className="pr-1.5"
+              onPress={() => handleDeleteField("type")}
+              hitSlop={20}
+            >
+              <Ionicons name="trash-outline" size={16} color="#e8eaf0" />
+            </Pressable>
+          </View>
         </>
       )}
 
       {!hasAllFields && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Pressable className="flex-row items-center self-start rounded-full bg-white/10 px-4 py-2">
+            <Pressable className="flex-row items-center self-start rounded-full bg-white/10 px-4 py-2 mt-3">
               <Ionicons name="add" size={16} color="#e8eaf0" />
               <Text className="mx-1.5 text-sm font-semibold text-[#e8eaf0]">
                 Add field
@@ -183,6 +198,8 @@ const CustomInput = ({
   label,
   className,
   error,
+  isDeletable = false,
+  onDelete,
 }: {
   control: Control<CreateSetFormData>;
   index: number;
@@ -191,6 +208,8 @@ const CustomInput = ({
   label: string;
   className?: string;
   error: string;
+  isDeletable?: boolean;
+  onDelete?: () => void;
 }) => {
   return (
     <View className="mb-2">
@@ -215,9 +234,16 @@ const CustomInput = ({
           )}
         />
       </View>
-      <Text className="mb-1 text-[10px] font-bold uppercase tracking-widest text-[#e8eaf0]">
-        {label}
-      </Text>
+      <View className="flex-row items-center justify-between">
+        <Text className="mb-1 text-[10px] font-bold uppercase tracking-widest text-[#e8eaf0]">
+          {label}
+        </Text>
+        {isDeletable && (
+          <Pressable className="pr-1.5" onPress={onDelete} hitSlop={20}>
+            <Ionicons name="trash-outline" size={16} color="#e8eaf0" />
+          </Pressable>
+        )}
+      </View>
       {error && <Text className="mb-2 text-xs text-red-500">{error}</Text>}
     </View>
   );
