@@ -18,7 +18,7 @@ const DescriptionSection = ({
 }: DescriptionSectionProps) => {
   return (
     <View className="px-5 pb-2">
-      {compactMode ? (
+      {compactMode && !value ? (
         <Pressable onPress={onToggleCompactMode}>
           <Text className="text-sm font-bold text-[#4255ff]">
             + Description

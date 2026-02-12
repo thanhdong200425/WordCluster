@@ -8,30 +8,69 @@ import {
   CreateSetFormData,
   createSetSchema,
 } from "@/schemas/create-set-schema";
+import { StoredSet } from "@/types/set";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import Toast from "react-native-toast-message";
+import NotFoundScreen from "./+not-found";
 
-export default function CreateSetScreen() {
+interface CreateSetScreenProps {
+  isEditMode?: boolean;
+  setId?: string;
+}
+
+export default function CreateSetScreen({
+  isEditMode = false,
+  setId,
+}: CreateSetScreenProps) {
   const [showDescription, setShowDescription] = useState<boolean>(true);
-  const { createSet } = useSets();
+  const [currentSetData, setCurrentSetData] = useState<StoredSet | null>(null);
+  const [isMissingSet, setIsMissingSet] = useState<boolean>(false);
+  const { createSet, getSet, updateSet } = useSets();
+
+  useEffect(() => {
+    if (isEditMode && setId) {
+      const set = getSet(setId);
+      if (set) {
+        setCurrentSetData(set);
+        setIsMissingSet(false);
+        reset({
+          title: set.title,
+          description: set.description,
+          items: set.items.map((item) => ({
+            term: item.term,
+            definition: item.definition,
+            example: item.example,
+            type: item.type,
+          })),
+        });
+      } else setIsMissingSet(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditMode, setId, getSet]);
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isDirty },
+    reset,
   } = useForm<CreateSetFormData>({
     mode: "onSubmit",
     resolver: zodResolver(createSetSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      items: [{ term: "", definition: "" }],
+      title: currentSetData?.title || "",
+      description: currentSetData?.description || "",
+      items: currentSetData?.items.map((item) => ({
+        term: item.term,
+        definition: item.definition,
+        example: item.example,
+        type: item.type,
+      })) || [{ term: "", definition: "" }],
     },
   });
 
@@ -39,6 +78,10 @@ export default function CreateSetScreen() {
     control,
     name: "items",
   });
+
+  if (isEditMode && isMissingSet) {
+    return <NotFoundScreen />;
+  }
 
   const handleDeleteTerm = (index: number) => {
     if (fields.length === 1) {
@@ -52,8 +95,19 @@ export default function CreateSetScreen() {
   };
 
   const onSubmit = async (data: CreateSetFormData) => {
-    if (!isValid) return;
-    await createSet(data);
+    if (isEditMode ? !isDirty : !isValid) return;
+
+    if (isEditMode && setId) {
+      await updateSet(setId, data);
+    } else {
+      await createSet(data);
+    }
+    Toast.show({
+      type: "success",
+      text1: isEditMode
+        ? "Set updated successfully"
+        : "Set created successfully",
+    });
     router.back();
   };
 
@@ -64,19 +118,19 @@ export default function CreateSetScreen() {
         <Pressable onPress={() => router.back()} hitSlop={8}>
           <Ionicons name="chevron-back" size={24} color="white" />
         </Pressable>
-        <Text className="text-lg font-bold text-white">Create set</Text>
+        <Text className="text-lg font-bold text-white">
+          {isEditMode ? "Edit set" : "Create set"}
+        </Text>
         <Pressable
           onPress={handleSubmit(onSubmit)}
           hitSlop={8}
-          disabled={!isValid}
+          disabled={isEditMode ? !isDirty : !isValid}
         >
-          <Pressable onPress={handleSubmit(onSubmit)} hitSlop={8}>
-            <Ionicons
-              name="checkmark"
-              size={28}
-              color={isValid ? "white" : "#94a3b8"}
-            />
-          </Pressable>
+          <Ionicons
+            name="checkmark"
+            size={28}
+            color={(isEditMode ? !isDirty : !isValid) ? "#94a3b8" : "white"}
+          />
         </Pressable>
       </View>
 
@@ -153,7 +207,5 @@ export default function CreateSetScreen() {
 }
 
 const styles = StyleSheet.create({
-  actionContainer: {
-    backgroundColor: undefined,
-  },
+  actionContainer: { backgroundColor: undefined },
 });

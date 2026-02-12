@@ -4,6 +4,7 @@ import { Text } from "@/components/ui/text";
 import { useSets } from "@/hooks/use-sets";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { SquarePen } from "lucide-react-native";
 import { Pressable, ScrollView, View } from "react-native";
 
 export default function SetDetailScreen() {
@@ -12,6 +13,14 @@ export default function SetDetailScreen() {
   const router = useRouter();
 
   const set = getSet(id);
+
+  const handleNavigateToEdit = () => {
+    if (!id) return;
+    router.push({
+      pathname: "/edit/[id]",
+      params: { id },
+    });
+  };
 
   if (!set) {
     return (
@@ -24,7 +33,7 @@ export default function SetDetailScreen() {
   return (
     <ScrollView className="flex-1 bg-[#121318]">
       {/* Header */}
-      <View className="flex-row items-center justify-between px-5 pb-4 pt-2">
+      <View className="flex-row items-center justify-between pl-5 pr-2 pb-4 pt-2">
         <Pressable onPress={() => router.back()} className="w-10">
           <Ionicons name="chevron-back" size={24} color="#e8eaf0" />
         </Pressable>
@@ -34,10 +43,12 @@ export default function SetDetailScreen() {
             className="mt-0.5 text-[10px] font-extrabold uppercase tracking-widest"
             style={{ color: "rgba(255,255,255,0.4)" }}
           >
-            STUDY SESSION
+            Flashcard sets
           </Text>
         </View>
-        <View className="w-10" />
+        <Pressable onPress={handleNavigateToEdit} className="w-10">
+          <SquarePen size={24} color="#e8eaf0" />
+        </Pressable>
       </View>
 
       {/* Flashcard Deck */}
