@@ -42,8 +42,10 @@ const useSetsStorage = create<SetsStorage>()(
     (set, get) => ({
       storedSets: [],
       isLoading: true,
+      isError: false,
       createSet: async (data: CreateSetFormData) => {
         try {
+          set({ isLoading: true });
           const currentSet = get().storedSets;
           const now = new Date().toISOString();
           const newSet: StoredSet = {
@@ -53,15 +55,12 @@ const useSetsStorage = create<SetsStorage>()(
             updatedAt: now,
           };
           currentSet.push(newSet);
-          await asyncStorageAdapter.setItem(
-            "sets-storage",
-            JSON.stringify(currentSet),
-          );
           set({ storedSets: currentSet });
           return Promise.resolve(newSet);
         } catch (error) {
           console.error("Failed to create set:", error);
-          return Promise.reject(error);
+          set({ isError: true });
+          return Promise.reject(error ?? "Failed to create set");
         }
       },
       getSet: (id: string) => {
@@ -69,53 +68,40 @@ const useSetsStorage = create<SetsStorage>()(
       },
       updateSet: (id: string, data: Partial<CreateSetFormData>) => {
         try {
-          const currentSet = get().storedSets.find((set) => set.id === id);
-          if (!currentSet) return Promise.resolve(undefined);
-          const updatedSet: StoredSet = {
-            ...currentSet,
-            ...data,
-            updatedAt: new Date().toISOString(),
-          };
+          set({ isLoading: true });
+          let updatedSet: StoredSet | undefined;
           const updated = get().storedSets.map((set) => {
             if (set.id === id) {
+              updatedSet = {
+                ...set,
+                ...data,
+                updatedAt: new Date().toISOString(),
+              };
               return updatedSet;
             }
             return set;
           });
-          asyncStorageAdapter.setItem("sets-storage", JSON.stringify(updated));
+          if (!updatedSet) return Promise.resolve(undefined);
           set({ storedSets: updated });
           return Promise.resolve(updatedSet);
         } catch (error) {
           console.error("Failed to update set:", error);
+          set({ isError: true });
           return Promise.reject(error ?? "Set not found");
         }
       },
       deleteSet: async (id: string) => {
         try {
+          set({ isLoading: true });
           const currentSet = get().storedSets;
           const filteredSet = currentSet.find((set) => set.id === id);
           if (!filteredSet) return Promise.resolve(false);
-
-          const updatedSets = currentSet.filter((set) => set.id !== id);
-          await asyncStorageAdapter.setItem(
-            "sets-storage",
-            JSON.stringify(updatedSets),
-          );
-          set({ storedSets: updatedSets });
+          set({ storedSets: currentSet.filter((set) => set.id !== id) });
           return Promise.resolve(true);
         } catch (error) {
           console.error("Failed to delete set:", error);
+          set({ isError: true });
           return Promise.reject(error ?? "Failed to delete set");
-        }
-      },
-      refreshSets: async () => {
-        try {
-          const data = await asyncStorageAdapter.getItem("sets-storage");
-          if (!data) return Promise.reject(new Error("No sets found"));
-          set({ storedSets: JSON.parse(data), isLoading: false });
-        } catch (error) {
-          console.error("Failed to refresh sets:", error);
-          return Promise.reject(error ?? "Failed to refresh sets");
         }
       },
     }),
@@ -124,8 +110,20 @@ const useSetsStorage = create<SetsStorage>()(
       storage: createJSONStorage(() => asyncStorageAdapter),
       partialize: (state) => ({
         storedSets: state.storedSets,
-        isLoading: state.isLoading,
       }),
+      onRehydrateStorage: () => {
+        return (state, error) => {
+          if (error) {
+            console.error("Failed to rehydrate sets storage:", error);
+            useSetsStorage.setState({ isError: true });
+          } else {
+            useSetsStorage.setState({ isError: false });
+            useSetsStorage.setState({ isLoading: false });
+          }
+        };
+      },
     },
   ),
 );
+
+export default useSetsStorage;
