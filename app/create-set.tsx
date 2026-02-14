@@ -3,11 +3,11 @@ import DescriptionSection from "@/components/create-set/DescriptionSection";
 import { TermCard } from "@/components/create-set/TermCard";
 import { TitleSection } from "@/components/create-set/TitleSection";
 import { Text } from "@/components/ui/text";
-import { useSets } from "@/hooks/use-sets";
 import {
   CreateSetFormData,
   createSetSchema,
 } from "@/schemas/create-set-schema";
+import useSetsStorage from "@/stores/setsStorage";
 import { StoredSet } from "@/types/set";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +23,7 @@ import {
 } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import Toast from "react-native-toast-message";
+import { useShallow } from "zustand/react/shallow";
 import NotFoundScreen from "./+not-found";
 
 interface CreateSetScreenProps {
@@ -37,7 +38,14 @@ export default function CreateSetScreen({
   const [showDescription, setShowDescription] = useState<boolean>(true);
   const [currentSetData, setCurrentSetData] = useState<StoredSet | null>(null);
   const [isMissingSet, setIsMissingSet] = useState<boolean>(false);
-  const { createSet, getSet, updateSet, isLoading } = useSets();
+  const { createSet, getSet, updateSet, isLoading } = useSetsStorage(
+    useShallow((state) => ({
+      createSet: state.createSet,
+      getSet: state.getSet,
+      updateSet: state.updateSet,
+      isLoading: state.isLoading,
+    })),
+  );
 
   useEffect(() => {
     if (!isEditMode && isLoading) return;

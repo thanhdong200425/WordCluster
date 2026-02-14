@@ -1,17 +1,21 @@
 import { FlashCardDeck } from "@/components/set-detail/FlashCardDeck";
 import { StudyModeCard } from "@/components/set-detail/StudyModeCard";
 import { Text } from "@/components/ui/text";
-import { useSets } from "@/hooks/use-sets";
+import useSetsStorage from "@/stores/setsStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SquarePen } from "lucide-react-native";
 import { Pressable, ScrollView, View } from "react-native";
+import { useShallow } from "zustand/react/shallow";
 
 export default function SetDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getSet } = useSets();
   const router = useRouter();
-
+  const { getSet } = useSetsStorage(
+    useShallow((state) => ({
+      getSet: state.getSet,
+    })),
+  );
   const set = getSet(id);
 
   const handleNavigateToEdit = () => {

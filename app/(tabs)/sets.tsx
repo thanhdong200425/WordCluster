@@ -3,16 +3,27 @@ import RightDeleteAction from "@/components/common/RightDeleteAction";
 import { SearchBar } from "@/components/home/SearchBar";
 import { SetCard } from "@/components/sets/SetCard";
 import { SetsHeader } from "@/components/sets/SetsHeader";
-import { useSets } from "@/hooks/use-sets";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
-import { ScrollView } from "react-native";
+import useSetsStorage from "@/stores/setsStorage";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { ActivityIndicator, ScrollView } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import Toast from "react-native-toast-message";
+import { useShallow } from "zustand/react/shallow";
 
 export default function SetsScreen() {
   const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
-  const { sets, refreshSets, deleteSet } = useSets();
+  const {
+    storedSets: sets,
+    isLoading,
+    deleteSet,
+  } = useSetsStorage(
+    useShallow((state) => ({
+      storedSets: state.storedSets,
+      isLoading: state.isLoading,
+      deleteSet: state.deleteSet,
+    })),
+  );
   const router = useRouter();
 
   const handleSelectSet = (id: string | number) => {
@@ -28,11 +39,11 @@ export default function SetsScreen() {
     });
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      refreshSets();
-    }, [refreshSets]),
-  );
+  if (isLoading) {
+    return (
+      <ActivityIndicator className="flex-1 items-center justify-center bg-[#121318]" />
+    );
+  }
 
   return (
     <>

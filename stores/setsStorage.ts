@@ -54,12 +54,12 @@ const useSetsStorage = create<SetsStorage>()(
             createdAt: now,
             updatedAt: now,
           };
-          currentSet.push(newSet);
-          set({ storedSets: currentSet });
+          const updated = [...currentSet, newSet];
+          set({ storedSets: updated, isLoading: false });
           return Promise.resolve(newSet);
         } catch (error) {
           console.error("Failed to create set:", error);
-          set({ isError: true });
+          set({ isError: true, isLoading: false });
           return Promise.reject(error ?? "Failed to create set");
         }
       },
@@ -82,11 +82,11 @@ const useSetsStorage = create<SetsStorage>()(
             return set;
           });
           if (!updatedSet) return Promise.resolve(undefined);
-          set({ storedSets: updated });
+          set({ storedSets: updated, isLoading: false });
           return Promise.resolve(updatedSet);
         } catch (error) {
           console.error("Failed to update set:", error);
-          set({ isError: true });
+          set({ isError: true, isLoading: false });
           return Promise.reject(error ?? "Set not found");
         }
       },
@@ -96,11 +96,14 @@ const useSetsStorage = create<SetsStorage>()(
           const currentSet = get().storedSets;
           const filteredSet = currentSet.find((set) => set.id === id);
           if (!filteredSet) return Promise.resolve(false);
-          set({ storedSets: currentSet.filter((set) => set.id !== id) });
+          set({
+            storedSets: currentSet.filter((set) => set.id !== id),
+            isLoading: false,
+          });
           return Promise.resolve(true);
         } catch (error) {
           console.error("Failed to delete set:", error);
-          set({ isError: true });
+          set({ isError: true, isLoading: false });
           return Promise.reject(error ?? "Failed to delete set");
         }
       },
