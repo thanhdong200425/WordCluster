@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 
 const STORAGE_KEY = "word-cluster:sets";
 
-function generateId(): string {
+export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
