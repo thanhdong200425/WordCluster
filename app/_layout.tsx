@@ -12,6 +12,7 @@ import Toast from "react-native-toast-message";
 import "../global.css";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export const unstable_settings = {
@@ -23,28 +24,36 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaView style={{ flex: 1 }} className="bg-[#121318]">
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="create-set" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="set-detail/[id]"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="flashcard/[id]"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="learn/[id]" options={{ headerShown: false }} />
-            <Stack.Screen name="test/[id]" options={{ headerShown: false }} />
-            <Stack.Screen name="edit/[id]" options={{ headerShown: false }} />
-          </Stack>
-          <Toast />
-        </SafeAreaView>
-        <PortalHost />
-      </GestureHandlerRootView>
-      <StatusBar style="light" />
+      <KeyboardProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <SafeAreaView style={{ flex: 1 }} className="bg-[#121318]">
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="create-set"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="set-detail/[id]"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="flashcard/[id]"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="learn/[id]"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="test/[id]" options={{ headerShown: false }} />
+              <Stack.Screen name="edit/[id]" options={{ headerShown: false }} />
+            </Stack>
+            <Toast />
+          </SafeAreaView>
+          <PortalHost />
+        </GestureHandlerRootView>
+        <StatusBar style="light" />
+      </KeyboardProvider>
     </ThemeProvider>
   );
 }

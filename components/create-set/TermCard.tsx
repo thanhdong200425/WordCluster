@@ -18,7 +18,12 @@ import type { CreateSetFormData } from "@/schemas/create-set-schema";
 import { Ionicons } from "@expo/vector-icons";
 import { Layers, StickyNote, Tag } from "lucide-react-native";
 import { useState } from "react";
-import { Controller, type Control, type FieldErrors } from "react-hook-form";
+import {
+  Controller,
+  useWatch,
+  type Control,
+  type FieldErrors,
+} from "react-hook-form";
 import { Pressable, TextInput, View } from "react-native";
 
 export type AddFieldType = "example" | "type" | "wordFamily";
@@ -41,9 +46,17 @@ interface TermCardProps {
 }
 
 export function TermCard({ index, control, errors }: TermCardProps) {
-  const [visibleFields, setVisibleFields] = useState<Set<AddFieldType>>(
-    new Set(),
-  );
+  const watchedFields = useWatch({
+    control,
+    name: `items.${index}`,
+  });
+  const [visibleFields, setVisibleFields] = useState<Set<AddFieldType>>(() => {
+    const fields = new Set<AddFieldType>();
+
+    if (watchedFields.example) fields.add("example");
+    if (watchedFields.type) fields.add("type");
+    return fields;
+  });
 
   const handleAddField = (type: AddFieldType) => {
     setVisibleFields((prev) => new Set(prev).add(type));
@@ -86,6 +99,7 @@ export function TermCard({ index, control, errors }: TermCardProps) {
           label="EXAMPLE"
           error=""
           isDeletable
+          containerClassName="mb-4"
           onDelete={() => handleDeleteField("example")}
         />
       )}
@@ -197,6 +211,7 @@ const CustomInput = ({
   placeholder,
   label,
   className,
+  containerClassName,
   error,
   isDeletable = false,
   onDelete,
@@ -207,12 +222,13 @@ const CustomInput = ({
   placeholder: string;
   label: string;
   className?: string;
+  containerClassName?: string;
   error: string;
   isDeletable?: boolean;
   onDelete?: () => void;
 }) => {
   return (
-    <View className="mb-2">
+    <View className={cn("mb-2", containerClassName)}>
       <View
         className={cn(
           "mb-1 rounded-[14px] border-2 border-white px-4 py-2.5",

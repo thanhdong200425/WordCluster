@@ -14,14 +14,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import Toast from "react-native-toast-message";
 import { useShallow } from "zustand/react/shallow";
 import NotFoundScreen from "./+not-found";
@@ -157,7 +152,10 @@ export default function CreateSetScreen({
       </View>
 
       {/* Content */}
-      <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">
+      <KeyboardAwareScrollView
+        className="flex-1 bg-[#121318]"
+        bottomOffset={50}
+      >
         <Controller
           control={control}
           name="title"
@@ -215,7 +213,7 @@ export default function CreateSetScreen({
             {errors.items.root.message}
           </Text>
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       {/* FAB */}
       <Pressable
