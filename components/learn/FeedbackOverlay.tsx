@@ -17,11 +17,11 @@ export function FeedbackOverlay({ correct }: FeedbackOverlayProps) {
 
   useEffect(() => {
     if (correct !== null) {
-      translateY.value = withTiming(0, { duration: 250 });
-      opacity.value = withTiming(1, { duration: 250 });
+      translateY.value = withTiming(0, { duration: 150 });
+      opacity.value = withTiming(1, { duration: 150 });
     } else {
-      translateY.value = withTiming(80, { duration: 200 });
-      opacity.value = withTiming(0, { duration: 200 });
+      translateY.value = withTiming(80, { duration: 150 });
+      opacity.value = withTiming(0, { duration: 150 });
     }
   }, [correct, translateY, opacity]);
 

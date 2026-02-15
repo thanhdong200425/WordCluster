@@ -1,14 +1,15 @@
 import { TestScreen } from "@/components/test/TestScreen";
 import { Text } from "@/components/ui/text";
-import { useSets } from "@/hooks/use-sets";
+import useSetsStorage from "@/stores/setsStorage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { View } from "react-native";
+import { useShallow } from "zustand/react/shallow";
 
 export default function TestRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getSet } = useSets();
+  const storedSets = useSetsStorage(useShallow((state) => state.storedSets));
   const router = useRouter();
-  const set = getSet(id);
+  const set = storedSets.find((set) => set.id === id);
 
   if (!set) {
     return (
