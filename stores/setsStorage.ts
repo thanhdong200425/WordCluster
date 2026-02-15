@@ -41,6 +41,7 @@ const useSetsStorage = create<SetsStorage>()(
   persist(
     (set, get) => ({
       storedSets: [],
+      searchQuery: "",
       isLoading: true,
       isError: false,
       createSet: async (data: CreateSetFormData) => {
@@ -106,6 +107,14 @@ const useSetsStorage = create<SetsStorage>()(
           set({ isError: true, isLoading: false });
           return Promise.reject(error ?? "Failed to delete set");
         }
+      },
+      setSearchQuery: (query: string) => {
+        set({ searchQuery: query });
+      },
+      getFilteredSets: () => {
+        return get().storedSets.filter((set) =>
+          set.title.toLowerCase().includes(get().searchQuery.toLowerCase()),
+        );
       },
     }),
     {

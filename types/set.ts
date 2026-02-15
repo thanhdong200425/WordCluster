@@ -9,6 +9,7 @@ export interface StoredSet extends CreateSetFormData {
 // Zustand store type
 export type SetsStorageState = {
   storedSets: StoredSet[];
+  searchQuery: string;
   isLoading: boolean;
   isError: boolean;
 };
@@ -21,6 +22,8 @@ export type SetsStorageActions = {
     data: Partial<CreateSetFormData>,
   ) => Promise<StoredSet | undefined>;
   deleteSet: (id: string) => Promise<boolean>;
+  setSearchQuery: (query: string) => void;
+  getFilteredSets: () => StoredSet[];
 };
 
 export type SetsStorage = SetsStorageState & SetsStorageActions;

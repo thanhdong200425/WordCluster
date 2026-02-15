@@ -3,15 +3,21 @@ import { TextInput, View } from "react-native";
 
 interface SearchBarProps {
   placeholder?: string;
+  value: string;
+  onChangeText: (text: string) => void;
 }
 
 export function SearchBar({
   placeholder = "Search roots (e.g., struct, bene)",
+  value,
+  onChangeText,
 }: SearchBarProps) {
   return (
     <View className="mx-5 my-3 flex-row items-center gap-2 rounded-[18px] bg-[#1c1e26] px-4 py-3">
       <Ionicons name="search" size={20} color="#a0a4b8" />
       <TextInput
+        value={value}
+        onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor="#a0a4b8"
         className="flex-1 text-base text-white"
