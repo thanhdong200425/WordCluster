@@ -1,19 +1,20 @@
 import { CompletionScreen } from "@/components/flashcard/CompletionScreen";
 import { FlipCard } from "@/components/flashcard/FlipCard";
 import { Text } from "@/components/ui/text";
-import { useSets } from "@/hooks/use-sets";
+import useSetsStorage from "@/stores/setsStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
+import { useShallow } from "zustand/react/shallow";
 
 interface FlashcardScreenProps {
   setId: string;
@@ -22,7 +23,7 @@ interface FlashcardScreenProps {
 const SWIPE_THRESHOLD = 80;
 
 export function FlashcardScreen({ setId }: FlashcardScreenProps) {
-  const { getSet } = useSets();
+  const storedSets = useSetsStorage(useShallow((state) => state.storedSets));
   const router = useRouter();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
@@ -35,7 +36,7 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
     transform: [{ translateX: translateX.value }],
   }));
 
-  const set = getSet(setId);
+  const set = storedSets.find((set) => set.id === setId);
 
   if (!set) {
     return (
@@ -89,11 +90,11 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
     .onEnd((event) => {
       if (event.translationX < -SWIPE_THRESHOLD) {
         translateX.value = withTiming(-screenWidth, { duration: 200 }, () => {
-          runOnJS(goToNext)();
+          scheduleOnRN(goToNext);
         });
       } else if (event.translationX > SWIPE_THRESHOLD && !isFirst) {
         translateX.value = withTiming(screenWidth, { duration: 200 }, () => {
-          runOnJS(goToPrevious)();
+          scheduleOnRN(goToPrevious);
         });
       } else {
         translateX.value = withSpring(0, { damping: 20, stiffness: 200 });
