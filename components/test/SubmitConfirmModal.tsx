@@ -1,5 +1,5 @@
 import { Text } from "@/components/ui/text";
-import { Modal, Pressable, StyleSheet, View } from "react-native";
+import { Modal, Pressable, View } from "react-native";
 
 interface SubmitConfirmModalProps {
   visible: boolean;
@@ -21,21 +21,18 @@ export function SubmitConfirmModal({
       animationType="fade"
       onRequestClose={onCancel}
     >
-      <Pressable style={styles.backdrop} onPress={onCancel}>
-        <Pressable style={styles.card} className="mx-8 rounded-2xl p-7">
-          <Text style={{ fontSize: 32, textAlign: "center" }}>{"⚠️"}</Text>
+      <Pressable
+        className="flex-1 items-center justify-center bg-[rgba(0,0,0,0.7)]"
+        onPress={onCancel}
+      >
+        <Pressable className="mx-8 w-full rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#1c1e26] p-7">
+          <Text className="text-center text-[32px]">{"⚠️"}</Text>
 
-          <Text
-            className="mt-3 text-center font-extrabold text-[#e8eaf0]"
-            style={{ fontSize: 18 }}
-          >
+          <Text className="mt-3 text-center text-[18px] font-extrabold text-[#e8eaf0]">
             Submit with unanswered?
           </Text>
 
-          <Text
-            className="mt-2 text-center"
-            style={{ fontSize: 13, color: "#6b7080" }}
-          >
+          <Text className="mt-2 text-center text-[13px] text-[#6b7080]">
             {unansweredCount} question{unansweredCount !== 1 ? "s" : ""} will be
             marked wrong.
           </Text>
@@ -43,18 +40,16 @@ export function SubmitConfirmModal({
           <View className="mt-6 flex-row gap-3">
             <Pressable
               onPress={onCancel}
-              style={styles.cancelButton}
-              className="flex-1 items-center rounded-xl py-3.5"
+              className="flex-1 items-center rounded-xl border-[1.5px] border-[rgba(255,255,255,0.1)] bg-transparent py-3.5"
             >
-              <Text className="font-semibold" style={{ color: "#a0a4b8" }}>
+              <Text className="font-semibold text-[#a0a4b8]">
                 Go Back
               </Text>
             </Pressable>
 
             <Pressable
               onPress={onConfirm}
-              style={styles.confirmButton}
-              className="flex-1 items-center rounded-xl py-3.5"
+              className="flex-1 items-center rounded-xl bg-[#ff6b8a] py-3.5"
             >
               <Text className="font-bold text-white">Submit Anyway</Text>
             </Pressable>
@@ -64,26 +59,3 @@ export function SubmitConfirmModal({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  card: {
-    backgroundColor: "#1c1e26",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-    width: "100%",
-  },
-  cancelButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.1)",
-  },
-  confirmButton: {
-    backgroundColor: "#ff6b8a",
-  },
-});
