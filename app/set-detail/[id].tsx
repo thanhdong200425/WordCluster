@@ -11,12 +11,12 @@ import { useShallow } from "zustand/react/shallow";
 export default function SetDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { getSet } = useSetsStorage(
+  const { storedSets } = useSetsStorage(
     useShallow((state) => ({
-      getSet: state.getSet,
+      storedSets: state.storedSets,
     })),
   );
-  const set = getSet(id);
+  const set = storedSets.find((set) => set.id === id);
 
   const handleNavigateToEdit = () => {
     if (!id) return;

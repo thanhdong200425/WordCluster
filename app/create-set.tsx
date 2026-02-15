@@ -33,19 +33,19 @@ export default function CreateSetScreen({
   const [showDescription, setShowDescription] = useState<boolean>(true);
   const [currentSetData, setCurrentSetData] = useState<StoredSet | null>(null);
   const [isMissingSet, setIsMissingSet] = useState<boolean>(false);
-  const { createSet, getSet, updateSet, isLoading } = useSetsStorage(
+  const { createSet, updateSet, isLoading, storedSets } = useSetsStorage(
     useShallow((state) => ({
       createSet: state.createSet,
-      getSet: state.getSet,
       updateSet: state.updateSet,
       isLoading: state.isLoading,
+      storedSets: state.storedSets,
     })),
   );
 
   useEffect(() => {
     if (!isEditMode && isLoading) return;
     if (isEditMode && setId) {
-      const set = getSet(setId);
+      const set = storedSets.find((set) => set.id === setId);
       if (set) {
         setCurrentSetData(set);
         setIsMissingSet(false);
@@ -64,7 +64,7 @@ export default function CreateSetScreen({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditMode, setId, getSet]);
+  }, [isEditMode, setId, storedSets]);
 
   const {
     control,
