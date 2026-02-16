@@ -47,10 +47,7 @@ export default function RootLayout() {
               />
               <Stack.Screen name="test/[id]" options={{ headerShown: false }} />
               <Stack.Screen name="edit/[id]" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="settings"
-                options={{ headerShown: false }}
-              />
+              <Stack.Screen name="settings" options={{ headerShown: false }} />
             </Stack>
             <Toast />
           </SafeAreaView>
