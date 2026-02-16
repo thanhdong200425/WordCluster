@@ -1,5 +1,6 @@
 import { ReviewItem } from "@/components/test/ReviewItem";
 import { Text } from "@/components/ui/text";
+import useStreakStorage from "@/stores/streakStorage";
 import type { GradedResult, TestQuestionType } from "@/types/test";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
@@ -52,6 +53,7 @@ export function TestResultsScreen({
   onRetake,
   onBack,
 }: TestResultsScreenProps) {
+  const recordStudySession = useStreakStorage((s) => s.recordStudySession);
   const [activeTab, setActiveTab] = useState<"overview" | "review">("overview");
 
   const correctCount = gradedResults.filter((r) => r.correct).length;
@@ -96,6 +98,7 @@ export function TestResultsScreen({
   const contentY = useSharedValue(10);
 
   useEffect(() => {
+    recordStudySession();
     emojiScale.value = withDelay(
       200,
       withSpring(1, { damping: 12, stiffness: 200 }),
@@ -107,6 +110,7 @@ export function TestResultsScreen({
     contentOpacity.value = withDelay(1000, withTiming(1, { duration: 300 }));
     contentY.value = withDelay(1000, withTiming(0, { duration: 300 }));
   }, [
+    recordStudySession,
     emojiScale,
     headerOpacity,
     headerY,

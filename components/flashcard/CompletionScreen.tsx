@@ -1,6 +1,7 @@
 import { CircularProgress } from "@/components/flashcard/CircularProgress";
 import { ConfettiAnimation } from "@/components/flashcard/ConfettiAnimation";
 import { Text } from "@/components/ui/text";
+import useStreakStorage from "@/stores/streakStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -21,6 +22,7 @@ interface CompletionScreenProps {
 }
 
 export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionScreenProps) {
+  const recordStudySession = useStreakStorage((s) => s.recordStudySession);
   const ringScale = useSharedValue(0);
   const progress = useSharedValue(0);
   const titleOpacity = useSharedValue(0);
@@ -32,6 +34,7 @@ export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionSc
   const glowOpacity = useSharedValue(0.4);
 
   useEffect(() => {
+    recordStudySession();
     // Staggered entrance sequence
     ringScale.value = withDelay(300, withSpring(1, { damping: 12, stiffness: 100 }));
     progress.value = withDelay(
@@ -54,7 +57,7 @@ export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionSc
       withRepeat(withTiming(0.7, { duration: 1500 }), -1, true)
     );
   }, [
-    ringScale, progress, titleOpacity, titleTranslateY,
+    recordStudySession, ringScale, progress, titleOpacity, titleTranslateY,
     statsOpacity, statsTranslateY, buttonsOpacity, buttonsTranslateY, glowOpacity,
   ]);
 

@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import useStreakStorage from "@/stores/streakStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -30,6 +31,7 @@ export function LearnResultsScreen({
   onRestart,
   onBack,
 }: LearnResultsScreenProps) {
+  const recordStudySession = useStreakStorage((s) => s.recordStudySession);
   const correctCount = results.filter(Boolean).length;
   const percentage = Math.round((correctCount / totalQuestions) * 100);
   const meta = getResultMeta(percentage);
@@ -45,6 +47,7 @@ export function LearnResultsScreen({
   const buttonsTranslateY = useSharedValue(10);
 
   useEffect(() => {
+    recordStudySession();
     emojiScale.value = withDelay(
       200,
       withSpring(1, { damping: 10, stiffness: 150 }),
@@ -58,6 +61,7 @@ export function LearnResultsScreen({
     buttonsOpacity.value = withDelay(1000, withTiming(1, { duration: 400 }));
     buttonsTranslateY.value = withDelay(1000, withTiming(0, { duration: 400 }));
   }, [
+    recordStudySession,
     emojiScale,
     messageOpacity,
     messageTranslateY,

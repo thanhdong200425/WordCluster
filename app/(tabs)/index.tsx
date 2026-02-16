@@ -1,18 +1,22 @@
 import { HomeHeader } from "@/components/home/HomeHeader";
+import { RecentSetsSection } from "@/components/home/RecentSetsSection";
 import { SearchBar } from "@/components/home/SearchBar";
+import { SectionTitle } from "@/components/home/SectionTitle";
+import { StreakCard } from "@/components/home/StreakCard";
 import { WordFamilyCard } from "@/components/home/WordFamilyCard";
 import useSetsStorage from "@/stores/setsStorage";
 import { StoredSet } from "@/types/set";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView } from "react-native";
 import { useShallow } from "zustand/react/shallow";
 
-// Default placeholder image
 const DEFAULT_IMAGE =
   "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=200&h=200&fit=crop";
 
 export default function HomeScreen() {
   const [foundSets, setFoundSets] = useState<StoredSet[]>([]);
+  const router = useRouter();
   const {
     storedSets: sets,
     searchQuery,
@@ -29,7 +33,6 @@ export default function HomeScreen() {
     })),
   );
 
-  // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
       setFoundSets(filteredSets());
@@ -48,11 +51,14 @@ export default function HomeScreen() {
   return (
     <ScrollView className="flex-1 bg-[#121318]">
       <HomeHeader />
+      <StreakCard />
       <SearchBar
         placeholder="Search roots (e.g., struct, bene)"
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
+      <RecentSetsSection sets={sets} />
+      {displaySets.length > 0 && <SectionTitle title="All Sets" />}
       {displaySets.map((set) => (
         <WordFamilyCard
           key={set.id}
@@ -60,6 +66,7 @@ export default function HomeScreen() {
           meaning={set.description}
           wordCount={set.items.length}
           imageUrl={DEFAULT_IMAGE}
+          onPress={() => router.push(`/set-detail/${set.id}`)}
         />
       ))}
     </ScrollView>

@@ -8,6 +8,7 @@ interface WordFamilyCardProps {
   progress?: number;
   isNew?: boolean;
   imageUrl: string;
+  onPress?: () => void;
 }
 
 export function WordFamilyCard({
@@ -17,12 +18,13 @@ export function WordFamilyCard({
   progress,
   isNew,
   imageUrl,
+  onPress,
 }: WordFamilyCardProps) {
   const hasProgress = progress !== undefined;
   const barColor = hasProgress && progress >= 50 ? "#5b6cff" : "#fb923c";
 
   return (
-    <View className="mx-5 mb-3 flex-row items-center rounded-2xl bg-[#1c1e26] p-4">
+    <Pressable onPress={onPress} className="mx-5 mb-3 flex-row items-center rounded-2xl bg-[#1c1e26] p-4">
       <View className="mr-4 flex-1">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold text-white">{title}</Text>
@@ -66,6 +68,6 @@ export function WordFamilyCard({
         className="h-24 w-24 rounded-2xl"
         resizeMode="cover"
       />
-    </View>
+    </Pressable>
   );
 }
