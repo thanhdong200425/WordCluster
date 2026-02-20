@@ -7,12 +7,5 @@ export async function initializeAds() {
     testDeviceIdentifiers: __DEV__ ? ["EMULATOR"] : [],
   });
 
-  await mobileAds()
-    .initialize()
-    .then((result) => {
-      console.log("Ads initialized", result);
-    })
-    .catch((error) => {
-      console.error("Failed to initialize ads", error);
-    });
+  await mobileAds().initialize();
 }
