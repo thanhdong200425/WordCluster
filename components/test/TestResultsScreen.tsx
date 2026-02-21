@@ -1,5 +1,6 @@
 import { ReviewItem } from "@/components/test/ReviewItem";
 import { Text } from "@/components/ui/text";
+import { useInterstitialAd } from "@/hooks/use-interstitial-ad";
 import useStreakStorage from "@/stores/streakStorage";
 import type { GradedResult, TestQuestionType } from "@/types/test";
 import { Ionicons } from "@expo/vector-icons";
@@ -54,6 +55,7 @@ export function TestResultsScreen({
   onBack,
 }: TestResultsScreenProps) {
   const recordStudySession = useStreakStorage((s) => s.recordStudySession);
+  const { showIfReady: showInterstitial } = useInterstitialAd();
   const [activeTab, setActiveTab] = useState<"overview" | "review">("overview");
 
   const correctCount = gradedResults.filter((r) => r.correct).length;
@@ -99,6 +101,7 @@ export function TestResultsScreen({
 
   useEffect(() => {
     recordStudySession();
+    showInterstitial();
     emojiScale.value = withDelay(
       200,
       withSpring(1, { damping: 12, stiffness: 200 }),
@@ -111,6 +114,7 @@ export function TestResultsScreen({
     contentY.value = withDelay(1000, withTiming(0, { duration: 300 }));
   }, [
     recordStudySession,
+    showInterstitial,
     emojiScale,
     headerOpacity,
     headerY,

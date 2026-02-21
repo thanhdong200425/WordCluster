@@ -1,6 +1,7 @@
 import { CircularProgress } from "@/components/flashcard/CircularProgress";
 import { ConfettiAnimation } from "@/components/flashcard/ConfettiAnimation";
 import { Text } from "@/components/ui/text";
+import { useInterstitialAd } from "@/hooks/use-interstitial-ad";
 import useStreakStorage from "@/stores/streakStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
@@ -23,6 +24,7 @@ interface CompletionScreenProps {
 
 export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionScreenProps) {
   const recordStudySession = useStreakStorage((s) => s.recordStudySession);
+  const { showIfReady: showInterstitial } = useInterstitialAd();
   const ringScale = useSharedValue(0);
   const progress = useSharedValue(0);
   const titleOpacity = useSharedValue(0);
@@ -35,6 +37,7 @@ export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionSc
 
   useEffect(() => {
     recordStudySession();
+    showInterstitial();
     // Staggered entrance sequence
     ringScale.value = withDelay(300, withSpring(1, { damping: 12, stiffness: 100 }));
     progress.value = withDelay(
@@ -57,7 +60,7 @@ export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionSc
       withRepeat(withTiming(0.7, { duration: 1500 }), -1, true)
     );
   }, [
-    recordStudySession, ringScale, progress, titleOpacity, titleTranslateY,
+    recordStudySession, showInterstitial, ringScale, progress, titleOpacity, titleTranslateY,
     statsOpacity, statsTranslateY, buttonsOpacity, buttonsTranslateY, glowOpacity,
   ]);
 
