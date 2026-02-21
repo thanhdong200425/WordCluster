@@ -2034,6 +2034,23 @@
   dependencies:
     nanoid "^3.3.11"
 
+"@revenuecat/purchases-js-hybrid-mappings@17.41.0":
+  version "17.41.0"
+  resolved "https://registry.yarnpkg.com/@revenuecat/purchases-js-hybrid-mappings/-/purchases-js-hybrid-mappings-17.41.0.tgz#cdc1f71c329876df39beb92113621172cc7b4b29"
+  integrity sha512-rjPX+k1ryiSu//hYpSPU0+M5rryVoNaMxr6raFDyc5bB1My2aCH4b7zUnVBiyGa6ZUayUMJtZxOsz/THzS4WqA==
+  dependencies:
+    "@revenuecat/purchases-js" "1.26.1"
+
+"@revenuecat/purchases-js@1.26.1":
+  version "1.26.1"
+  resolved "https://registry.yarnpkg.com/@revenuecat/purchases-js/-/purchases-js-1.26.1.tgz#3816c2db6b59655f3bdb6443ab7a47864417129e"
+  integrity sha512-+RO6G/AW6/Tm7RFqz2sdkHBAAyV4T2Lj4KGQm8vVUvR8g9hxuDeenCAIKssAqAgLTyq8uqUl4dH6ncbCzHBA0g==
+
+"@revenuecat/purchases-typescript-internal@17.41.0":
+  version "17.41.0"
+  resolved "https://registry.yarnpkg.com/@revenuecat/purchases-typescript-internal/-/purchases-typescript-internal-17.41.0.tgz#5e3caa2732032d86d2fb1d7d1bdd8b80882b9396"
+  integrity sha512-1UhQaQcHQ4TxTdMRXagWhN0ecFC61Wy6ula+aSHuUDLJwyKsMl4Dt4vocuo1Ja9o5Jc1Ty4AXx4MnqEnuLrr6A==
+
 "@rn-primitives/alert-dialog@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@rn-primitives/alert-dialog/-/alert-dialog-1.2.0.tgz#9597b0ae64f5db374076bc83787e951ded35e4f9"
@@ -6365,6 +6382,21 @@ react-native-keyboard-controller@1.18.5:
   integrity sha512-wbYN6Tcu3G5a05dhRYBgjgd74KqoYWuUmroLpigRg9cXy5uYo7prTMIvMgvLtARQtUF7BOtFggUnzgoBOgk0TQ==
   dependencies:
     react-native-is-edge-to-edge "^1.2.1"
+
+react-native-purchases-ui@^9.10.3:
+  version "9.10.3"
+  resolved "https://registry.yarnpkg.com/react-native-purchases-ui/-/react-native-purchases-ui-9.10.3.tgz#38f73b2e6c4c76ecd3fbf11217bf348f7d44d04d"
+  integrity sha512-Dzval20UJHIgvDqyosthFMnwgQ/Q8fvYPKEZzWB902Ju+ina/WrOmzK2PIA1iJxb50NiSqva3JzyTBgNq1BEdQ==
+  dependencies:
+    "@revenuecat/purchases-typescript-internal" "17.41.0"
+
+react-native-purchases@^9.10.3:
+  version "9.10.3"
+  resolved "https://registry.yarnpkg.com/react-native-purchases/-/react-native-purchases-9.10.3.tgz#74126af6cfe91a5ec4b6b8832d63b6ebe5f07814"
+  integrity sha512-YMdueV9SNTT8bLeFN7pFe27tBMusUP6dXit7yU0opjN2XJw//bSJYrk1snBv8e33At2i6Yq1wNXyHipth8dBgg==
+  dependencies:
+    "@revenuecat/purchases-js-hybrid-mappings" "17.41.0"
+    "@revenuecat/purchases-typescript-internal" "17.41.0"
 
 react-native-reanimated@~4.1.1:
   version "4.1.6"
