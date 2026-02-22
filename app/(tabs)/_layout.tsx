@@ -1,11 +1,23 @@
 import { NativeAdCard } from "@/components/ads/NativeAdCard";
 import { HapticTab } from "@/components/haptic-tab";
 import "@/lib/nativewind-inteprop";
+import useRevenueCatStorage from "@/stores/revenueCatStorage";
 import { Image } from "expo-image";
 import { Tabs } from "expo-router";
 import { View } from "react-native";
+import { logger } from "react-native-logs";
+import { useShallow } from "zustand/react/shallow";
+
+const log = logger.createLogger();
 
 export default function TabLayout() {
+  const customerInfo = useRevenueCatStorage(
+    useShallow((state) => state.customerInfo),
+  );
+
+  log.info("Customer info", customerInfo);
+
+  console.log("Customer info");
   return (
     <View className="flex-1">
       <Tabs

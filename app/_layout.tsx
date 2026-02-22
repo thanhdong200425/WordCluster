@@ -14,8 +14,10 @@ import "../global.css";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { initializeAds } from "@/lib/ads";
+import useRevenueCatStorage from "@/stores/revenueCatStorage";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useShallow } from "zustand/react/shallow";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -23,9 +25,15 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const { initialize: initializeRevenueCat } = useRevenueCatStorage(
+    useShallow((state) => ({
+      initialize: state.initialize,
+    })),
+  );
 
   useEffect(() => {
     initializeAds();
+    initializeRevenueCat();
   }, []);
 
   return (
