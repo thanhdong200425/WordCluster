@@ -1,26 +1,196 @@
-import { Text } from "@/components/ui/text";
 import useUserStorage from "@/stores/userStorage";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { Image, Pressable, View } from "react-native";
+import { PressableFeedback } from "heroui-native/pressable-feedback";
+import { useRef, useState } from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 
-export function HomeHeader() {
+interface HomeHeaderProps {
+  searchQuery: string;
+  onSearchChange: (text: string) => void;
+}
+
+const SHADOW = {
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.08,
+  shadowRadius: 4,
+  elevation: 2,
+} as const;
+
+const HEADER_HEIGHT = 52;
+
+export function HomeHeader({ searchQuery, onSearchChange }: HomeHeaderProps) {
   const router = useRouter();
   const userName = useUserStorage((state) => state.userName);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const inputRef = useRef<TextInput>(null);
+  const progress = useSharedValue(0);
 
-  const avatarUri = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=5b6cff&color=fff&size=80`;
+  const initials = userName
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+
+  const expand = () => {
+    setIsExpanded(true);
+    progress.value = withSpring(1, { damping: 22, stiffness: 280 });
+    setTimeout(() => inputRef.current?.focus(), 60);
+  };
+
+  const collapse = () => {
+    inputRef.current?.blur();
+    setIsExpanded(false);
+    onSearchChange("");
+    progress.value = withTiming(0, { duration: 260 });
+  };
+
+  // Collapsed row fades out as progress → 1
+  const collapsedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(progress.value, [0, 0.8], [1, 0]),
+  }));
+
+  // Expanded row fades in as progress → 1
+  const expandedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(progress.value, [0.3, 1], [0, 1]),
+  }));
 
   return (
-    <View className="flex-row items-center justify-between px-5 py-3">
-      <View className="flex-row items-center gap-3">
-        <Image source={{ uri: avatarUri }} className="h-10 w-10 rounded-full" />
-        <Text className="text-lg font-semibold text-white">
-          Hello {userName}
-        </Text>
-      </View>
-      <Pressable hitSlop={8} onPress={() => router.push("/settings")}>
-        <Ionicons name="settings-outline" size={24} color="#a0a4b8" />
-      </Pressable>
+    <View style={{ height: HEADER_HEIGHT, position: "relative" }}>
+      {/* ── Collapsed row ─────────────────────────────────────── */}
+      <Animated.View
+        style={[styles.row, collapsedStyle]}
+        pointerEvents={isExpanded ? "none" : "auto"}
+      >
+        {/* Search icon button */}
+        <PressableFeedback onPress={expand} style={[styles.iconBtn, SHADOW]}>
+          <Ionicons name="search" size={16} color="#64748b" />
+        </PressableFeedback>
+
+        <View style={{ flex: 1 }} />
+
+        {/* Initials pill + Settings */}
+        <View style={styles.rightGroup}>
+          <LinearGradient
+            colors={["#5b6bf8", "#4b5bf0"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.initialsGradient}
+          >
+            <Text style={styles.initialsText}>{initials}</Text>
+          </LinearGradient>
+
+          <PressableFeedback
+            onPress={() => router.push("/settings")}
+            style={[styles.iconBtn, styles.roundBtn, SHADOW]}
+          >
+            <Ionicons name="settings-outline" size={16} color="#64748b" />
+          </PressableFeedback>
+        </View>
+      </Animated.View>
+
+      {/* ── Expanded row ───────────────────────────────────────── */}
+      <Animated.View
+        style={[styles.row, expandedStyle]}
+        pointerEvents={isExpanded ? "auto" : "none"}
+      >
+        {/* Search input */}
+        <View style={[styles.inputContainer, SHADOW]}>
+          <Ionicons
+            name="search"
+            size={16}
+            color="#94a3b8"
+            style={{ marginRight: 8 }}
+          />
+          <TextInput
+            ref={inputRef}
+            value={searchQuery}
+            onChangeText={onSearchChange}
+            placeholder="Search roots (e.g., struct, bene)"
+            placeholderTextColor="#94a3b8"
+            style={styles.input}
+            returnKeyType="search"
+            clearButtonMode="while-editing"
+          />
+        </View>
+
+        {/* Cancel button */}
+        <PressableFeedback onPress={collapse} style={styles.cancelBtn}>
+          <Text style={styles.cancelText}>Cancel</Text>
+        </PressableFeedback>
+      </Animated.View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    ...StyleSheet.absoluteFillObject,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  iconBtn: {
+    width: 36,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    backgroundColor: "#fff",
+  },
+  roundBtn: {
+    borderRadius: 18,
+  },
+  rightGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  initialsGradient: {
+    width: 36,
+    height: 36,
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  initialsText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 13,
+    letterSpacing: -0.2,
+  },
+  inputContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    height: 36,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+  },
+  input: {
+    flex: 1,
+    fontSize: 14,
+    color: "#1a1b2e",
+    padding: 0,
+  },
+  cancelBtn: {
+    paddingVertical: 4,
+    paddingHorizontal: 2,
+  },
+  cancelText: {
+    color: "#5b6bf8",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+});
