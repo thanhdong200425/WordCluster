@@ -9,6 +9,20 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  /* App design tokens — light (Warm Slate) */
+  --color-app-bg: #F4F4F7;
+  --color-app-surface: #FFFFFF;
+  --color-app-surface-2: #EBEBEE;
+  --color-app-nav: #FAFAFA;
+  --color-app-border: #DCDDE6;
+  --color-app-border-2: #E0E1EA;
+  --color-app-text: #1A1B2E;
+  --color-app-text-muted: #64748B;
+  --color-app-text-faint: #94A3B8;
+  --color-app-accent-surface: #EEF0FF;
+  --color-app-dots: #C8CAD8;
+  --color-app-accent: #5B6BF8;
+
   /* Light mode color tokens */
   --color-background: hsl(0 0% 100%);
   --color-foreground: hsl(0 0% 3.9%);
@@ -44,6 +58,19 @@
 
 /* Dark mode overrides — applied when .dark class is present */
 .dark {
+  /* App design tokens — dark */
+  --color-app-bg: #0F1015;
+  --color-app-surface: #1C1E26;
+  --color-app-surface-2: #252832;
+  --color-app-nav: #13141A;
+  --color-app-border: #1E2028;
+  --color-app-border-2: #2A2D3A;
+  --color-app-text: #FFFFFF;
+  --color-app-text-muted: #9CA3AF;
+  --color-app-text-faint: #6B7280;
+  --color-app-accent-surface: #2D3462;
+  --color-app-dots: #2D3748;
+  --color-app-accent: #5B6BF8;
   --color-background: hsl(0 0% 3.9%);
   --color-foreground: hsl(0 0% 98%);
   --color-card: hsl(0 0% 3.9%);

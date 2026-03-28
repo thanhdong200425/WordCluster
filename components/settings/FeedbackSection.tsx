@@ -1,12 +1,16 @@
 import { SettingsMenuItem } from "@/components/settings/SettingsMenuItem";
-import { Text } from "@/components/ui/text";
+import { AppTheme } from "@/constants/appTheme";
 import { MessageSquare } from "lucide-react-native";
-import { Linking, View } from "react-native";
+import { Linking, StyleSheet, Text, View } from "react-native";
 
 const FEEDBACK_EMAIL = "thanhdong200425@gmail.com";
 const FEEDBACK_SUBJECT = "Lexio - Feedback";
 
-export function FeedbackSection() {
+interface FeedbackSectionProps {
+  t: AppTheme;
+}
+
+export function FeedbackSection({ t }: FeedbackSectionProps) {
   const handleSendFeedback = () => {
     const mailto = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(FEEDBACK_SUBJECT)}`;
     Linking.openURL(mailto);
@@ -14,14 +18,25 @@ export function FeedbackSection() {
 
   return (
     <View>
-      <Text className="px-5 pb-2 pt-4 text-xs font-semibold uppercase tracking-wider text-[#a0a4b8]">
-        Support
-      </Text>
+      <Text style={[styles.sectionTitle, { color: t.textFaint }]}>SUPPORT</Text>
       <SettingsMenuItem
         icon={MessageSquare}
         label="Send Feedback"
         onPress={handleSendFeedback}
+        t={t}
+        showBorder={false}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  sectionTitle: {
+    fontSize: 11,
+    fontWeight: "600",
+    letterSpacing: 1.2,
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 8,
+  },
+});

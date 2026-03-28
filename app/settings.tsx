@@ -1,22 +1,59 @@
+import { AppearanceSection } from "@/components/settings/AppearanceSection";
 import { FeedbackSection } from "@/components/settings/FeedbackSection";
 import { LegalSection } from "@/components/settings/LegalSection";
-import { ProfileSection } from "@/components/settings/ProfileSection";
 import { SettingsHeader } from "@/components/settings/SettingsHeader";
+import { useAppTheme } from "@/constants/appTheme";
+import useThemePreferenceStorage from "@/stores/themePreferenceStorage";
+import { useFocusEffect } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useCallback, useState } from "react";
 import { ScrollView, View } from "react-native";
 
 export default function SettingsScreen() {
+  const t = useAppTheme();
+  const { preference, setPreference } = useThemePreferenceStorage();
+  const [statusBarStyle, setStatusBarStyle] = useState<"dark" | "light">(
+    "dark",
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle("dark");
+      return () => setStatusBarStyle("light");
+    }, []),
+  );
+
   return (
-    <ScrollView className="flex-1 bg-[#121318]">
-      <SettingsHeader />
-      <ProfileSection />
-      <Divider />
-      <LegalSection />
-      <Divider />
-      <FeedbackSection />
-    </ScrollView>
+    <>
+      <StatusBar style={statusBarStyle} />
+      <ScrollView
+        style={{ flex: 1, backgroundColor: t.bg }}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
+        <SettingsHeader t={t} />
+        <View style={{ gap: 8 }}>
+          <AppearanceSection
+            preference={preference}
+            onSelect={setPreference}
+            t={t}
+          />
+          <LegalSection t={t} />
+          <LegalDivider t={t} />
+          <FeedbackSection t={t} />
+        </View>
+      </ScrollView>
+    </>
   );
 }
 
-function Divider() {
-  return <View className="mx-5 h-px bg-[#2c2e3a]" />;
+function LegalDivider({ t }: { t: ReturnType<typeof useAppTheme> }) {
+  return (
+    <View
+      style={{
+        height: 0.5,
+        backgroundColor: t.border,
+        marginHorizontal: 20,
+      }}
+    />
+  );
 }

@@ -80,14 +80,19 @@ export function HomeHeader({ searchQuery, onSearchChange }: HomeHeaderProps) {
 
         {/* Initials pill + Settings */}
         <View style={styles.rightGroup}>
-          <LinearGradient
-            colors={["#5b6bf8", "#4b5bf0"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+          <PressableFeedback
+            onPress={() => router.push("/profile")}
             style={styles.initialsGradient}
           >
-            <Text style={styles.initialsText}>{initials}</Text>
-          </LinearGradient>
+            <LinearGradient
+              colors={["#5b6bf8", "#4b5bf0"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.initialsGradient}
+            >
+              <Text style={styles.initialsText}>{initials}</Text>
+            </LinearGradient>
+          </PressableFeedback>
 
           <PressableFeedback
             onPress={() => router.push("/settings")}

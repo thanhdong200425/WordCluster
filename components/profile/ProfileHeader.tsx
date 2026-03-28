@@ -4,11 +4,11 @@ import { useRouter } from "expo-router";
 import { PressableFeedback } from "heroui-native/pressable-feedback";
 import { StyleSheet, Text, View } from "react-native";
 
-interface SettingsHeaderProps {
+interface ProfileHeaderProps {
   t: AppTheme;
 }
 
-export function SettingsHeader({ t }: SettingsHeaderProps) {
+export function ProfileHeader({ t }: ProfileHeaderProps) {
   const router = useRouter();
 
   return (
@@ -19,7 +19,7 @@ export function SettingsHeader({ t }: SettingsHeaderProps) {
       >
         <Ionicons name="chevron-back" size={18} color={t.textMuted} />
       </PressableFeedback>
-      <Text style={[styles.title, { color: t.text }]}>Settings</Text>
+      <Text style={[styles.title, { color: t.text }]}>Profile</Text>
     </View>
   );
 }

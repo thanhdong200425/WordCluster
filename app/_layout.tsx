@@ -16,7 +16,9 @@ import "../global.css";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { initializeAds } from "@/lib/ads";
 import useRevenueCatStorage from "@/stores/revenueCatStorage";
+import useThemePreferenceStorage from "@/stores/themePreferenceStorage";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import { Appearance } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
@@ -31,11 +33,20 @@ export default function RootLayout() {
       initialize: state.initialize,
     })),
   );
+  const themePreference = useThemePreferenceStorage((state) => state.preference);
 
   useEffect(() => {
     initializeAds();
     initializeRevenueCat();
   }, [initializeRevenueCat]);
+
+  useEffect(() => {
+    if (themePreference === "system") {
+      Appearance.setColorScheme(null);
+    } else {
+      Appearance.setColorScheme(themePreference);
+    }
+  }, [themePreference]);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -71,6 +82,10 @@ export default function RootLayout() {
                 />
                 <Stack.Screen
                   name="settings"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="profile"
                   options={{ headerShown: false }}
                 />
               </Stack>
