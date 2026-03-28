@@ -1,21 +1,10 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Icon } from "@/components/ui/icon";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 import type { CreateSetFormData } from "@/schemas/create-set-schema";
 import { Ionicons } from "@expo/vector-icons";
+import { Menu } from "heroui-native/menu";
+import { Select } from "heroui-native/select";
 import { Layers, StickyNote, Tag } from "lucide-react-native";
 import { useState } from "react";
 import {
@@ -118,22 +107,28 @@ export function TermCard({ index, control, errors }: TermCardProps) {
                 }
                 onValueChange={(option) => onChange(option?.value ?? "")}
               >
-                <SelectTrigger className="mb-1 h-auto rounded-[14px] border-2 border-white bg-transparent px-4 py-2.5">
-                  <SelectValue
+                <Select.Trigger
+                  variant="unstyled"
+                  className="mb-1 h-auto rounded-[14px] border-2 border-white bg-transparent px-4 py-2.5"
+                >
+                  <Select.Value
                     className="text-[18px] text-[#e8eaf0]"
                     placeholder="Select type"
                   />
-                </SelectTrigger>
-                <SelectContent>
-                  {TYPE_OPTIONS.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      label={option.label}
-                      value={option.value}
-                      className="text-[18px] text-[#e8eaf0]"
-                    />
-                  ))}
-                </SelectContent>
+                  <Select.TriggerIndicator />
+                </Select.Trigger>
+                <Select.Portal>
+                  <Select.Overlay />
+                  <Select.Content presentation="popover">
+                    {TYPE_OPTIONS.map((option) => (
+                      <Select.Item
+                        key={option.value}
+                        label={option.label}
+                        value={option.value}
+                      />
+                    ))}
+                  </Select.Content>
+                </Select.Portal>
               </Select>
             )}
           />
@@ -153,8 +148,8 @@ export function TermCard({ index, control, errors }: TermCardProps) {
       )}
 
       {!hasAllFields && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <Menu>
+          <Menu.Trigger asChild>
             <Pressable className="flex-row items-center self-start rounded-full bg-white/10 px-4 py-2 mt-3">
               <Ionicons name="add" size={16} color="#e8eaf0" />
               <Text className="mx-1.5 text-sm font-semibold text-[#e8eaf0]">
@@ -162,43 +157,48 @@ export function TermCard({ index, control, errors }: TermCardProps) {
               </Text>
               <Ionicons name="chevron-down" size={14} color="#e8eaf0" />
             </Pressable>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-48 rounded-xl border-white/10 bg-[#2d3142]"
-            align="start"
-            sideOffset={4}
-          >
-            {!visibleFields.has("example") && (
-              <DropdownMenuItem
-                className="gap-3 px-4 py-3"
-                onPress={() => handleAddField("example")}
-              >
-                <Icon as={StickyNote} className="text-[#e8eaf0]" size={16} />
-                <Text className="text-sm font-medium text-[#e8eaf0]">
-                  Example
-                </Text>
-              </DropdownMenuItem>
-            )}
-            {!visibleFields.has("type") && (
-              <DropdownMenuItem
-                className="gap-3 px-4 py-3"
-                onPress={() => handleAddField("type")}
-              >
-                <Icon as={Tag} className="text-[#e8eaf0]" size={16} />
-                <Text className="text-sm font-medium text-[#e8eaf0]">Type</Text>
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem
-              className="gap-3 px-4 py-3"
-              onPress={() => handleAddField("wordFamily")}
+          </Menu.Trigger>
+          <Menu.Portal>
+            <Menu.Overlay />
+            <Menu.Content
+              presentation="popover"
+              width={192}
+              className="rounded-xl border-white/10 bg-[#2d3142]"
             >
-              <Icon as={Layers} className="text-[#e8eaf0]" size={16} />
-              <Text className="text-sm font-medium text-[#e8eaf0]">
-                Word family
-              </Text>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              {!visibleFields.has("example") && (
+                <Menu.Item
+                  className="gap-3 px-4 py-3"
+                  onPress={() => handleAddField("example")}
+                >
+                  <Icon as={StickyNote} className="text-[#e8eaf0]" size={16} />
+                  <Menu.ItemTitle className="text-sm font-medium text-[#e8eaf0]">
+                    Example
+                  </Menu.ItemTitle>
+                </Menu.Item>
+              )}
+              {!visibleFields.has("type") && (
+                <Menu.Item
+                  className="gap-3 px-4 py-3"
+                  onPress={() => handleAddField("type")}
+                >
+                  <Icon as={Tag} className="text-[#e8eaf0]" size={16} />
+                  <Menu.ItemTitle className="text-sm font-medium text-[#e8eaf0]">
+                    Type
+                  </Menu.ItemTitle>
+                </Menu.Item>
+              )}
+              <Menu.Item
+                className="gap-3 px-4 py-3"
+                onPress={() => handleAddField("wordFamily")}
+              >
+                <Icon as={Layers} className="text-[#e8eaf0]" size={16} />
+                <Menu.ItemTitle className="text-sm font-medium text-[#e8eaf0]">
+                  Word family
+                </Menu.ItemTitle>
+              </Menu.Item>
+            </Menu.Content>
+          </Menu.Portal>
+        </Menu>
       )}
     </View>
   );

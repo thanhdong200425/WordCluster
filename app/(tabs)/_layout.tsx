@@ -1,6 +1,5 @@
 import { NativeAdCard } from "@/components/ads/NativeAdCard";
 import { HapticTab } from "@/components/haptic-tab";
-import "@/lib/nativewind-inteprop";
 import useRevenueCatStorage from "@/stores/revenueCatStorage";
 import { Image } from "expo-image";
 import { Tabs } from "expo-router";
