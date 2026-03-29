@@ -1,4 +1,5 @@
 import { SectionTitle } from "@/components/home/SectionTitle";
+import { useAppTheme } from "@/constants/appTheme";
 import { StoredSet } from "@/types/set";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -13,23 +14,31 @@ interface RecentSetsSectionProps {
 
 function RecentSetCard({ set }: { set: StoredSet }) {
   const router = useRouter();
+  const theme = useAppTheme();
 
   return (
     <PressableFeedback
       onPress={() => router.push(`/set-detail/${set.id}`)}
       className="flex-1"
     >
-      <Card className="bg-white rounded-2xl p-4 flex-1">
-        <View className="mb-4 h-10 w-10 items-center justify-center rounded-xl bg-[#eef0ff]">
-          <Ionicons name="book-outline" size={18} color="#5b6bf8" />
+      <Card
+        className="rounded-2xl p-4 flex-1"
+        style={{ backgroundColor: theme.surface }}
+      >
+        <View
+          className="mb-4 h-10 w-10 items-center justify-center rounded-xl"
+          style={{ backgroundColor: theme.accentSurface }}
+        >
+          <Ionicons name="book-outline" size={18} color={theme.accentStart} />
         </View>
         <Text
-          className="text-[15px] font-bold text-[#1a1b2e]"
+          className="text-[15px] font-bold"
+          style={{ color: theme.text }}
           numberOfLines={1}
         >
           {set.title}
         </Text>
-        <Text className="mt-1 text-[13px] text-[#94a3b8]">
+        <Text className="mt-1 text-[13px]" style={{ color: theme.textFaint }}>
           {set.items.length} {set.items.length === 1 ? "word" : "words"}
         </Text>
       </Card>

@@ -1,3 +1,4 @@
+import { useAppTheme } from "@/constants/appTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { TextInput, View } from "react-native";
 
@@ -12,15 +13,24 @@ export function SearchBar({
   value,
   onChangeText,
 }: SearchBarProps) {
+  const theme = useAppTheme();
+
   return (
-    <View className="mx-5 my-3 flex-row items-center gap-2 rounded-[18px] bg-[#1c1e26] px-4 py-3">
-      <Ionicons name="search" size={20} color="#a0a4b8" />
+    <View
+      className="mx-5 my-3 flex-row items-center gap-2 rounded-[18px] border px-4 py-3"
+      style={{
+        backgroundColor: theme.surface2,
+        borderColor: theme.border,
+      }}
+    >
+      <Ionicons name="search" size={20} color={theme.textMuted} />
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#a0a4b8"
-        className="flex-1 text-base text-white"
+        placeholderTextColor={theme.textFaint}
+        className="flex-1 text-base"
+        style={{ color: theme.text }}
       />
     </View>
   );

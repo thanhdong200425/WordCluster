@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, View } from "react-native";
 
@@ -19,10 +20,16 @@ export function StudyModeCard({
   iconBgColor,
   onPress,
 }: StudyModeCardProps) {
+  const theme = useAppTheme();
+
   return (
     <Pressable
       onPress={onPress}
-      className="mx-5 mb-3 flex-row items-center rounded-2xl border border-white/5 bg-[#1c1e26] p-4"
+      className="mx-5 mb-3 flex-row items-center rounded-2xl border p-4"
+      style={{
+        backgroundColor: theme.surface,
+        borderColor: theme.border,
+      }}
     >
       <View
         className="mr-4 h-10 w-10 items-center justify-center rounded-xl"
@@ -32,11 +39,15 @@ export function StudyModeCard({
       </View>
 
       <View className="flex-1">
-        <Text className="text-base font-bold text-[#e8eaf0]">{title}</Text>
-        <Text className="mt-0.5 text-xs text-[#a0a4b8]">{description}</Text>
+        <Text className="text-base font-bold" style={{ color: theme.text }}>
+          {title}
+        </Text>
+        <Text className="mt-0.5 text-xs" style={{ color: theme.textMuted }}>
+          {description}
+        </Text>
       </View>
 
-      <Ionicons name="play" size={16} color="rgba(255,255,255,0.3)" />
+      <Ionicons name="play" size={16} color={theme.textFaint} />
     </Pressable>
   );
 }

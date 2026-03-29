@@ -1,3 +1,4 @@
+import { useAppTheme } from "@/constants/appTheme";
 import useUserStorage from "@/stores/userStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -30,6 +31,7 @@ const HEADER_HEIGHT = 52;
 
 export function HomeHeader({ searchQuery, onSearchChange }: HomeHeaderProps) {
   const router = useRouter();
+  const theme = useAppTheme();
   const userName = useUserStorage((state) => state.userName);
   const [isExpanded, setIsExpanded] = useState(false);
   const inputRef = useRef<TextInput>(null);
@@ -72,8 +74,11 @@ export function HomeHeader({ searchQuery, onSearchChange }: HomeHeaderProps) {
         pointerEvents={isExpanded ? "none" : "auto"}
       >
         {/* Search icon button */}
-        <PressableFeedback onPress={expand} style={[styles.iconBtn, SHADOW]}>
-          <Ionicons name="search" size={16} color="#64748b" />
+        <PressableFeedback
+          onPress={expand}
+          style={[styles.iconBtn, { backgroundColor: theme.surface }, SHADOW]}
+        >
+          <Ionicons name="search" size={16} color={theme.textMuted} />
         </PressableFeedback>
 
         <View style={{ flex: 1 }} />
@@ -85,7 +90,7 @@ export function HomeHeader({ searchQuery, onSearchChange }: HomeHeaderProps) {
             style={styles.initialsGradient}
           >
             <LinearGradient
-              colors={["#5b6bf8", "#4b5bf0"]}
+              colors={[theme.accentStart, theme.accentEnd]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.initialsGradient}
@@ -96,9 +101,14 @@ export function HomeHeader({ searchQuery, onSearchChange }: HomeHeaderProps) {
 
           <PressableFeedback
             onPress={() => router.push("/settings")}
-            style={[styles.iconBtn, styles.roundBtn, SHADOW]}
+            style={[
+              styles.iconBtn,
+              styles.roundBtn,
+              { backgroundColor: theme.surface },
+              SHADOW,
+            ]}
           >
-            <Ionicons name="settings-outline" size={16} color="#64748b" />
+            <Ionicons name="settings-outline" size={16} color={theme.textMuted} />
           </PressableFeedback>
         </View>
       </Animated.View>
@@ -109,11 +119,17 @@ export function HomeHeader({ searchQuery, onSearchChange }: HomeHeaderProps) {
         pointerEvents={isExpanded ? "auto" : "none"}
       >
         {/* Search input */}
-        <View style={[styles.inputContainer, SHADOW]}>
+        <View
+          style={[
+            styles.inputContainer,
+            { backgroundColor: theme.surface },
+            SHADOW,
+          ]}
+        >
           <Ionicons
             name="search"
             size={16}
-            color="#94a3b8"
+            color={theme.textFaint}
             style={{ marginRight: 8 }}
           />
           <TextInput
@@ -121,8 +137,8 @@ export function HomeHeader({ searchQuery, onSearchChange }: HomeHeaderProps) {
             value={searchQuery}
             onChangeText={onSearchChange}
             placeholder="Search roots (e.g., struct, bene)"
-            placeholderTextColor="#94a3b8"
-            style={styles.input}
+            placeholderTextColor={theme.textFaint}
+            style={[styles.input, { color: theme.text }]}
             returnKeyType="search"
             clearButtonMode="while-editing"
           />
@@ -130,7 +146,9 @@ export function HomeHeader({ searchQuery, onSearchChange }: HomeHeaderProps) {
 
         {/* Cancel button */}
         <PressableFeedback onPress={collapse} style={styles.cancelBtn}>
-          <Text style={styles.cancelText}>Cancel</Text>
+          <Text style={[styles.cancelText, { color: theme.accentStart }]}>
+            Cancel
+          </Text>
         </PressableFeedback>
       </Animated.View>
     </View>
@@ -151,7 +169,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
-    backgroundColor: "#fff",
   },
   roundBtn: {
     borderRadius: 18,
@@ -179,14 +196,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     height: 36,
-    backgroundColor: "#fff",
     borderRadius: 10,
     paddingHorizontal: 12,
   },
   input: {
     flex: 1,
     fontSize: 14,
-    color: "#1a1b2e",
     padding: 0,
   },
   cancelBtn: {
@@ -194,7 +209,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
   cancelText: {
-    color: "#5b6bf8",
     fontSize: 14,
     fontWeight: "500",
   },

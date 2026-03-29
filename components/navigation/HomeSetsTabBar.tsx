@@ -1,3 +1,4 @@
+import { useAppTheme } from "@/constants/appTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { PlatformPressable } from "@react-navigation/elements";
@@ -20,16 +21,19 @@ export function HomeSetsTabBar({
 }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const theme = useAppTheme();
 
-  const activeColor = "#5b6bf8";
-  const inactiveColor = "#64748b";
+  const activeColor = theme.accentStart;
+  const inactiveColor = theme.textMuted;
   const BAR_HEIGHT = 56;
 
   return (
     <View
-      className="bg-[#fafafa] border-t border-[#dcdde6] flex-row items-center relative"
+      className="flex-row items-center relative"
       style={{
+        backgroundColor: theme.nav,
         borderTopWidth: 0.5,
+        borderTopColor: theme.border,
         paddingBottom: insets.bottom,
         height: BAR_HEIGHT + insets.bottom,
       }}
@@ -115,7 +119,7 @@ export function HomeSetsTabBar({
           style={{ width: 60, height: 60 }}
         >
           <LinearGradient
-            colors={["#5b6bf8", "#4b5bf0"]}
+            colors={[theme.accentStart, theme.accentEnd]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{
@@ -124,7 +128,7 @@ export function HomeSetsTabBar({
               borderRadius: 30,
               alignItems: "center",
               justifyContent: "center",
-              shadowColor: "#5b6bf8",
+              shadowColor: theme.accentStart,
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.45,
               shadowRadius: 12,

@@ -2,28 +2,23 @@ import { AllSetsCard } from "@/components/home/AllSetsCard";
 import { HomeHeader } from "@/components/home/HomeHeader";
 import { RecentSetsSection } from "@/components/home/RecentSetsSection";
 import { SectionTitle } from "@/components/home/SectionTitle";
+import { useAppTheme } from "@/constants/appTheme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import useSetsStorage from "@/stores/setsStorage";
 import { StoredSet } from "@/types/set";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Spinner } from "heroui-native/spinner";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { useShallow } from "zustand/react/shallow";
 
 export default function HomeScreen() {
   const [foundSets, setFoundSets] = useState<StoredSet[]>([]);
-  const [statusBarStyle, setStatusBarStyle] = useState<"dark" | "light">(
-    "dark",
-  );
   const router = useRouter();
-
-  useFocusEffect(
-    useCallback(() => {
-      setStatusBarStyle("dark");
-      return () => setStatusBarStyle("light");
-    }, []),
-  );
+  const theme = useAppTheme();
+  const colorScheme = useColorScheme();
+  const statusBarStyle = colorScheme === "dark" ? "light" : "dark";
 
   const {
     storedSets: sets,
@@ -50,9 +45,15 @@ export default function HomeScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#f4f4f7]">
-        <Spinner />
-      </View>
+      <>
+        <StatusBar style={statusBarStyle} />
+        <View
+          className="flex-1 items-center justify-center"
+          style={{ backgroundColor: theme.bg }}
+        >
+          <Spinner />
+        </View>
+      </>
     );
   }
 
@@ -61,7 +62,7 @@ export default function HomeScreen() {
   return (
     <>
       <StatusBar style={statusBarStyle} />
-      <ScrollView className="flex-1 bg-[#f4f4f7]">
+      <ScrollView className="flex-1" style={{ backgroundColor: theme.bg }}>
         <HomeHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
         <RecentSetsSection sets={sets} />
         {displaySets.length > 0 && <SectionTitle title="All Sets" />}

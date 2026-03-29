@@ -3,16 +3,22 @@ import RightDeleteAction from "@/components/common/RightDeleteAction";
 import { SearchBar } from "@/components/home/SearchBar";
 import { SetCard } from "@/components/sets/SetCard";
 import { SetsHeader } from "@/components/sets/SetsHeader";
+import { useAppTheme } from "@/constants/appTheme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import useSetsStorage from "@/stores/setsStorage";
 import { StoredSet } from "@/types/set";
 import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView } from "react-native";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import Toast from "react-native-toast-message";
 import { useShallow } from "zustand/react/shallow";
 
 export default function SetsScreen() {
+  const theme = useAppTheme();
+  const colorScheme = useColorScheme();
+  const statusBarStyle = colorScheme === "dark" ? "light" : "dark";
   const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
   const [foundSets, setFoundSets] = useState<StoredSet[]>([]);
   const {
@@ -58,13 +64,22 @@ export default function SetsScreen() {
 
   if (isLoading) {
     return (
-      <ActivityIndicator className="flex-1 items-center justify-center bg-[#121318]" />
+      <>
+        <StatusBar style={statusBarStyle} />
+        <View
+          className="flex-1 items-center justify-center"
+          style={{ backgroundColor: theme.bg }}
+        >
+          <ActivityIndicator color={theme.accentStart} />
+        </View>
+      </>
     );
   }
 
   return (
     <>
-      <ScrollView className="flex-1 bg-[#121318]">
+      <StatusBar style={statusBarStyle} />
+      <ScrollView className="flex-1" style={{ backgroundColor: theme.bg }}>
         <SetsHeader totalSets={sets.length} />
         <SearchBar
           placeholder="Search sets..."

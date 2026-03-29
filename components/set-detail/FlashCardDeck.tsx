@@ -1,6 +1,7 @@
 import { CardCounter } from "@/components/set-detail/CardCounter";
 import { FlashCard } from "@/components/set-detail/FlashCard";
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import { useState } from "react";
 import { useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -26,6 +27,7 @@ interface FlashCardDeckProps {
 const SWIPE_THRESHOLD = 80;
 
 export function FlashCardDeck({ items }: FlashCardDeckProps) {
+  const theme = useAppTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const translateX = useSharedValue(0);
@@ -37,8 +39,11 @@ export function FlashCardDeck({ items }: FlashCardDeckProps) {
 
   if (items.length === 0) {
     return (
-      <View className="mx-5 items-center rounded-2xl bg-[#282b37] px-6 py-8">
-        <Text className="text-[#a0a4b8]">No cards in this set</Text>
+      <View
+        className="mx-5 items-center rounded-2xl px-6 py-8"
+        style={{ backgroundColor: theme.surface2 }}
+      >
+        <Text style={{ color: theme.textMuted }}>No cards in this set</Text>
       </View>
     );
   }

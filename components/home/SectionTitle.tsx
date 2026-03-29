@@ -1,17 +1,14 @@
+import { useAppTheme } from "@/constants/appTheme";
 import { Text, View } from "react-native";
 
 interface SectionTitleProps {
   title: string;
   className?: string;
-  variant?: "dark" | "light";
 }
 
-export function SectionTitle({
-  title,
-  className,
-  variant = "light",
-}: SectionTitleProps) {
-  const textColor = variant === "light" ? "#64748b" : "#a0a4b8";
+export function SectionTitle({ title, className }: SectionTitleProps) {
+  const theme = useAppTheme();
+  const textColor = theme.textMuted;
 
   return (
     <View className={`px-4 pb-2 pt-4 ${className ?? ""}`}>

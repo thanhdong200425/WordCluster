@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import * as Haptics from "expo-haptics";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -20,6 +21,7 @@ interface FlashCardProps {
 const FLIP_DURATION = 400;
 
 export function FlashCard({ term, definition, isFlipped, onFlip }: FlashCardProps) {
+  const theme = useAppTheme();
   const flipProgress = useSharedValue(0);
 
   useEffect(() => {
@@ -57,28 +59,57 @@ export function FlashCard({ term, definition, isFlipped, onFlip }: FlashCardProp
   return (
     <Pressable onPress={handleFlip} style={styles.container}>
       <Animated.View
-        style={[styles.face, frontAnimatedStyle]}
-        className="rounded-2xl bg-[#282b37] px-6 py-8"
+        style={[
+          styles.face,
+          frontAnimatedStyle,
+          {
+            backgroundColor: theme.surface2,
+            borderRadius: 16,
+            paddingHorizontal: 24,
+            paddingVertical: 32,
+          },
+        ]}
       >
-        <Text className="mb-4 text-center text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+        <Text
+          className="mb-4 text-center text-[10px] font-extrabold uppercase tracking-widest"
+          style={{ color: theme.textFaint }}
+        >
           TERM
         </Text>
         <View className="flex-1 items-center justify-center">
-          <Text className="text-center text-base leading-6 text-white">
+          <Text
+            className="text-center text-base leading-6"
+            style={{ color: theme.text }}
+          >
             {term}
           </Text>
         </View>
       </Animated.View>
 
       <Animated.View
-        style={[styles.face, styles.backFace, backAnimatedStyle]}
-        className="rounded-2xl bg-[#282b37] px-6 py-8"
+        style={[
+          styles.face,
+          styles.backFace,
+          backAnimatedStyle,
+          {
+            backgroundColor: theme.surface2,
+            borderRadius: 16,
+            paddingHorizontal: 24,
+            paddingVertical: 32,
+          },
+        ]}
       >
-        <Text className="mb-4 text-center text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+        <Text
+          className="mb-4 text-center text-[10px] font-extrabold uppercase tracking-widest"
+          style={{ color: theme.textFaint }}
+        >
           DEFINITION
         </Text>
         <View className="flex-1 items-center justify-center">
-          <Text className="text-center text-base leading-6 text-white">
+          <Text
+            className="text-center text-base leading-6"
+            style={{ color: theme.text }}
+          >
             {definition}
           </Text>
         </View>
