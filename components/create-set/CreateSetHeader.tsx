@@ -1,9 +1,8 @@
 import { AppTheme } from "@/constants/appTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Button } from "heroui-native/button";
 import { PressableFeedback } from "heroui-native/pressable-feedback";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 interface CreateSetHeaderProps {
   isEditMode: boolean;
@@ -22,75 +21,65 @@ export function CreateSetHeader({
 
   return (
     <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: t.surface,
-          borderBottomColor: t.border,
-        },
-      ]}
+      className="relative h-[66px] flex-row items-center border-b px-4"
+      style={{
+        backgroundColor: t.surface,
+        borderBottomColor: t.border,
+      }}
     >
-      <PressableFeedback
-        onPress={() => router.back()}
-        className="flex-row items-center gap-1.5"
-        style={styles.backButton}
+      <View
+        className="absolute inset-x-0 top-0 bottom-0 items-center justify-center px-12"
+        pointerEvents="none"
       >
-        <Ionicons name="chevron-back" size={18} color={t.textMuted} />
-        <Text style={[styles.backText, { color: t.textMuted }]}>Back</Text>
-      </PressableFeedback>
-
-      <Text style={[styles.title, { color: t.text }]}>
-        {isEditMode ? "Edit Set" : "Create Set"}
-      </Text>
-
-      <Button
-        onPress={onSubmit}
-        isDisabled={isSubmitDisabled}
-        feedbackVariant="scale-highlight"
-        className="min-w-[72px] rounded-full px-4 py-0"
-        style={[
-          styles.ctaButton,
-          {
-            backgroundColor: isSubmitDisabled ? t.surface2 : t.accentStart,
-          },
-        ]}
-      >
-        <Button.Label
-          className={isSubmitDisabled ? "text-[#94A3B8]" : "text-white"}
+        <Text
+          className="text-center text-[17px] font-bold tracking-[-0.3px]"
+          style={{ color: t.text }}
+          numberOfLines={1}
         >
-          {isEditMode ? "Save" : "Create"}
-        </Button.Label>
-      </Button>
+          {isEditMode ? "Edit Set" : "Create Set"}
+        </Text>
+      </View>
+
+      <View
+        className="z-10 flex-1 flex-row items-center justify-start"
+        pointerEvents="box-none"
+      >
+        <PressableFeedback
+          onPress={() => router.back()}
+          className="h-10 w-10 items-center justify-center rounded-full"
+          style={{ backgroundColor: t.surface2 }}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
+          <Ionicons name="chevron-back" size={20} color={t.textMuted} />
+        </PressableFeedback>
+      </View>
+
+      <View
+        className="z-10 flex-1 flex-row items-center justify-end"
+        pointerEvents="box-none"
+      >
+        <PressableFeedback
+          onPress={onSubmit}
+          isDisabled={isSubmitDisabled}
+          className="h-10 w-10 items-center justify-center rounded-full"
+          style={{
+            backgroundColor: isSubmitDisabled ? t.surface2 : t.accentStart,
+            opacity: isSubmitDisabled ? 0.7 : 1,
+          }}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel={isEditMode ? "Save set" : "Create set"}
+          accessibilityState={{ disabled: isSubmitDisabled }}
+        >
+          <Ionicons
+            name="checkmark"
+            size={22}
+            color={isSubmitDisabled ? t.textFaint : "#FFFFFF"}
+          />
+        </PressableFeedback>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    height: 66,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 16,
-  },
-  backButton: {
-    minWidth: 72,
-  },
-  backText: {
-    fontSize: 15,
-    fontWeight: "400",
-  },
-  title: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    textAlign: "center",
-    fontSize: 17,
-    fontWeight: "700",
-    letterSpacing: -0.3,
-  },
-  ctaButton: {
-    height: 38,
-  },
-});

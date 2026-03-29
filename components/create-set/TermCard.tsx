@@ -1,12 +1,13 @@
 import { CreateSetFieldRow } from "@/components/create-set/CreateSetFieldRow";
+import { FieldSectionHeader } from "@/components/create-set/FieldSectionHeader";
 import { AppTheme } from "@/constants/appTheme";
 import type { CreateSetFormData } from "@/schemas/create-set-schema";
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "heroui-native/button";
 import { Card } from "heroui-native/card";
 import { Menu } from "heroui-native/menu";
-import { Select } from "heroui-native/select";
 import { PressableFeedback } from "heroui-native/pressable-feedback";
+import { Select } from "heroui-native/select";
 import { StickyNote, Tag } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
@@ -77,7 +78,8 @@ export function TermCard({ index, control, errors, t }: TermCardProps) {
     setVisibleFields((prev) => new Set([...prev].filter((t) => t !== type)));
   };
 
-  const hasAllFields = visibleFields.has("example") && visibleFields.has("type");
+  const hasAllFields =
+    visibleFields.has("example") && visibleFields.has("type");
 
   return (
     <Card
@@ -92,7 +94,7 @@ export function TermCard({ index, control, errors, t }: TermCardProps) {
       }}
     >
       <Card.Header
-        className="flex-row items-center justify-between px-3.5 py-3"
+        className="flex-row items-center justify-between p-2"
         style={{
           borderBottomWidth: isExpanded ? StyleSheet.hairlineWidth : 0,
           borderBottomColor: t.border,
@@ -162,15 +164,17 @@ export function TermCard({ index, control, errors, t }: TermCardProps) {
 
             {visibleFields.has("type") ? (
               <View
-                className="px-3.5 pt-3"
+                className="px-3.5 pb-3 pt-3"
                 style={{
                   borderBottomWidth: StyleSheet.hairlineWidth,
                   borderBottomColor: t.border,
                 }}
               >
-                <Text style={[styles.fieldLabel, { color: t.textFaint }]}>
-                  Type
-                </Text>
+                <FieldSectionHeader
+                  label="Type"
+                  t={t}
+                  onDelete={() => handleDeleteField("type")}
+                />
                 <Controller
                   control={control}
                   name={`items.${index}.type`}
@@ -185,7 +189,7 @@ export function TermCard({ index, control, errors, t }: TermCardProps) {
                       onValueChange={(option) => onChange(option?.value ?? "")}
                     >
                       <Select.Trigger
-                        variant="unstyled"
+                        variant="default"
                         className="min-h-[32px] rounded-xl border px-3 py-2"
                         style={{ borderColor: t.border, backgroundColor: t.bg }}
                       >
@@ -198,7 +202,10 @@ export function TermCard({ index, control, errors, t }: TermCardProps) {
                       </Select.Trigger>
                       <Select.Portal>
                         <Select.Overlay />
-                        <Select.Content presentation="popover">
+                        <Select.Content
+                          presentation="popover"
+                          width={"trigger"}
+                        >
                           {TYPE_OPTIONS.map((option) => (
                             <Select.Item
                               key={option.value}
@@ -211,18 +218,6 @@ export function TermCard({ index, control, errors, t }: TermCardProps) {
                     </Select>
                   )}
                 />
-                <View className="flex-row items-center justify-end pb-3 pt-2">
-                  <PressableFeedback
-                    onPress={() => handleDeleteField("type")}
-                    className="rounded-full p-1"
-                  >
-                    <Ionicons
-                      name="trash-outline"
-                      size={16}
-                      color={t.textMuted}
-                    />
-                  </PressableFeedback>
-                </View>
               </View>
             ) : null}
           </Card.Body>
@@ -241,7 +236,10 @@ export function TermCard({ index, control, errors, t }: TermCardProps) {
                     variant="ghost"
                     feedbackVariant="scale-highlight"
                     className="rounded-full px-3 py-0"
-                    style={[styles.addFieldButton, { backgroundColor: t.surface2 }]}
+                    style={[
+                      styles.addFieldButton,
+                      { backgroundColor: t.surface2 },
+                    ]}
                   >
                     <Ionicons name="add" size={14} color={t.textMuted} />
                     <Button.Label
@@ -315,13 +313,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 1.1,
-  },
-  fieldLabel: {
-    fontSize: 9,
-    fontWeight: "600",
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    marginBottom: 8,
   },
   addFieldButton: {
     height: 34,

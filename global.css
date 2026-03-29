@@ -23,25 +23,71 @@
   --color-app-dots: #C8CAD8;
   --color-app-accent: #5B6BF8;
 
+  /* HeroUI base tokens — light */
+  --background: #F4F4F7;
+  --foreground: #1A1B2E;
+  --surface: #FFFFFF;
+  --surface-foreground: #1A1B2E;
+  --surface-secondary: #EBEBEE;
+  --surface-secondary-foreground: #1A1B2E;
+  --surface-tertiary: #F4F4F7;
+  --surface-tertiary-foreground: #1A1B2E;
+  --overlay: #FFFFFF;
+  --overlay-foreground: #1A1B2E;
+  --muted: #64748B;
+  --default: #EBEBEE;
+  --default-foreground: #1A1B2E;
+  --accent: #5B6BF8;
+  --accent-foreground: #FFFFFF;
+  --field-background: #FFFFFF;
+  --field-foreground: #1A1B2E;
+  --field-placeholder: #94A3B8;
+  --field-border: #DCDDE6;
+  --success: #22C55E;
+  --success-foreground: #052E16;
+  --warning: #F59E0B;
+  --warning-foreground: #1A1B2E;
+  --danger: #EF4444;
+  --danger-foreground: #FFFFFF;
+  --segment: #FFFFFF;
+  --segment-foreground: #1A1B2E;
+  --border: #DCDDE6;
+  --separator: #C8CAD8;
+  --focus: #5B6BF8;
+  --link: #5B6BF8;
+  --surface-shadow:
+    0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+    0 0 1px 0 rgba(0, 0, 0, 0.06);
+  --overlay-shadow:
+    0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+    0 14px 28px 0 rgba(0, 0, 0, 0.03);
+  --field-shadow:
+    0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+    0 0 1px 0 rgba(0, 0, 0, 0.06);
+  --border-width: 1px;
+  --field-border-width: 1px;
+  --radius: 0.625rem;
+  --field-radius: 0.875rem;
+
   /* Light mode color tokens */
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(0 0% 3.9%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(0 0% 3.9%);
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(0 0% 3.9%);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--surface-foreground);
+  --color-popover: var(--overlay);
+  --color-popover-foreground: var(--overlay-foreground);
   --color-primary: hsl(0 0% 9%);
   --color-primary-foreground: hsl(0 0% 98%);
-  --color-secondary: hsl(0 0% 96.1%);
-  --color-secondary-foreground: hsl(0 0% 9%);
-  --color-muted: hsl(0 0% 96.1%);
-  --color-muted-foreground: hsl(0 0% 45.1%);
-  --color-accent: hsl(0 0% 96.1%);
-  --color-accent-foreground: hsl(0 0% 9%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-border: hsl(0 0% 89.8%);
-  --color-input: hsl(0 0% 89.8%);
-  --color-ring: hsl(0 0% 63%);
+  --color-secondary: var(--surface-secondary);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--surface-secondary);
+  --color-muted-foreground: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--danger);
+  --color-border: var(--border);
+  --color-input: var(--field-border);
+  --color-ring: var(--focus);
 
   /* Chart colors */
   --color-chart-1: hsl(12 76% 61%);
@@ -71,24 +117,61 @@
   --color-app-accent-surface: #2D3462;
   --color-app-dots: #2D3748;
   --color-app-accent: #5B6BF8;
-  --color-background: hsl(0 0% 3.9%);
-  --color-foreground: hsl(0 0% 98%);
-  --color-card: hsl(0 0% 3.9%);
-  --color-card-foreground: hsl(0 0% 98%);
-  --color-popover: hsl(0 0% 3.9%);
-  --color-popover-foreground: hsl(0 0% 98%);
+
+  /* HeroUI base tokens — dark */
+  --background: #0F1015;
+  --foreground: #FFFFFF;
+  --surface: #1C1E26;
+  --surface-foreground: #FFFFFF;
+  --surface-secondary: #252832;
+  --surface-secondary-foreground: #FFFFFF;
+  --surface-tertiary: #2A2D3A;
+  --surface-tertiary-foreground: #FFFFFF;
+  --overlay: #1C1E26;
+  --overlay-foreground: #FFFFFF;
+  --muted: #9CA3AF;
+  --default: #252832;
+  --default-foreground: #FFFFFF;
+  --accent: #5B6BF8;
+  --accent-foreground: #FFFFFF;
+  --field-background: #1C1E26;
+  --field-foreground: #FFFFFF;
+  --field-placeholder: #6B7280;
+  --field-border: #2A2D3A;
+  --success: #22C55E;
+  --success-foreground: #052E16;
+  --warning: #F59E0B;
+  --warning-foreground: #1A1B2E;
+  --danger: #EF4444;
+  --danger-foreground: #FFFFFF;
+  --segment: #252832;
+  --segment-foreground: #FFFFFF;
+  --border: #1E2028;
+  --separator: #2A2D3A;
+  --focus: #5B6BF8;
+  --link: #5B6BF8;
+  --surface-shadow: 0 0 0 0 transparent inset;
+  --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  --field-shadow: 0 0 0 0 transparent inset;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--surface-foreground);
+  --color-popover: var(--overlay);
+  --color-popover-foreground: var(--overlay-foreground);
   --color-primary: hsl(0 0% 98%);
   --color-primary-foreground: hsl(0 0% 9%);
-  --color-secondary: hsl(0 0% 14.9%);
-  --color-secondary-foreground: hsl(0 0% 98%);
-  --color-muted: hsl(0 0% 14.9%);
-  --color-muted-foreground: hsl(0 0% 63.9%);
-  --color-accent: hsl(0 0% 14.9%);
-  --color-accent-foreground: hsl(0 0% 98%);
-  --color-destructive: hsl(0 70.9% 59.4%);
-  --color-border: hsl(0 0% 14.9%);
-  --color-input: hsl(0 0% 14.9%);
-  --color-ring: hsl(300 0% 45%);
+  --color-secondary: var(--surface-secondary);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--surface-secondary);
+  --color-muted-foreground: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--danger);
+  --color-border: var(--border);
+  --color-input: var(--field-border);
+  --color-ring: var(--focus);
 
   /* Chart colors (dark) */
   --color-chart-1: hsl(220 70% 50%);

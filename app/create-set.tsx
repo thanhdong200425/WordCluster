@@ -1,11 +1,11 @@
-import { useAppTheme } from "@/constants/appTheme";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import RightDeleteAction from "@/components/common/RightDeleteAction";
 import { CreateSetHeader } from "@/components/create-set/CreateSetHeader";
 import DescriptionSection from "@/components/create-set/DescriptionSection";
 import { TermCard } from "@/components/create-set/TermCard";
 import { TitleSection } from "@/components/create-set/TitleSection";
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   CreateSetFormData,
   createSetSchema,
@@ -13,9 +13,9 @@ import {
 import useSetsStorage from "@/stores/setsStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Button } from "heroui-native/button";
-import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
@@ -141,7 +141,7 @@ export default function CreateSetScreen({
 
   return (
     <View style={[styles.screen, { backgroundColor: t.bg }]}>
-      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+      <StatusBar style={"auto"} />
       <CreateSetHeader
         isEditMode={isEditMode}
         isSubmitDisabled={isEditMode ? !isDirty : !isValid}
@@ -242,7 +242,8 @@ export default function CreateSetScreen({
               styles.addTermButton,
               {
                 borderColor: t.border2,
-                backgroundColor: colorScheme === "dark" ? t.surface : "transparent",
+                backgroundColor:
+                  colorScheme === "dark" ? t.surface : "transparent",
               },
             ]}
           >
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
   },
   cardWrap: {
-    marginBottom: 10,
+    marginBottom: 5,
   },
   swipeContainer: {
     marginBottom: 2,

@@ -1,10 +1,10 @@
+import { FieldSectionHeader } from "@/components/create-set/FieldSectionHeader";
 import { AppTheme } from "@/constants/appTheme";
 import { cn } from "@/lib/utils";
 import { CreateSetFormData } from "@/schemas/create-set-schema";
-import { Ionicons } from "@expo/vector-icons";
 import { Input } from "heroui-native/input";
-import { Controller, Control } from "react-hook-form";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Control, Controller } from "react-hook-form";
+import { StyleSheet, Text, View } from "react-native";
 
 interface CreateSetFieldRowProps {
   control: Control<CreateSetFormData>;
@@ -43,7 +43,11 @@ export function CreateSetFieldRow({
         },
       ]}
     >
-      <Text style={[styles.label, { color: t.textFaint }]}>{label}</Text>
+      {isDeletable && onDelete ? (
+        <FieldSectionHeader label={label} t={t} onDelete={onDelete} />
+      ) : (
+        <Text style={[styles.label, { color: t.textFaint }]}>{label}</Text>
+      )}
       <Controller
         control={control}
         name={`items.${index}.${name}`}
@@ -56,8 +60,8 @@ export function CreateSetFieldRow({
             placeholderTextColor={t.textFaint}
             multiline={multiline}
             className={cn(
-              "h-auto rounded-none border-0 bg-transparent px-0 pb-3 pt-0 text-[15px]",
-              multiline ? "min-h-[64px]" : "min-h-[32px]",
+              "h-auto rounded-none border-0 bg-transparent px-0 pt-0 text-[15px]",
+              multiline ? "min-h-[40px] pb-1" : "min-h-[32px] pb-3",
             )}
             style={[
               styles.input,
@@ -69,13 +73,6 @@ export function CreateSetFieldRow({
           />
         )}
       />
-      {isDeletable && onDelete ? (
-        <View className="flex-row items-center justify-end pb-3">
-          <Pressable onPress={onDelete} hitSlop={20}>
-            <Ionicons name="trash-outline" size={16} color={t.textMuted} />
-          </Pressable>
-        </View>
-      ) : null}
       {error ? (
         <Text style={[styles.error, { color: "#ef4444" }]}>{error}</Text>
       ) : null}

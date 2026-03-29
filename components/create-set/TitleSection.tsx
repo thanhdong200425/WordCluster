@@ -37,9 +37,7 @@ export function TitleSection({
           style={[styles.input, { color: t.text }]}
         />
       </Card>
-      {errors.title && (
-        <Text style={styles.error}>{errors.title.message}</Text>
-      )}
+      {errors.title && <Text style={styles.error}>{errors.title.message}</Text>}
     </View>
   );
 }
