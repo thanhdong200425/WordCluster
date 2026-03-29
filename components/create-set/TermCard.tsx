@@ -1,21 +1,23 @@
-import { Icon } from "@/components/ui/icon";
-import { Text } from "@/components/ui/text";
-import { cn } from "@/lib/utils";
+import { CreateSetFieldRow } from "@/components/create-set/CreateSetFieldRow";
+import { AppTheme } from "@/constants/appTheme";
 import type { CreateSetFormData } from "@/schemas/create-set-schema";
 import { Ionicons } from "@expo/vector-icons";
+import { Button } from "heroui-native/button";
+import { Card } from "heroui-native/card";
 import { Menu } from "heroui-native/menu";
 import { Select } from "heroui-native/select";
-import { Layers, StickyNote, Tag } from "lucide-react-native";
-import { useState } from "react";
+import { PressableFeedback } from "heroui-native/pressable-feedback";
+import { StickyNote, Tag } from "lucide-react-native";
+import { useEffect, useState } from "react";
 import {
   Controller,
   useWatch,
   type Control,
   type FieldErrors,
 } from "react-hook-form";
-import { Pressable, TextInput, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-export type AddFieldType = "example" | "type" | "wordFamily";
+export type AddFieldType = "example" | "type";
 
 const TYPE_OPTIONS = [
   { label: "Noun", value: "noun" },
@@ -32,13 +34,15 @@ interface TermCardProps {
   index: number;
   control: Control<CreateSetFormData>;
   errors?: FieldErrors<CreateSetFormData["items"][number]>;
+  t: AppTheme;
 }
 
-export function TermCard({ index, control, errors }: TermCardProps) {
+export function TermCard({ index, control, errors, t }: TermCardProps) {
   const watchedFields = useWatch({
     control,
     name: `items.${index}`,
   });
+  const [isExpanded, setIsExpanded] = useState(true);
   const [visibleFields, setVisibleFields] = useState<Set<AddFieldType>>(() => {
     const fields = new Set<AddFieldType>();
 
@@ -47,220 +51,279 @@ export function TermCard({ index, control, errors }: TermCardProps) {
     return fields;
   });
 
+  useEffect(() => {
+    setVisibleFields((prev) => {
+      const next = new Set(prev);
+
+      if (watchedFields.example) next.add("example");
+      if (watchedFields.type) next.add("type");
+
+      return next;
+    });
+  }, [watchedFields.example, watchedFields.type]);
+
+  useEffect(() => {
+    if (errors?.term || errors?.definition || errors?.example || errors?.type) {
+      setIsExpanded(true);
+    }
+  }, [errors?.definition, errors?.example, errors?.term, errors?.type]);
+
   const handleAddField = (type: AddFieldType) => {
     setVisibleFields((prev) => new Set(prev).add(type));
+    setIsExpanded(true);
   };
 
   const handleDeleteField = (type: AddFieldType) => {
     setVisibleFields((prev) => new Set([...prev].filter((t) => t !== type)));
   };
 
-  const hasAllFields =
-    visibleFields.has("example") && visibleFields.has("type");
+  const hasAllFields = visibleFields.has("example") && visibleFields.has("type");
 
   return (
-    <View className="mx-5 mb-4 rounded-lg bg-[#282b37] p-5 shadow-sm flex">
-      <Text className="mb-4 text-sm font-bold text-white">{index + 1}</Text>
-      <CustomInput
-        control={control}
-        index={index}
-        name="term"
-        placeholder="Enter term"
-        label="TERM"
-        error={errors?.term?.message ?? ""}
-      />
-
-      <CustomInput
-        control={control}
-        index={index}
-        name="definition"
-        placeholder="Enter definition"
-        label="DEFINITION"
-        error={errors?.definition?.message ?? ""}
-      />
-
-      {visibleFields.has("example") && (
-        <CustomInput
-          control={control}
-          index={index}
-          name="example"
-          placeholder="Enter example"
-          label="EXAMPLE"
-          error=""
-          isDeletable
-          containerClassName="mb-4"
-          onDelete={() => handleDeleteField("example")}
-        />
-      )}
-
-      {visibleFields.has("type") && (
-        <>
-          <Controller
-            control={control}
-            name={`items.${index}.type`}
-            render={({ field: { onChange, value } }) => (
-              <Select
-                value={
-                  value
-                    ? (TYPE_OPTIONS.find((o) => o.value === value) ?? undefined)
-                    : undefined
-                }
-                onValueChange={(option) => onChange(option?.value ?? "")}
-              >
-                <Select.Trigger
-                  variant="unstyled"
-                  className="mb-1 h-auto rounded-[14px] border-2 border-white bg-transparent px-4 py-2.5"
-                >
-                  <Select.Value
-                    className="text-[18px] text-[#e8eaf0]"
-                    placeholder="Select type"
-                  />
-                  <Select.TriggerIndicator />
-                </Select.Trigger>
-                <Select.Portal>
-                  <Select.Overlay />
-                  <Select.Content presentation="popover">
-                    {TYPE_OPTIONS.map((option) => (
-                      <Select.Item
-                        key={option.value}
-                        label={option.label}
-                        value={option.value}
-                      />
-                    ))}
-                  </Select.Content>
-                </Select.Portal>
-              </Select>
-            )}
-          />
-          <View className="flex-row items-center justify-between">
-            <Text className="mb-1 text-[10px] font-bold uppercase tracking-widest text-[#e8eaf0]">
-              TYPE
-            </Text>
-            <Pressable
-              className="pr-1.5"
-              onPress={() => handleDeleteField("type")}
-              hitSlop={20}
-            >
-              <Ionicons name="trash-outline" size={16} color="#e8eaf0" />
-            </Pressable>
+    <Card
+      className="overflow-hidden rounded-2xl"
+      style={{
+        backgroundColor: t.surface,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: t.bg === "#F4F4F7" ? 0.04 : 0,
+        shadowRadius: 16,
+        elevation: t.bg === "#F4F4F7" ? 2 : 0,
+      }}
+    >
+      <Card.Header
+        className="flex-row items-center justify-between px-3.5 py-3"
+        style={{
+          borderBottomWidth: isExpanded ? StyleSheet.hairlineWidth : 0,
+          borderBottomColor: t.border,
+        }}
+      >
+        <View className="flex-row items-center gap-2.5">
+          <View
+            className="h-[22px] w-[22px] items-center justify-center rounded-full"
+            style={{ backgroundColor: t.accentStart }}
+          >
+            <Text style={styles.badgeText}>{index + 1}</Text>
           </View>
-        </>
-      )}
+          <Text style={[styles.cardLabel, { color: t.textFaint }]}>Card</Text>
+        </View>
 
-      {!hasAllFields && (
-        <Menu>
-          <Menu.Trigger asChild>
-            <Pressable className="flex-row items-center self-start rounded-full bg-white/10 px-4 py-2 mt-3">
-              <Ionicons name="add" size={16} color="#e8eaf0" />
-              <Text className="mx-1.5 text-sm font-semibold text-[#e8eaf0]">
-                Add field
-              </Text>
-              <Ionicons name="chevron-down" size={14} color="#e8eaf0" />
-            </Pressable>
-          </Menu.Trigger>
-          <Menu.Portal>
-            <Menu.Overlay />
-            <Menu.Content
-              presentation="popover"
-              width={192}
-              className="rounded-xl border-white/10 bg-[#2d3142]"
-            >
-              {!visibleFields.has("example") && (
-                <Menu.Item
-                  className="gap-3 px-4 py-3"
-                  onPress={() => handleAddField("example")}
-                >
-                  <Icon as={StickyNote} className="text-[#e8eaf0]" size={16} />
-                  <Menu.ItemTitle className="text-sm font-medium text-[#e8eaf0]">
-                    Example
-                  </Menu.ItemTitle>
-                </Menu.Item>
-              )}
-              {!visibleFields.has("type") && (
-                <Menu.Item
-                  className="gap-3 px-4 py-3"
-                  onPress={() => handleAddField("type")}
-                >
-                  <Icon as={Tag} className="text-[#e8eaf0]" size={16} />
-                  <Menu.ItemTitle className="text-sm font-medium text-[#e8eaf0]">
-                    Type
-                  </Menu.ItemTitle>
-                </Menu.Item>
-              )}
-              <Menu.Item
-                className="gap-3 px-4 py-3"
-                onPress={() => handleAddField("wordFamily")}
+        <PressableFeedback
+          onPress={() => setIsExpanded((prev) => !prev)}
+          className="h-[26px] w-[26px] items-center justify-center rounded-full"
+          style={{ backgroundColor: t.surface2 }}
+        >
+          <Ionicons
+            name={isExpanded ? "chevron-up" : "chevron-down"}
+            size={14}
+            color={t.textMuted}
+          />
+        </PressableFeedback>
+      </Card.Header>
+
+      {isExpanded ? (
+        <>
+          <Card.Body className="p-0">
+            <CreateSetFieldRow
+              control={control}
+              index={index}
+              name="term"
+              label="Term"
+              placeholder="Enter term"
+              t={t}
+              error={errors?.term?.message}
+            />
+
+            <CreateSetFieldRow
+              control={control}
+              index={index}
+              name="definition"
+              label="Definition"
+              placeholder="Enter definition"
+              t={t}
+              error={errors?.definition?.message}
+              containerClassName="pb-0"
+            />
+
+            {visibleFields.has("example") ? (
+              <CreateSetFieldRow
+                control={control}
+                index={index}
+                name="example"
+                label="Example"
+                placeholder="Enter example"
+                t={t}
+                error={errors?.example?.message}
+                multiline
+                isDeletable
+                onDelete={() => handleDeleteField("example")}
+              />
+            ) : null}
+
+            {visibleFields.has("type") ? (
+              <View
+                className="px-3.5 pt-3"
+                style={{
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                  borderBottomColor: t.border,
+                }}
               >
-                <Icon as={Layers} className="text-[#e8eaf0]" size={16} />
-                <Menu.ItemTitle className="text-sm font-medium text-[#e8eaf0]">
-                  Word family
-                </Menu.ItemTitle>
-              </Menu.Item>
-            </Menu.Content>
-          </Menu.Portal>
-        </Menu>
-      )}
-    </View>
+                <Text style={[styles.fieldLabel, { color: t.textFaint }]}>
+                  Type
+                </Text>
+                <Controller
+                  control={control}
+                  name={`items.${index}.type`}
+                  render={({ field: { onChange, value } }) => (
+                    <Select
+                      value={
+                        value
+                          ? (TYPE_OPTIONS.find((o) => o.value === value) ??
+                            undefined)
+                          : undefined
+                      }
+                      onValueChange={(option) => onChange(option?.value ?? "")}
+                    >
+                      <Select.Trigger
+                        variant="unstyled"
+                        className="min-h-[32px] rounded-xl border px-3 py-2"
+                        style={{ borderColor: t.border, backgroundColor: t.bg }}
+                      >
+                        <Select.Value
+                          className="text-[15px]"
+                          style={{ color: t.text }}
+                          placeholder="Select type"
+                        />
+                        <Select.TriggerIndicator />
+                      </Select.Trigger>
+                      <Select.Portal>
+                        <Select.Overlay />
+                        <Select.Content presentation="popover">
+                          {TYPE_OPTIONS.map((option) => (
+                            <Select.Item
+                              key={option.value}
+                              label={option.label}
+                              value={option.value}
+                            />
+                          ))}
+                        </Select.Content>
+                      </Select.Portal>
+                    </Select>
+                  )}
+                />
+                <View className="flex-row items-center justify-end pb-3 pt-2">
+                  <PressableFeedback
+                    onPress={() => handleDeleteField("type")}
+                    className="rounded-full p-1"
+                  >
+                    <Ionicons
+                      name="trash-outline"
+                      size={16}
+                      color={t.textMuted}
+                    />
+                  </PressableFeedback>
+                </View>
+              </View>
+            ) : null}
+          </Card.Body>
+
+          {!hasAllFields ? (
+            <Card.Footer
+              className="flex-row px-3.5 py-3"
+              style={{
+                borderTopWidth: StyleSheet.hairlineWidth,
+                borderTopColor: t.border,
+              }}
+            >
+              <Menu>
+                <Menu.Trigger asChild>
+                  <Button
+                    variant="ghost"
+                    feedbackVariant="scale-highlight"
+                    className="rounded-full px-3 py-0"
+                    style={[styles.addFieldButton, { backgroundColor: t.surface2 }]}
+                  >
+                    <Ionicons name="add" size={14} color={t.textMuted} />
+                    <Button.Label
+                      className="text-[13px]"
+                      style={{ color: t.textMuted }}
+                    >
+                      Add field
+                    </Button.Label>
+                    <Ionicons
+                      name="chevron-down"
+                      size={12}
+                      color={t.textMuted}
+                    />
+                  </Button>
+                </Menu.Trigger>
+                <Menu.Portal>
+                  <Menu.Overlay />
+                  <Menu.Content
+                    presentation="popover"
+                    width={188}
+                    className="rounded-xl"
+                    style={{ backgroundColor: t.surface }}
+                  >
+                    {!visibleFields.has("example") ? (
+                      <Menu.Item
+                        className="gap-3 px-4 py-3"
+                        onPress={() => handleAddField("example")}
+                      >
+                        <StickyNote size={16} color={t.textMuted} />
+                        <Menu.ItemTitle
+                          className="text-sm"
+                          style={{ color: t.text }}
+                        >
+                          Example
+                        </Menu.ItemTitle>
+                      </Menu.Item>
+                    ) : null}
+                    {!visibleFields.has("type") ? (
+                      <Menu.Item
+                        className="gap-3 px-4 py-3"
+                        onPress={() => handleAddField("type")}
+                      >
+                        <Tag size={16} color={t.textMuted} />
+                        <Menu.ItemTitle
+                          className="text-sm"
+                          style={{ color: t.text }}
+                        >
+                          Type
+                        </Menu.ItemTitle>
+                      </Menu.Item>
+                    ) : null}
+                  </Menu.Content>
+                </Menu.Portal>
+              </Menu>
+            </Card.Footer>
+          ) : null}
+        </>
+      ) : null}
+    </Card>
   );
 }
 
-const CustomInput = ({
-  control,
-  index,
-  name,
-  placeholder,
-  label,
-  className,
-  containerClassName,
-  error,
-  isDeletable = false,
-  onDelete,
-}: {
-  control: Control<CreateSetFormData>;
-  index: number;
-  name: keyof CreateSetFormData["items"][number];
-  placeholder: string;
-  label: string;
-  className?: string;
-  containerClassName?: string;
-  error: string;
-  isDeletable?: boolean;
-  onDelete?: () => void;
-}) => {
-  return (
-    <View className={cn("mb-2", containerClassName)}>
-      <View
-        className={cn(
-          "mb-1 rounded-[14px] border-2 border-white px-4 py-2.5",
-          className,
-        )}
-      >
-        <Controller
-          control={control}
-          name={`items.${index}.${name}`}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={placeholder}
-              placeholderTextColor="#a0a4b8"
-              className="text-[18px] text-[#e8eaf0]"
-            />
-          )}
-        />
-      </View>
-      <View className="flex-row items-center justify-between">
-        <Text className="mb-1 text-[10px] font-bold uppercase tracking-widest text-[#e8eaf0]">
-          {label}
-        </Text>
-        {isDeletable && (
-          <Pressable className="pr-1.5" onPress={onDelete} hitSlop={20}>
-            <Ionicons name="trash-outline" size={16} color="#e8eaf0" />
-          </Pressable>
-        )}
-      </View>
-      {error && <Text className="mb-2 text-xs text-red-500">{error}</Text>}
-    </View>
-  );
-};
+const styles = StyleSheet.create({
+  badgeText: {
+    color: "#fff",
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  cardLabel: {
+    fontSize: 11,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 1.1,
+  },
+  fieldLabel: {
+    fontSize: 9,
+    fontWeight: "600",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    marginBottom: 8,
+  },
+  addFieldButton: {
+    height: 34,
+  },
+});

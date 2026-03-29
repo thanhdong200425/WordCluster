@@ -1,4 +1,7 @@
+import { useAppTheme } from "@/constants/appTheme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import RightDeleteAction from "@/components/common/RightDeleteAction";
+import { CreateSetHeader } from "@/components/create-set/CreateSetHeader";
 import DescriptionSection from "@/components/create-set/DescriptionSection";
 import { TermCard } from "@/components/create-set/TermCard";
 import { TitleSection } from "@/components/create-set/TitleSection";
@@ -8,13 +11,14 @@ import {
   createSetSchema,
 } from "@/schemas/create-set-schema";
 import useSetsStorage from "@/stores/setsStorage";
-import { StoredSet } from "@/types/set";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { StatusBar } from "expo-status-bar";
+import { Button } from "heroui-native/button";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import Toast from "react-native-toast-message";
@@ -31,8 +35,9 @@ export default function CreateSetScreen({
   setId,
 }: CreateSetScreenProps) {
   const [showDescription, setShowDescription] = useState<boolean>(true);
-  const [currentSetData, setCurrentSetData] = useState<StoredSet | null>(null);
   const [isMissingSet, setIsMissingSet] = useState<boolean>(false);
+  const t = useAppTheme();
+  const colorScheme = useColorScheme();
   const { createSet, updateSet, isLoading, storedSets } = useSetsStorage(
     useShallow((state) => ({
       createSet: state.createSet,
@@ -47,8 +52,8 @@ export default function CreateSetScreen({
     if (isEditMode && setId) {
       const set = storedSets.find((set) => set.id === setId);
       if (set) {
-        setCurrentSetData(set);
         setIsMissingSet(false);
+        setShowDescription(!set.description);
         reset({
           title: set.title,
           description: set.description,
@@ -75,14 +80,9 @@ export default function CreateSetScreen({
     mode: "onSubmit",
     resolver: zodResolver(createSetSchema),
     defaultValues: {
-      title: currentSetData?.title || "",
-      description: currentSetData?.description || "",
-      items: currentSetData?.items.map((item) => ({
-        term: item.term,
-        definition: item.definition,
-        example: item.example,
-        type: item.type,
-      })) || [{ term: "", definition: "" }],
+      title: "",
+      description: "",
+      items: [{ term: "", definition: "" }],
     },
   });
 
@@ -92,7 +92,18 @@ export default function CreateSetScreen({
   });
 
   if (isEditMode && isLoading) {
-    return <ActivityIndicator size="large" color="#94a3b8" />;
+    return (
+      <View
+        style={[
+          styles.loaderContainer,
+          {
+            backgroundColor: t.bg,
+          },
+        ]}
+      >
+        <ActivityIndicator size="large" color={t.accentStart} />
+      </View>
+    );
   }
 
   if (isEditMode && isMissingSet) {
@@ -129,32 +140,20 @@ export default function CreateSetScreen({
   };
 
   return (
-    <View className="flex-1 bg-[#121318]">
-      {/* Header */}
-      <View className="flex-row items-center justify-between border-b border-[#e2e8f0] px-4 py-3">
-        <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Ionicons name="chevron-back" size={24} color="white" />
-        </Pressable>
-        <Text className="text-lg font-bold text-white">
-          {isEditMode ? "Edit set" : "Create set"}
-        </Text>
-        <Pressable
-          onPress={handleSubmit(onSubmit)}
-          hitSlop={8}
-          disabled={isEditMode ? !isDirty : !isValid}
-        >
-          <Ionicons
-            name="checkmark"
-            size={28}
-            color={(isEditMode ? !isDirty : !isValid) ? "#94a3b8" : "white"}
-          />
-        </Pressable>
-      </View>
+    <View style={[styles.screen, { backgroundColor: t.bg }]}>
+      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+      <CreateSetHeader
+        isEditMode={isEditMode}
+        isSubmitDisabled={isEditMode ? !isDirty : !isValid}
+        t={t}
+        onSubmit={handleSubmit(onSubmit)}
+      />
 
-      {/* Content */}
       <KeyboardAwareScrollView
-        className="flex-1 bg-[#121318]"
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.contentContainer}
         bottomOffset={50}
+        keyboardShouldPersistTaps="handled"
       >
         <Controller
           control={control}
@@ -165,6 +164,7 @@ export default function CreateSetScreen({
               value={value}
               onChange={onChange}
               onBlur={onBlur}
+              t={t}
             />
           )}
         />
@@ -179,11 +179,25 @@ export default function CreateSetScreen({
               onChange={onChange}
               onBlur={onBlur}
               onToggleCompactMode={() => setShowDescription(!showDescription)}
+              t={t}
             />
           )}
         />
 
-        <View className="mt-4">
+        <View className="px-4 pt-6">
+          <Text
+            style={[
+              styles.termCount,
+              {
+                color: t.textMuted,
+              },
+            ]}
+          >
+            {fields.length} {fields.length === 1 ? "Term" : "Terms"}
+          </Text>
+        </View>
+
+        <View className="px-4 pt-3">
           {fields.map((field, index) => (
             <ReanimatedSwipeable
               key={field.id}
@@ -194,38 +208,86 @@ export default function CreateSetScreen({
                   setId: field.id,
                   onDelete: () => handleDeleteTerm(index),
                   containerStyle: styles.actionContainer,
-                  buttonClassName: "h-1/3 bg-red-500 rounded-3xl",
+                  buttonClassName: "h-1/3 rounded-3xl bg-red-500",
                 })
               }
+              containerStyle={styles.swipeContainer}
             >
-              <TermCard
-                key={field.id}
-                index={index}
-                control={control}
-                errors={errors.items?.[index]}
-              />
+              <View style={styles.cardWrap}>
+                <TermCard
+                  key={field.id}
+                  index={index}
+                  control={control}
+                  errors={errors.items?.[index]}
+                  t={t}
+                />
+              </View>
             </ReanimatedSwipeable>
           ))}
         </View>
 
         {errors.items?.root && (
-          <Text className="mx-5 mb-4 text-sm text-red-500">
+          <Text className="mx-5 mb-4 mt-2 text-sm text-red-500">
             {errors.items.root.message}
           </Text>
         )}
-      </KeyboardAwareScrollView>
 
-      {/* FAB */}
-      <Pressable
-        onPress={() => append({ term: "", definition: "" })}
-        className="absolute bottom-6 right-6 h-14 w-14 items-center justify-center rounded-full bg-[#4255ff] shadow-lg"
-      >
-        <Ionicons name="add" size={28} color="white" />
-      </Pressable>
+        <View className="px-4 pb-8 pt-2">
+          <Button
+            onPress={() => append({ term: "", definition: "" })}
+            variant="outline"
+            feedbackVariant="scale-highlight"
+            className="w-full rounded-2xl border-dashed px-4 py-0"
+            style={[
+              styles.addTermButton,
+              {
+                borderColor: t.border2,
+                backgroundColor: colorScheme === "dark" ? t.surface : "transparent",
+              },
+            ]}
+          >
+            <Ionicons name="add" size={18} color={t.accentStart} />
+            <Button.Label
+              className="text-[15px]"
+              style={{ color: t.accentStart }}
+            >
+              Add Term
+            </Button.Label>
+          </Button>
+        </View>
+      </KeyboardAwareScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   actionContainer: { backgroundColor: undefined },
+  screen: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingBottom: 28,
+  },
+  cardWrap: {
+    marginBottom: 10,
+  },
+  swipeContainer: {
+    marginBottom: 2,
+  },
+  loaderContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  termCount: {
+    fontSize: 11,
+    fontWeight: "600",
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+    marginLeft: 2,
+  },
+  addTermButton: {
+    height: 56,
+    borderWidth: 1.5,
+  },
 });
