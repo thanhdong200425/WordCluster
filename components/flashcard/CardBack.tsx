@@ -1,6 +1,7 @@
 import { ExpandableChip } from "@/components/flashcard/ExpandableChip";
 import { ExpandableSection } from "@/components/flashcard/ExpandableSection";
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 
@@ -14,6 +15,7 @@ interface CardBackProps {
 type ActiveChip = "example" | null;
 
 export function CardBack({ definition, type, example, onFlip }: CardBackProps) {
+  const theme = useAppTheme();
   const [activeChip, setActiveChip] = useState<ActiveChip>(null);
 
   const toggleChip = (chip: ActiveChip) => {
@@ -24,54 +26,59 @@ export function CardBack({ definition, type, example, onFlip }: CardBackProps) {
 
   return (
     <View className="flex-1 px-6 py-6">
-      {/* Top row: label + type badge */}
       <View className="flex-row items-center justify-between">
         <Text
-          className="text-[10px] font-extrabold uppercase"
-          style={{ color: "rgba(255,255,255,0.3)", letterSpacing: 1.5 }}
+          className="text-[11px] font-semibold uppercase"
+          style={{ color: theme.textFaint, letterSpacing: 1.38 }}
         >
-          DEFINITION
+          Definition
         </Text>
         {type ? (
           <View
             className="rounded-lg px-2.5 py-1"
-            style={{ backgroundColor: "rgba(173,70,255,0.12)" }}
+            style={{ backgroundColor: `${theme.accentStart}1F` }}
           >
-            <Text className="text-[10px] font-bold text-[#ad46ff]">
+            <Text
+              className="text-[10px] font-bold"
+              style={{ color: theme.accentStart }}
+            >
               {type}
             </Text>
           </View>
         ) : null}
       </View>
 
-      {/* Center: definition (tappable for flip) */}
       <Pressable onPress={onFlip} className="flex-1 items-center justify-center">
-        <Text className="text-center text-base leading-6 text-[#e8eaf0]">
+        <Text
+          className="text-center text-base leading-6"
+          style={{ color: theme.text }}
+        >
           {definition}
         </Text>
       </Pressable>
 
-      {/* Expandable content */}
       {example ? (
         <ExpandableSection visible={activeChip === "example"}>
           <View
             className="mb-3 rounded-xl px-4 py-3"
-            style={{ backgroundColor: "rgba(91,108,255,0.08)" }}
+            style={{ backgroundColor: theme.accentSurface }}
           >
             <Text
               className="mb-1.5 text-[10px] font-extrabold uppercase"
-              style={{ color: "#5b6cff", letterSpacing: 1.5 }}
+              style={{ color: theme.accentStart, letterSpacing: 1.5 }}
             >
-              EXAMPLE
+              Example
             </Text>
-            <Text className="text-sm italic leading-5 text-[#e8eaf0]">
+            <Text
+              className="text-sm italic leading-5"
+              style={{ color: theme.text }}
+            >
               {example}
             </Text>
           </View>
         </ExpandableSection>
       ) : null}
 
-      {/* Chips */}
       {hasChips ? (
         <View className="flex-row gap-2">
           {example ? (
@@ -79,8 +86,8 @@ export function CardBack({ definition, type, example, onFlip }: CardBackProps) {
               label="Example"
               emoji="📝"
               isActive={activeChip === "example"}
-              activeColor="#5b6cff"
-              activeBg="rgba(91,108,255,0.2)"
+              activeColor={theme.accentStart}
+              activeBg={`${theme.accentStart}33`}
               onPress={() => toggleChip("example")}
             />
           ) : null}

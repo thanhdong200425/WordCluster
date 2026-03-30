@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import { View } from "react-native";
 
 interface CardFrontProps {
@@ -7,41 +8,46 @@ interface CardFrontProps {
 }
 
 export function CardFront({ term, type }: CardFrontProps) {
+  const theme = useAppTheme();
+
   return (
     <View className="flex-1 px-6 py-6">
-      {/* Top row: label + type badge */}
       <View className="flex-row items-center justify-between">
         <Text
-          className="text-[10px] font-extrabold uppercase"
-          style={{ color: "rgba(255,255,255,0.3)", letterSpacing: 1.5 }}
+          className="text-[11px] font-semibold uppercase"
+          style={{ color: theme.textFaint, letterSpacing: 1.38 }}
         >
-          TERM
+          Term
         </Text>
         {type ? (
           <View
             className="rounded-lg px-2.5 py-1"
-            style={{ backgroundColor: "rgba(173,70,255,0.12)" }}
+            style={{ backgroundColor: `${theme.accentStart}1F` }}
           >
-            <Text className="text-[10px] font-bold text-[#ad46ff]">
+            <Text
+              className="text-[10px] font-bold"
+              style={{ color: theme.accentStart }}
+            >
               {type}
             </Text>
           </View>
         ) : null}
       </View>
 
-      {/* Center: term */}
       <View className="flex-1 items-center justify-center">
-        <Text className="text-center text-2xl font-bold text-[#e8eaf0]">
+        <Text
+          className="text-center text-2xl font-bold"
+          style={{ color: theme.text }}
+        >
           {term}
         </Text>
       </View>
 
-      {/* Bottom hint */}
       <Text
-        className="text-center text-xs"
-        style={{ color: "rgba(255,255,255,0.25)" }}
+        className="text-center text-[13px]"
+        style={{ color: theme.textFaint }}
       >
-        Tap to reveal definition
+        Tap to reveal back
       </Text>
     </View>
   );

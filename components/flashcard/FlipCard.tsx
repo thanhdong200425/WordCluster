@@ -1,7 +1,8 @@
-import { CardBack } from "@/components/flashcard/CardBack";
-import { CardFront } from "@/components/flashcard/CardFront";
+import { CardFace, CardFaceItem } from "@/components/flashcard/CardFace";
+import { useAppTheme } from "@/constants/appTheme";
+import useFlashcardLayoutStore from "@/stores/flashcardLayoutStore";
 import * as Haptics from "expo-haptics";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated, {
   Easing,
@@ -11,15 +12,10 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-interface FlipCardItem {
-  term: string;
-  definition: string;
-  example?: string;
-  type?: string;
-}
+export type { CardFaceItem as FlipCardItem };
 
 interface FlipCardProps {
-  item: FlipCardItem;
+  item: CardFaceItem;
   isFlipped: boolean;
   onFlip: () => void;
   height: number;
@@ -28,7 +24,25 @@ interface FlipCardProps {
 const FLIP_DURATION = 500;
 
 export function FlipCard({ item, isFlipped, onFlip, height }: FlipCardProps) {
+  const theme = useAppTheme();
+  const frontFields = useFlashcardLayoutStore((s) => s.frontFields);
+  const backFields = useFlashcardLayoutStore((s) => s.backFields);
   const flipProgress = useSharedValue(0);
+
+  const cardSurfaceStyle = useMemo(
+    () => ({
+      backgroundColor: theme.surface,
+      borderRadius: 24,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: theme.border2,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.07,
+      shadowRadius: 12,
+      elevation: 4,
+    }),
+    [theme.surface, theme.border2],
+  );
 
   useEffect(() => {
     flipProgress.value = withTiming(isFlipped ? 180 : 0, {
@@ -64,19 +78,24 @@ export function FlipCard({ item, isFlipped, onFlip, height }: FlipCardProps) {
 
   return (
     <View style={[styles.container, { height }]}>
-      {/* Front face — entire face is tappable for flip */}
-      <Animated.View style={[styles.face, styles.card, frontAnimatedStyle]}>
+      {/* Front face — entire face tappable via parent Pressable */}
+      <Animated.View style={[styles.face, cardSurfaceStyle, frontAnimatedStyle]}>
         <Pressable onPress={handleFlip} style={StyleSheet.absoluteFill}>
-          <CardFront term={item.term} type={item.type} />
+          <CardFace
+            item={item}
+            enabledFields={frontFields}
+            isFront
+            onFlip={handleFlip}
+          />
         </Pressable>
       </Animated.View>
 
-      {/* Back face — definition area tappable for flip, chips separate */}
-      <Animated.View style={[styles.face, styles.card, backAnimatedStyle]}>
-        <CardBack
-          definition={item.definition}
-          type={item.type}
-          example={item.example}
+      {/* Back face — content area tappable for flip inside CardFace */}
+      <Animated.View style={[styles.face, cardSurfaceStyle, backAnimatedStyle]}>
+        <CardFace
+          item={item}
+          enabledFields={backFields}
+          isFront={false}
           onFlip={handleFlip}
         />
       </Animated.View>
@@ -94,16 +113,5 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-  },
-  card: {
-    backgroundColor: "#1a1d2e",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "rgba(91,108,255,0.15)",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
   },
 });

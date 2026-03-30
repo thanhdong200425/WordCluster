@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import { Pressable } from "react-native";
 
 interface ExpandableChipProps {
@@ -18,18 +19,20 @@ export function ExpandableChip({
   activeBg,
   onPress,
 }: ExpandableChipProps) {
+  const theme = useAppTheme();
+
   return (
     <Pressable
       onPress={onPress}
       className="flex-row items-center rounded-xl px-3 py-2"
       style={{
-        backgroundColor: isActive ? activeBg : "rgba(255,255,255,0.05)",
+        backgroundColor: isActive ? activeBg : theme.surface2,
       }}
     >
       <Text className="mr-1.5 text-xs">{emoji}</Text>
       <Text
         className="text-xs font-semibold"
-        style={{ color: isActive ? activeColor : "#a0a4b8" }}
+        style={{ color: isActive ? activeColor : theme.textMuted }}
       >
         {label}
       </Text>

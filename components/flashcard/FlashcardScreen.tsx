@@ -1,11 +1,13 @@
 import { CompletionScreen } from "@/components/flashcard/CompletionScreen";
+import { FlashcardFaceLayoutModal } from "@/components/flashcard/FlashcardFaceLayoutModal";
 import { FlipCard } from "@/components/flashcard/FlipCard";
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import useSetsStorage from "@/stores/setsStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, useWindowDimensions, View } from "react-native";
+import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
@@ -13,6 +15,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 import { useShallow } from "zustand/react/shallow";
 
@@ -23,6 +26,8 @@ interface FlashcardScreenProps {
 const SWIPE_THRESHOLD = 80;
 
 export function FlashcardScreen({ setId }: FlashcardScreenProps) {
+  const theme = useAppTheme();
+  const insets = useSafeAreaInsets();
   const storedSets = useSetsStorage(useShallow((state) => state.storedSets));
   const router = useRouter();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -30,6 +35,7 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [layoutModalOpen, setLayoutModalOpen] = useState(false);
   const translateX = useSharedValue(0);
 
   const cardAnimatedStyle = useAnimatedStyle(() => ({
@@ -40,8 +46,11 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
 
   if (!set) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#121318]">
-        <Text className="text-[#a0a4b8]">Set not found</Text>
+      <View
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: theme.bg }}
+      >
+        <Text style={{ color: theme.textMuted }}>Set not found</Text>
       </View>
     );
   }
@@ -50,8 +59,11 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
 
   if (items.length === 0) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#121318]">
-        <Text className="text-[#a0a4b8]">No cards in this set</Text>
+      <View
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: theme.bg }}
+      >
+        <Text style={{ color: theme.textMuted }}>No cards in this set</Text>
       </View>
     );
   }
@@ -111,22 +123,63 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
     );
   }
 
+  const headerIconButtonStyle = [
+    styles.headerIconButton,
+    {
+      backgroundColor: theme.surface,
+      borderColor: theme.border2,
+    },
+  ];
+
+  const navCircleStyle = [
+    styles.navCircleButton,
+    { backgroundColor: theme.surface2 },
+  ];
+
   return (
-    <View className="flex-1 bg-[#121318]">
-      {/* Header */}
-      <View className="flex-row items-center justify-between px-5 pb-4 pt-2">
-        <Pressable onPress={() => router.back()} className="w-10">
-          <Ionicons name="chevron-back" size={24} color="#e8eaf0" />
+    <View className="flex-1" style={{ backgroundColor: theme.bg }}>
+      <View
+        className="flex-row items-center border-b px-5 pb-3"
+        style={{
+          borderBottomColor: theme.border,
+          paddingTop: insets.top * 0.2,
+        }}
+      >
+        <Pressable
+          onPress={() => router.back()}
+          style={({ pressed }) => [
+            ...headerIconButtonStyle,
+            { opacity: pressed ? 0.85 : 1 },
+          ]}
+        >
+          <Ionicons name="chevron-back" size={18} color={theme.text} />
         </Pressable>
-        <View className="flex-1 items-center">
-          <Text className="text-lg font-bold text-[#e8eaf0]">Flashcards</Text>
+        <View className="min-w-0 flex-1 items-center px-2">
+          <Text
+            className="text-[17px] font-bold"
+            style={{ color: theme.text }}
+            numberOfLines={1}
+          >
+            Flashcards
+          </Text>
         </View>
-        <Text className="w-10 text-right text-xs text-[#a0a4b8]">
-          {currentIndex + 1}/{items.length}
-        </Text>
+        <Pressable
+          onPress={() => setLayoutModalOpen(true)}
+          style={({ pressed }) => [
+            ...headerIconButtonStyle,
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
+          accessibilityLabel="Flashcard layout settings"
+        >
+          <Ionicons name="options-outline" size={18} color={theme.textMuted} />
+        </Pressable>
       </View>
 
-      {/* Card area */}
+      <FlashcardFaceLayoutModal
+        visible={layoutModalOpen}
+        onClose={() => setLayoutModalOpen(false)}
+      />
+
       <View className="flex-1 justify-center">
         <GestureDetector gesture={panGesture}>
           <Animated.View style={cardAnimatedStyle}>
@@ -140,23 +193,64 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
         </GestureDetector>
       </View>
 
-      {/* Bottom navigation */}
-      <View className="flex-row items-center justify-center gap-8 pb-8 pt-4">
-        <Pressable
-          onPress={isFirst ? undefined : goToPrevious}
-          style={{ opacity: isFirst ? 0.3 : 1 }}
-        >
-          <Ionicons name="chevron-back" size={28} color="#e8eaf0" />
-        </Pressable>
+      <View
+        className="border-t px-[22px] pt-3"
+        style={{
+          borderTopColor: theme.border,
+          backgroundColor: theme.surface,
+          paddingBottom: Math.max(insets.bottom, 20),
+        }}
+      >
+        <View className="flex-row items-center justify-center gap-10">
+          <Pressable
+            onPress={isFirst ? undefined : goToPrevious}
+            disabled={isFirst}
+            style={({ pressed }) => [
+              ...navCircleStyle,
+              {
+                opacity: isFirst ? 0.3 : pressed ? 0.9 : 1,
+              },
+            ]}
+          >
+            <Ionicons name="chevron-back" size={22} color={theme.textMuted} />
+          </Pressable>
 
-        <Text className="text-sm text-[#a0a4b8]">
-          {currentIndex + 1} / {items.length}
-        </Text>
+          <Text
+            className="min-w-[48px] text-center text-base"
+            style={{ color: theme.textMuted }}
+          >
+            {currentIndex + 1} / {items.length}
+          </Text>
 
-        <Pressable onPress={goToNext}>
-          <Ionicons name="chevron-forward" size={28} color="#e8eaf0" />
-        </Pressable>
+          <Pressable
+            onPress={goToNext}
+            style={({ pressed }) => [
+              ...navCircleStyle,
+              { opacity: pressed ? 0.9 : 1 },
+            ]}
+          >
+            <Ionicons name="chevron-forward" size={22} color={theme.text} />
+          </Pressable>
+        </View>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  headerIconButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  navCircleButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
