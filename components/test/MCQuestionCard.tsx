@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import type { TestQuestion } from "@/types/test";
 import { Pressable, StyleSheet, View } from "react-native";
 
@@ -15,6 +16,7 @@ export function MCQuestionCard({
   onChange,
   questionNumber,
 }: MCQuestionCardProps) {
+  const theme = useAppTheme();
   const options = question.options ?? [];
 
   return (
@@ -23,7 +25,7 @@ export function MCQuestionCard({
       <View className="mb-2 flex-row items-center gap-2">
         <Text
           className="font-bold"
-          style={{ fontSize: 10, fontFamily: "monospace", color: "#4a4d5e" }}
+          style={{ fontSize: 10, fontFamily: "monospace", color: theme.textFaint }}
         >
           Q{questionNumber}
         </Text>
@@ -41,15 +43,15 @@ export function MCQuestionCard({
 
       {/* Prompt */}
       <Text
-        className="mb-1 font-medium text-[#e8eaf0]"
-        style={{ fontSize: 14, lineHeight: 22 }}
+        className="mb-1 font-medium"
+        style={{ fontSize: 14, lineHeight: 22, color: theme.text }}
       >
         {question.prompt}
       </Text>
 
       {/* Hint */}
       {question.hint && (
-        <Text className="mb-2 italic" style={{ fontSize: 11, color: "#6b7080" }}>
+        <Text className="mb-2 italic" style={{ fontSize: 11, color: theme.textMuted }}>
           Hint: {question.hint}
         </Text>
       )}
@@ -62,14 +64,27 @@ export function MCQuestionCard({
             <Pressable
               key={option}
               onPress={() => onChange(question.id, option)}
-              style={[styles.optionBase, isSelected ? styles.optionSelected : styles.optionDefault]}
+              style={[
+                styles.optionBase,
+                isSelected
+                  ? {
+                      backgroundColor: "rgba(0,188,125,0.08)",
+                      borderColor: "rgba(0,188,125,0.3)",
+                    }
+                  : {
+                      backgroundColor: theme.surface2,
+                      borderColor: theme.border,
+                    },
+              ]}
               className="flex-row items-center rounded-xl px-4 py-3"
             >
               {/* Radio circle */}
               <View
                 style={[
                   styles.radio,
-                  isSelected ? styles.radioSelected : styles.radioDefault,
+                  isSelected
+                    ? { borderColor: "#00bc7d" }
+                    : { borderColor: theme.border },
                 ]}
               >
                 {isSelected && <View style={styles.radioInner} />}
@@ -78,7 +93,7 @@ export function MCQuestionCard({
                 className="flex-1 font-medium"
                 style={{
                   fontSize: 13,
-                  color: isSelected ? "#e8eaf0" : "#a0a4b8",
+                  color: isSelected ? theme.text : theme.textMuted,
                 }}
               >
                 {option}
@@ -95,14 +110,6 @@ const styles = StyleSheet.create({
   optionBase: {
     borderWidth: 1.5,
   },
-  optionDefault: {
-    backgroundColor: "rgba(255,255,255,0.03)",
-    borderColor: "rgba(255,255,255,0.06)",
-  },
-  optionSelected: {
-    backgroundColor: "rgba(0,188,125,0.08)",
-    borderColor: "rgba(0,188,125,0.3)",
-  },
   radio: {
     width: 22,
     height: 22,
@@ -111,12 +118,6 @@ const styles = StyleSheet.create({
     marginRight: 12,
     alignItems: "center",
     justifyContent: "center",
-  },
-  radioDefault: {
-    borderColor: "rgba(255,255,255,0.12)",
-  },
-  radioSelected: {
-    borderColor: "#00bc7d",
   },
   radioInner: {
     width: 10,

@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import useStreakStorage from "@/stores/streakStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
@@ -31,6 +32,7 @@ export function LearnResultsScreen({
   onRestart,
   onBack,
 }: LearnResultsScreenProps) {
+  const theme = useAppTheme();
   const recordStudySession = useStreakStorage((s) => s.recordStudySession);
   const correctCount = results.filter(Boolean).length;
   const percentage = Math.round((correctCount / totalQuestions) * 100);
@@ -93,7 +95,10 @@ export function LearnResultsScreen({
   }));
 
   return (
-    <View className="flex-1 bg-[#121318] px-4 justify-center items-center gap-4">
+    <View
+      className="flex-1 px-4 justify-center items-center gap-4"
+      style={{ backgroundColor: theme.bg }}
+    >
       {/* Emoji */}
       <Animated.View style={[emojiStyle]}>
         <Text className="text-[64px] leading-normal">{meta.emoji}</Text>
@@ -101,17 +106,26 @@ export function LearnResultsScreen({
 
       {/* Message */}
       <Animated.View style={messageStyle} className="items-center">
-        <Text className="font-extrabold text-[#e8eaf0] text-[24px] leading-normal">
+        <Text
+          className="font-extrabold text-[24px] leading-normal"
+          style={{ color: theme.text }}
+        >
           {meta.message}
         </Text>
       </Animated.View>
 
       {/* Percentage */}
       <Animated.View style={percentStyle} className="items-center">
-        <Text className="font-extrabold text-[#5b6cff] text-[42px] leading-normal">
+        <Text
+          className="font-extrabold text-[42px] leading-normal"
+          style={{ color: theme.accentStart }}
+        >
           {percentage}%
         </Text>
-        <Text className="text-[14px] text-[#6b7080] leading-normal">
+        <Text
+          className="text-[14px] leading-normal"
+          style={{ color: theme.textMuted }}
+        >
           {correctCount} of {totalQuestions} correct
         </Text>
       </Animated.View>
@@ -120,7 +134,13 @@ export function LearnResultsScreen({
       <Animated.View style={buttonsStyle} className="mt-1 w-full gap-3">
         <Pressable
           onPress={onRestart}
-          style={styles.primaryButton}
+          style={[
+            styles.primaryButton,
+            {
+              backgroundColor: theme.accentStart,
+              shadowColor: `${theme.accentStart}4D`,
+            },
+          ]}
           className="flex-row items-center justify-center rounded-xl py-4"
         >
           <Ionicons name="refresh" size={18} color="#fff" />
@@ -131,11 +151,14 @@ export function LearnResultsScreen({
 
         <Pressable
           onPress={onBack}
-          style={styles.secondaryButton}
+          style={[styles.secondaryButton, { borderColor: theme.border }]}
           className="flex-row items-center justify-center rounded-xl py-4"
         >
-          <Ionicons name="chevron-back" size={18} color="#a0a4b8" />
-          <Text className="ml-1 text-[15px] font-semibold text-[#a0a4b8]">
+          <Ionicons name="chevron-back" size={18} color={theme.textFaint} />
+          <Text
+            className="ml-1 text-[15px] font-semibold"
+            style={{ color: theme.textFaint }}
+          >
             Back to Set
           </Text>
         </Pressable>
@@ -146,8 +169,6 @@ export function LearnResultsScreen({
 
 const styles = StyleSheet.create({
   primaryButton: {
-    backgroundColor: "#5b6cff",
-    shadowColor: "rgba(91,108,255,0.3)",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 12,
@@ -156,6 +177,5 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: "transparent",
     borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.1)",
   },
 });

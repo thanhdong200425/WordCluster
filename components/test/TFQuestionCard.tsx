@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import type { TestQuestion } from "@/types/test";
 import { Pressable, StyleSheet, View } from "react-native";
 
@@ -15,13 +16,14 @@ export function TFQuestionCard({
   onChange,
   questionNumber,
 }: TFQuestionCardProps) {
+  const theme = useAppTheme();
   return (
     <View className="px-5 py-3">
       {/* Header row */}
       <View className="mb-2 flex-row items-center gap-2">
         <Text
           className="font-bold"
-          style={{ fontSize: 10, fontFamily: "monospace", color: "#4a4d5e" }}
+          style={{ fontSize: 10, fontFamily: "monospace", color: theme.textFaint }}
         >
           Q{questionNumber}
         </Text>
@@ -39,8 +41,8 @@ export function TFQuestionCard({
 
       {/* Prompt */}
       <Text
-        className="mb-3 font-medium text-[#e8eaf0]"
-        style={{ fontSize: 14, lineHeight: 22 }}
+        className="mb-3 font-medium"
+        style={{ fontSize: 14, lineHeight: 22, color: theme.text }}
       >
         {question.prompt}
       </Text>
@@ -51,13 +53,21 @@ export function TFQuestionCard({
           onPress={() => onChange(question.id, "True")}
           style={[
             styles.button,
-            answer === "True" ? styles.trueSelected : styles.buttonDefault,
+            answer === "True"
+              ? {
+                  backgroundColor: "rgba(0,188,125,0.08)",
+                  borderColor: "rgba(0,188,125,0.25)",
+                }
+              : {
+                  backgroundColor: theme.surface2,
+                  borderColor: theme.border,
+                },
           ]}
           className="flex-1 items-center rounded-xl py-3.5"
         >
           <Text
             className="text-[15px] font-bold"
-            style={{ color: answer === "True" ? "#00bc7d" : "#6b7080" }}
+            style={{ color: answer === "True" ? "#00bc7d" : theme.textMuted }}
           >
             True
           </Text>
@@ -67,13 +77,21 @@ export function TFQuestionCard({
           onPress={() => onChange(question.id, "False")}
           style={[
             styles.button,
-            answer === "False" ? styles.falseSelected : styles.buttonDefault,
+            answer === "False"
+              ? {
+                  backgroundColor: "rgba(255,107,138,0.08)",
+                  borderColor: "rgba(255,107,138,0.25)",
+                }
+              : {
+                  backgroundColor: theme.surface2,
+                  borderColor: theme.border,
+                },
           ]}
           className="flex-1 items-center rounded-xl py-3.5"
         >
           <Text
             className="text-[15px] font-bold"
-            style={{ color: answer === "False" ? "#ff6b8a" : "#6b7080" }}
+            style={{ color: answer === "False" ? "#ff6b8a" : theme.textMuted }}
           >
             False
           </Text>
@@ -86,17 +104,5 @@ export function TFQuestionCard({
 const styles = StyleSheet.create({
   button: {
     borderWidth: 2,
-  },
-  buttonDefault: {
-    backgroundColor: "rgba(255,255,255,0.03)",
-    borderColor: "rgba(255,255,255,0.06)",
-  },
-  trueSelected: {
-    backgroundColor: "rgba(0,188,125,0.08)",
-    borderColor: "rgba(0,188,125,0.25)",
-  },
-  falseSelected: {
-    backgroundColor: "rgba(255,107,138,0.08)",
-    borderColor: "rgba(255,107,138,0.25)",
   },
 });

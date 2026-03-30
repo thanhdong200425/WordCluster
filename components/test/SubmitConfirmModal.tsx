@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import { Modal, Pressable, View } from "react-native";
 
 interface SubmitConfirmModalProps {
@@ -14,6 +15,7 @@ export function SubmitConfirmModal({
   onConfirm,
   onCancel,
 }: SubmitConfirmModalProps) {
+  const theme = useAppTheme();
   return (
     <Modal
       visible={visible}
@@ -25,14 +27,26 @@ export function SubmitConfirmModal({
         className="flex-1 items-center justify-center bg-[rgba(0,0,0,0.7)]"
         onPress={onCancel}
       >
-        <Pressable className="mx-8 w-full rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#1c1e26] p-7">
+        <Pressable
+          className="mx-8 w-full rounded-2xl border p-7"
+          style={{
+            backgroundColor: theme.surface,
+            borderColor: theme.border,
+          }}
+        >
           <Text className="text-center text-[32px]">{"⚠️"}</Text>
 
-          <Text className="mt-3 text-center text-[18px] font-extrabold text-[#e8eaf0]">
+          <Text
+            className="mt-3 text-center text-[18px] font-extrabold"
+            style={{ color: theme.text }}
+          >
             Submit with unanswered?
           </Text>
 
-          <Text className="mt-2 text-center text-[13px] text-[#6b7080]">
+          <Text
+            className="mt-2 text-center text-[13px]"
+            style={{ color: theme.textMuted }}
+          >
             {unansweredCount} question{unansweredCount !== 1 ? "s" : ""} will be
             marked wrong.
           </Text>
@@ -40,16 +54,18 @@ export function SubmitConfirmModal({
           <View className="mt-6 flex-row gap-3">
             <Pressable
               onPress={onCancel}
-              className="flex-1 items-center rounded-xl border-[1.5px] border-[rgba(255,255,255,0.1)] bg-transparent py-3.5"
+              className="flex-1 items-center rounded-xl border-[1.5px] bg-transparent py-3.5"
+              style={{ borderColor: theme.border }}
             >
-              <Text className="font-semibold text-[#a0a4b8]">
+              <Text className="font-semibold" style={{ color: theme.textFaint }}>
                 Go Back
               </Text>
             </Pressable>
 
             <Pressable
               onPress={onConfirm}
-              className="flex-1 items-center rounded-xl bg-[#ff6b8a] py-3.5"
+              className="flex-1 items-center rounded-xl py-3.5"
+              style={{ backgroundColor: "#ff6b8a" }}
             >
               <Text className="font-bold text-white">Submit Anyway</Text>
             </Pressable>

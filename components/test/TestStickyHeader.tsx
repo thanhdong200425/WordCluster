@@ -1,5 +1,6 @@
 import { TestTimer } from "@/components/test/TestTimer";
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, View } from "react-native";
 
@@ -18,24 +19,40 @@ export function TestStickyHeader({
   onTimeUp,
   onCancel,
 }: TestStickyHeaderProps) {
+  const theme = useAppTheme();
   const progress = total > 0 ? answered / total : 0;
 
   return (
-    <View style={styles.container} className="flex-row items-center px-4 py-3">
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.bg,
+          borderBottomColor: theme.border,
+        },
+      ]}
+      className="flex-row items-center px-4 py-3"
+    >
       <Pressable onPress={onCancel} className="mr-3">
-        <Ionicons name="close" size={22} color="#6b7080" />
+        <Ionicons name="close" size={22} color={theme.textMuted} />
       </Pressable>
 
       <Text
         className="mr-3 font-bold"
-        style={{ fontSize: 11, color: "#a0a4b8" }}
+        style={{ fontSize: 11, color: theme.textMuted }}
       >
         {answered}/{total}
       </Text>
 
-      <View style={styles.progressTrack} className="flex-1 rounded-full">
+      <View
+        style={[styles.progressTrack, { backgroundColor: theme.border }]}
+        className="flex-1 rounded-full"
+      >
         <View
-          style={[styles.progressFill, { width: `${progress * 100}%` }]}
+          style={[
+            styles.progressFill,
+            { backgroundColor: theme.accentStart, width: `${progress * 100}%` },
+          ]}
           className="rounded-full"
         />
       </View>
@@ -53,16 +70,12 @@ export function TestStickyHeader({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "rgba(18,19,24,0.95)",
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255,255,255,0.04)",
   },
   progressTrack: {
     height: 4,
-    backgroundColor: "rgba(255,255,255,0.06)",
   },
   progressFill: {
     height: 4,
-    backgroundColor: "#00bc7d",
   },
 });

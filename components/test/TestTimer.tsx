@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
@@ -15,6 +16,7 @@ interface TestTimerProps {
 }
 
 export function TestTimer({ totalSeconds, onTimeUp }: TestTimerProps) {
+  const theme = useAppTheme();
   const [remaining, setRemaining] = useState(totalSeconds);
   const onTimeUpRef = useRef(onTimeUp);
   onTimeUpRef.current = onTimeUp;
@@ -57,13 +59,25 @@ export function TestTimer({ totalSeconds, onTimeUp }: TestTimerProps) {
 
   return (
     <Animated.View
-      style={[styles.container, isLow ? styles.containerLow : styles.containerNormal, pulseStyle]}
+      style={[
+        styles.container,
+        isLow
+          ? {
+              backgroundColor: "rgba(255,107,138,0.12)",
+              borderColor: "rgba(255,107,138,0.2)",
+            }
+          : {
+              backgroundColor: theme.surface2,
+              borderColor: theme.border,
+            },
+        pulseStyle,
+      ]}
       className="flex-row items-center rounded-lg px-3 py-1"
     >
       <Ionicons
         name="timer-outline"
         size={14}
-        color={isLow ? "#ff6b8a" : "#e8eaf0"}
+        color={isLow ? "#ff6b8a" : theme.text}
       />
       <Text
         className="ml-1 font-bold"
@@ -71,7 +85,7 @@ export function TestTimer({ totalSeconds, onTimeUp }: TestTimerProps) {
           fontSize: 13,
           fontFamily: "monospace",
           fontVariant: ["tabular-nums"],
-          color: isLow ? "#ff6b8a" : "#e8eaf0",
+          color: isLow ? "#ff6b8a" : theme.text,
         }}
       >
         {formatted}
@@ -83,13 +97,5 @@ export function TestTimer({ totalSeconds, onTimeUp }: TestTimerProps) {
 const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
-  },
-  containerNormal: {
-    backgroundColor: "rgba(255,255,255,0.04)",
-    borderColor: "rgba(255,255,255,0.06)",
-  },
-  containerLow: {
-    backgroundColor: "rgba(255,107,138,0.12)",
-    borderColor: "rgba(255,107,138,0.2)",
   },
 });

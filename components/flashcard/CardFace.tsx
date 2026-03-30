@@ -49,17 +49,17 @@ export function CardFace({ item, enabledFields, isFront, onFlip }: CardFaceProps
 
   const primaryValue = getFieldValue(primaryField, item) ?? "";
 
-  // Show type badge only when type exists and isn't explicitly laid out as a field
-  const showTypeBadge = !!item.type && !enabledFields.includes("type");
+  // Show type badge when type exists, is enabled, and isn't the primary field
+  const showTypeBadge = !!item.type && enabledFields.includes("type") && primaryField !== "type";
 
   // On back face, show example as an expandable chip if it's secondary (keeps current UX)
   const exampleAsChip =
     !isFront && secondaryFields.includes("example") && !!item.example;
 
-  // Remaining secondary fields shown as inline text
-  const inlineSecondaryFields = exampleAsChip
-    ? secondaryFields.filter((f) => f !== "example")
-    : secondaryFields;
+  // Remaining secondary fields shown as inline text (type is shown as a badge instead)
+  const inlineSecondaryFields = secondaryFields.filter(
+    (f) => f !== "type" && !(exampleAsChip && f === "example")
+  );
 
   // Use larger text for short-value fields (term, type), readable size otherwise
   const primaryIsLarge =

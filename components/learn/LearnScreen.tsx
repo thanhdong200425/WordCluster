@@ -6,6 +6,7 @@ import { MultipleChoiceCard } from "@/components/learn/MultipleChoiceCard";
 import { ProgressHeader } from "@/components/learn/ProgressHeader";
 import { TypeMatchCard } from "@/components/learn/TypeMatchCard";
 import { TypingCard } from "@/components/learn/TypingCard";
+import { useAppTheme } from "@/constants/appTheme";
 import type { Question, QuestionItem } from "@/types/learn";
 import { generateQuestions } from "@/utils/question-generator";
 import { useCallback, useState } from "react";
@@ -17,6 +18,7 @@ interface LearnScreenProps {
 }
 
 export function LearnScreen({ items, onBack }: LearnScreenProps) {
+  const theme = useAppTheme();
   const [questions] = useState<Question[]>(() => generateQuestions(items));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<boolean[]>([]);
@@ -115,7 +117,8 @@ export function LearnScreen({ items, onBack }: LearnScreenProps) {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-[#121318]"
+      className="flex-1"
+      style={{ backgroundColor: theme.bg }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ProgressHeader

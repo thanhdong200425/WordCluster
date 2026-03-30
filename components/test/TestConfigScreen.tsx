@@ -1,6 +1,7 @@
 import { QuestionTypeToggle } from "@/components/test/QuestionTypeToggle";
 import { TimerSelector } from "@/components/test/TimerSelector";
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import type { QuestionItem } from "@/types/learn";
 import {
   DEFAULT_TEST_CONFIG,
@@ -42,6 +43,7 @@ export function TestConfigScreen({
   onStart,
   onBack,
 }: TestConfigScreenProps) {
+  const theme = useAppTheme();
   const available = useMemo(() => getAvailableTypes(items), [items]);
 
   const [config, setConfig] = useState<TestConfig>(() => ({
@@ -88,7 +90,7 @@ export function TestConfigScreen({
   });
 
   return (
-    <View className="flex-1 bg-[#121318]">
+    <View className="flex-1" style={{ backgroundColor: theme.bg }}>
       <ScrollView
         className="flex-1"
         contentContainerClassName="pb-32"
@@ -97,19 +99,19 @@ export function TestConfigScreen({
         {/* Header */}
         <View className="flex-row items-center px-5 pb-2 pt-2">
           <Pressable onPress={onBack} className="w-10">
-            <Ionicons name="chevron-back" size={24} color="#e8eaf0" />
+            <Ionicons name="chevron-back" size={24} color={theme.text} />
           </Pressable>
         </View>
 
         <View className="mb-6 items-center px-5">
           <Text style={{ fontSize: 32 }}>{"📋"}</Text>
           <Text
-            className="mt-2 font-extrabold text-[#e8eaf0]"
-            style={{ fontSize: 20 }}
+            className="mt-2 font-extrabold"
+            style={{ fontSize: 20, color: theme.text }}
           >
             Test Settings
           </Text>
-          <Text className="mt-1" style={{ fontSize: 13, color: "#6b7080" }}>
+          <Text className="mt-1" style={{ fontSize: 13, color: theme.textMuted }}>
             {items.length} terms · {totalQuestions} questions
           </Text>
         </View>
@@ -120,7 +122,7 @@ export function TestConfigScreen({
           style={{
             fontSize: 10,
             letterSpacing: 1.5,
-            color: "rgba(255,255,255,0.25)",
+            color: theme.textFaint,
           }}
         >
           QUESTION TYPES
@@ -149,7 +151,7 @@ export function TestConfigScreen({
           style={{
             fontSize: 10,
             letterSpacing: 1.5,
-            color: "rgba(255,255,255,0.25)",
+            color: theme.textFaint,
           }}
         >
           TIMER (OPTIONAL)
@@ -163,13 +165,14 @@ export function TestConfigScreen({
 
       {/* Start Button */}
       <View className="absolute bottom-0 left-0 right-0 px-5 pb-6 pt-4"
-        style={styles.bottomGradient}
+        style={{ backgroundColor: theme.bg }}
       >
         <Pressable
           onPress={() => hasEnabledTypes && onStart(config)}
           disabled={!hasEnabledTypes}
           style={[
             styles.startButton,
+            { backgroundColor: theme.accentStart, shadowColor: `${theme.accentStart}4D` },
             !hasEnabledTypes && { opacity: 0.4 },
           ]}
           className="items-center rounded-2xl py-4"
@@ -184,12 +187,7 @@ export function TestConfigScreen({
 }
 
 const styles = StyleSheet.create({
-  bottomGradient: {
-    backgroundColor: "#121318",
-  },
   startButton: {
-    backgroundColor: "#00bc7d",
-    shadowColor: "rgba(0,188,125,0.3)",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 12,

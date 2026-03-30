@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import type { TestQuestion } from "@/types/test";
 import { StyleSheet, TextInput, View } from "react-native";
 
@@ -15,6 +16,7 @@ export function WrittenQuestionCard({
   onChange,
   questionNumber,
 }: WrittenQuestionCardProps) {
+  const theme = useAppTheme();
   const isFillBlank = question.type === "fill_blank";
   const hasText = answer.length > 0;
 
@@ -24,7 +26,7 @@ export function WrittenQuestionCard({
       <View className="mb-2 flex-row items-center gap-2">
         <Text
           className="font-bold"
-          style={{ fontSize: 10, fontFamily: "monospace", color: "#4a4d5e" }}
+          style={{ fontSize: 10, fontFamily: "monospace", color: theme.textFaint }}
         >
           Q{questionNumber}
         </Text>
@@ -44,16 +46,16 @@ export function WrittenQuestionCard({
       {isFillBlank ? (
         <View className="mb-3">
           <Text
-            className="font-medium text-[#e8eaf0]"
-            style={{ fontSize: 14, lineHeight: 22 }}
+            className="font-medium"
+            style={{ fontSize: 14, lineHeight: 22, color: theme.text }}
           >
-            {renderFillBlankPrompt(question.prompt)}
+            {renderFillBlankPrompt(question.prompt, theme.accentStart)}
           </Text>
         </View>
       ) : (
         <Text
-          className="mb-3 font-medium text-[#e8eaf0]"
-          style={{ fontSize: 14, lineHeight: 22 }}
+          className="mb-3 font-medium"
+          style={{ fontSize: 14, lineHeight: 22, color: theme.text }}
         >
           {question.prompt}
         </Text>
@@ -64,31 +66,40 @@ export function WrittenQuestionCard({
         value={answer}
         onChangeText={(text) => onChange(question.id, text)}
         placeholder="Type your answer..."
-        placeholderTextColor="#4a4d5e"
+        placeholderTextColor={theme.textMuted}
         autoCapitalize="none"
         autoCorrect={false}
         style={[
           styles.input,
-          hasText ? styles.inputActive : styles.inputDefault,
+          { color: theme.text },
+          hasText
+            ? {
+                backgroundColor: theme.surface2,
+                borderColor: "rgba(0,188,125,0.2)",
+              }
+            : {
+                backgroundColor: theme.surface2,
+                borderColor: theme.border,
+              },
         ]}
       />
     </View>
   );
 }
 
-function renderFillBlankPrompt(prompt: string) {
+function renderFillBlankPrompt(prompt: string, underlineColor: string) {
   const parts = prompt.split("______");
   if (parts.length < 2) return prompt;
 
   return (
     <Text
-      className="font-medium text-[#e8eaf0]"
+      className="font-medium"
       style={{ fontSize: 14, lineHeight: 22 }}
     >
       {parts[0]}
       <Text
-        className="font-bold text-[#00bc7d]"
-        style={{ textDecorationLine: "underline" }}
+        className="font-bold"
+        style={{ color: underlineColor, textDecorationLine: "underline" }}
       >
         {"______"}
       </Text>
@@ -105,15 +116,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 14,
     fontWeight: "500",
-    color: "#e8eaf0",
     fontFamily: "monospace",
-  },
-  inputDefault: {
-    backgroundColor: "rgba(255,255,255,0.04)",
-    borderColor: "rgba(255,255,255,0.08)",
-  },
-  inputActive: {
-    backgroundColor: "rgba(255,255,255,0.04)",
-    borderColor: "rgba(0,188,125,0.2)",
   },
 });

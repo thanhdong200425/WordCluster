@@ -14,7 +14,7 @@ import Toast from "react-native-toast-message";
 import "../global.css";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { initializeAds } from "@/lib/ads";
+// import { initializeAds } from "@/lib/ads";
 import useRevenueCatStorage from "@/stores/revenueCatStorage";
 import useThemePreferenceStorage from "@/stores/themePreferenceStorage";
 import { KeyboardProvider } from "react-native-keyboard-controller";
@@ -36,7 +36,7 @@ export default function RootLayout() {
   const themePreference = useThemePreferenceStorage((state) => state.preference);
 
   useEffect(() => {
-    initializeAds();
+    // initializeAds();
     initializeRevenueCat();
   }, [initializeRevenueCat]);
 

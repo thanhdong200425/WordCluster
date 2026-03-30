@@ -5,6 +5,7 @@ import { SubmitConfirmModal } from "@/components/test/SubmitConfirmModal";
 import { TFQuestionCard } from "@/components/test/TFQuestionCard";
 import { TestStickyHeader } from "@/components/test/TestStickyHeader";
 import { WrittenQuestionCard } from "@/components/test/WrittenQuestionCard";
+import { useAppTheme } from "@/constants/appTheme";
 import type { TestConfig, TestQuestion } from "@/types/test";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -32,6 +33,7 @@ export function TestExamScreen({
   onSubmit,
   onCancel,
 }: TestExamScreenProps) {
+  const theme = useAppTheme();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -125,7 +127,8 @@ export function TestExamScreen({
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-[#121318]"
+      className="flex-1"
+      style={{ backgroundColor: theme.bg }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TestStickyHeader
@@ -149,7 +152,7 @@ export function TestExamScreen({
             className="mx-5 my-1"
             style={{
               height: 1,
-              backgroundColor: "rgba(255,255,255,0.04)",
+              backgroundColor: theme.border,
             }}
           />
         )}

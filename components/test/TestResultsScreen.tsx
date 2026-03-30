@@ -1,6 +1,6 @@
 import { ReviewItem } from "@/components/test/ReviewItem";
 import { Text } from "@/components/ui/text";
-import { useInterstitialAd } from "@/hooks/use-interstitial-ad";
+import { useAppTheme } from "@/constants/appTheme";
 import useStreakStorage from "@/stores/streakStorage";
 import type { GradedResult, TestQuestionType } from "@/types/test";
 import { Ionicons } from "@expo/vector-icons";
@@ -54,8 +54,9 @@ export function TestResultsScreen({
   onRetake,
   onBack,
 }: TestResultsScreenProps) {
+  const theme = useAppTheme();
   const recordStudySession = useStreakStorage((s) => s.recordStudySession);
-  const { showIfReady: showInterstitial } = useInterstitialAd();
+  // const { showIfReady: showInterstitial } = useInterstitialAd();
   const [activeTab, setActiveTab] = useState<"overview" | "review">("overview");
 
   const correctCount = gradedResults.filter((r) => r.correct).length;
@@ -101,7 +102,7 @@ export function TestResultsScreen({
 
   useEffect(() => {
     recordStudySession();
-    showInterstitial();
+    // showInterstitial();
     emojiScale.value = withDelay(
       200,
       withSpring(1, { damping: 12, stiffness: 200 }),
@@ -114,7 +115,7 @@ export function TestResultsScreen({
     contentY.value = withDelay(1000, withTiming(0, { duration: 300 }));
   }, [
     recordStudySession,
-    showInterstitial,
+    // showInterstitial,
     emojiScale,
     headerOpacity,
     headerY,
@@ -142,17 +143,24 @@ export function TestResultsScreen({
 
   return (
     <ScrollView
-      className="flex-1 bg-[#121318]"
+      className="flex-1"
+      style={{ backgroundColor: theme.bg }}
       contentContainerClassName="pb-10"
     >
       {/* Score Header */}
-      <View className="items-center bg-[rgba(0,188,125,0.04)] px-6 pb-6 pt-8">
+      <View
+        className="items-center px-6 pb-6 pt-8"
+        style={{ backgroundColor: `${theme.accentStart}` }}
+      >
         <Animated.View style={emojiStyle}>
           <Text className="leading-[56px] text-[56px]">{meta.emoji}</Text>
         </Animated.View>
 
         <Animated.View style={headerStyle} className="mt-3 items-center">
-          <Text className="text-[20px] font-extrabold text-[#e8eaf0]">
+          <Text
+            className="text-[20px] font-extrabold"
+            style={{ color: theme.text }}
+          >
             {meta.message}
           </Text>
 
@@ -171,10 +179,13 @@ export function TestResultsScreen({
             </View>
 
             <View>
-              <Text className="text-[36px] font-black text-[#00bc7d]">
+              <Text
+                className="text-[36px] font-black"
+                style={{ color: theme.accentStart }}
+              >
                 {percentage}%
               </Text>
-              <Text className="text-xs text-[#6b7080]">
+              <Text className="text-xs" style={{ color: theme.textMuted }}>
                 {correctCount} of {totalCount} correct
               </Text>
             </View>
@@ -191,12 +202,16 @@ export function TestResultsScreen({
           return (
             <View key={section.label} className="mb-3 flex-row items-center">
               <Text
-                className="w-24 text-right text-[10px] font-semibold text-[#6b7080]"
+                className="w-24 text-right text-[10px] font-semibold"
+                style={{ color: theme.textMuted }}
                 numberOfLines={1}
               >
                 {section.label}
               </Text>
-              <View className="mx-3 h-1.5 flex-1 rounded-full bg-[rgba(255,255,255,0.06)]">
+              <View
+                className="mx-3 h-1.5 flex-1 rounded-full"
+                style={{ backgroundColor: theme.border }}
+              >
                 <View
                   style={{
                     width: `${ratio * 100}%`,
@@ -205,7 +220,10 @@ export function TestResultsScreen({
                   className="h-1.5 rounded-full"
                 />
               </View>
-              <Text className="w-8 text-[10px] font-bold text-[#a0a4b8]">
+              <Text
+                className="w-8 text-[10px] font-bold"
+                style={{ color: theme.textFaint }}
+              >
                 {section.correct}/{section.total}
               </Text>
             </View>
@@ -215,17 +233,25 @@ export function TestResultsScreen({
 
       {/* Tabs */}
       <Animated.View style={contentStyle}>
-        <View className="mb-4 flex-row border-b border-b-[rgba(255,255,255,0.06)]">
+        <View
+          className="mb-4 flex-row border-b"
+          style={{ borderBottomColor: theme.border }}
+        >
           <Pressable
             onPress={() => setActiveTab("overview")}
             className={`flex-1 items-center pb-3 ${
-              activeTab === "overview" ? "border-b-2 border-b-[#00bc7d]" : ""
+              activeTab === "overview" ? "border-b-2" : ""
             }`}
+            style={{
+              borderBottomColor:
+                activeTab === "overview" ? theme.accentStart : "transparent",
+            }}
           >
             <Text
-              className={`text-[13px] font-semibold ${
-                activeTab === "overview" ? "text-[#e8eaf0]" : "text-[#6b7080]"
-              }`}
+              className="text-[13px] font-semibold"
+              style={{
+                color: activeTab === "overview" ? theme.text : theme.textMuted,
+              }}
             >
               Overview
             </Text>
@@ -233,13 +259,18 @@ export function TestResultsScreen({
           <Pressable
             onPress={() => setActiveTab("review")}
             className={`flex-1 items-center pb-3 ${
-              activeTab === "review" ? "border-b-2 border-b-[#00bc7d]" : ""
+              activeTab === "review" ? "border-b-2" : ""
             }`}
+            style={{
+              borderBottomColor:
+                activeTab === "review" ? theme.accentStart : "transparent",
+            }}
           >
             <Text
-              className={`text-[13px] font-semibold ${
-                activeTab === "review" ? "text-[#e8eaf0]" : "text-[#6b7080]"
-              }`}
+              className="text-[13px] font-semibold"
+              style={{
+                color: activeTab === "review" ? theme.text : theme.textMuted,
+              }}
             >
               Review ({wrongResults.length} wrong)
             </Text>
@@ -265,7 +296,15 @@ export function TestResultsScreen({
             <View className="gap-3 px-5">
               <Pressable
                 onPress={onRetake}
-                className="flex-row items-center justify-center rounded-xl bg-[#00bc7d] py-4 shadow-[0_4px_12px_rgba(0,188,125,0.3)]"
+                className="flex-row items-center justify-center rounded-xl py-4"
+                style={{
+                  backgroundColor: theme.accentStart,
+                  shadowColor: `${theme.accentStart}4D`,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowRadius: 12,
+                  shadowOpacity: 1,
+                  elevation: 4,
+                }}
               >
                 <Ionicons name="refresh" size={18} color="#fff" />
                 <Text className="ml-2 text-[15px] font-bold text-white">
@@ -275,10 +314,18 @@ export function TestResultsScreen({
 
               <Pressable
                 onPress={onBack}
-                className="flex-row items-center justify-center rounded-xl border-[1.5px] border-[rgba(255,255,255,0.1)] bg-transparent py-4"
+                className="flex-row items-center justify-center rounded-xl border-[1.5px] bg-transparent py-4"
+                style={{ borderColor: theme.border }}
               >
-                <Ionicons name="chevron-back" size={18} color="#a0a4b8" />
-                <Text className="ml-1 text-[15px] font-semibold text-[#a0a4b8]">
+                <Ionicons
+                  name="chevron-back"
+                  size={18}
+                  color={theme.textFaint}
+                />
+                <Text
+                  className="ml-1 text-[15px] font-semibold"
+                  style={{ color: theme.textFaint }}
+                >
                   Back to Set
                 </Text>
               </Pressable>
@@ -289,7 +336,10 @@ export function TestResultsScreen({
             {wrongResults.length === 0 ? (
               <View className="items-center py-10">
                 <Text className="text-[32px]">{"✨"}</Text>
-                <Text className="mt-2 font-semibold text-[#6b7080]">
+                <Text
+                  className="mt-2 font-semibold"
+                  style={{ color: theme.textMuted }}
+                >
                   All answers correct! Nothing to review.
                 </Text>
               </View>

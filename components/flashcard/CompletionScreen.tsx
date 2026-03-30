@@ -1,7 +1,8 @@
 import { CircularProgress } from "@/components/flashcard/CircularProgress";
 import { ConfettiAnimation } from "@/components/flashcard/ConfettiAnimation";
 import { Text } from "@/components/ui/text";
-import { useInterstitialAd } from "@/hooks/use-interstitial-ad";
+import { useAppTheme } from "@/constants/appTheme";
+// import { useInterstitialAd } from "@/hooks/use-interstitial-ad";
 import useStreakStorage from "@/stores/streakStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
@@ -22,9 +23,14 @@ interface CompletionScreenProps {
   onBack: () => void;
 }
 
-export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionScreenProps) {
+export function CompletionScreen({
+  totalCards,
+  onRestart,
+  onBack,
+}: CompletionScreenProps) {
+  const theme = useAppTheme();
   const recordStudySession = useStreakStorage((s) => s.recordStudySession);
-  const { showIfReady: showInterstitial } = useInterstitialAd();
+  // const { showIfReady: showInterstitial } = useInterstitialAd();
   const ringScale = useSharedValue(0);
   const progress = useSharedValue(0);
   const titleOpacity = useSharedValue(0);
@@ -37,12 +43,15 @@ export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionSc
 
   useEffect(() => {
     recordStudySession();
-    showInterstitial();
+    // showInterstitial();
     // Staggered entrance sequence
-    ringScale.value = withDelay(300, withSpring(1, { damping: 12, stiffness: 100 }));
+    ringScale.value = withDelay(
+      300,
+      withSpring(1, { damping: 12, stiffness: 100 }),
+    );
     progress.value = withDelay(
       300,
-      withTiming(100, { duration: 1000, easing: Easing.out(Easing.cubic) })
+      withTiming(100, { duration: 1000, easing: Easing.out(Easing.cubic) }),
     );
 
     titleOpacity.value = withDelay(450, withTiming(1, { duration: 400 }));
@@ -57,11 +66,19 @@ export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionSc
     // Pulsing glow
     glowOpacity.value = withDelay(
       300,
-      withRepeat(withTiming(0.7, { duration: 1500 }), -1, true)
+      withRepeat(withTiming(0.7, { duration: 1500 }), -1, true),
     );
   }, [
-    recordStudySession, showInterstitial, ringScale, progress, titleOpacity, titleTranslateY,
-    statsOpacity, statsTranslateY, buttonsOpacity, buttonsTranslateY, glowOpacity,
+    recordStudySession,
+    /* showInterstitial, */ ringScale,
+    progress,
+    titleOpacity,
+    titleTranslateY,
+    statsOpacity,
+    statsTranslateY,
+    buttonsOpacity,
+    buttonsTranslateY,
+    glowOpacity,
   ]);
 
   const ringContainerStyle = useAnimatedStyle(() => ({
@@ -88,14 +105,20 @@ export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionSc
   }));
 
   return (
-    <View className="flex-1 bg-[#121318]">
+    <View className="flex-1" style={{ backgroundColor: theme.bg }}>
       <ConfettiAnimation />
 
       <View className="flex-1 items-center justify-center px-8">
         {/* Ring with glow */}
         <Animated.View style={ringContainerStyle} className="mb-8">
           <View className="items-center justify-center">
-            <Animated.View style={[styles.glow, glowStyle]} />
+            <Animated.View
+              style={[
+                styles.glow,
+                glowStyle,
+                { backgroundColor: `${theme.accentStart}` },
+              ]}
+            />
             <CircularProgress progress={progress} />
           </View>
         </Animated.View>
@@ -103,19 +126,23 @@ export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionSc
         {/* Title */}
         <Animated.View style={titleStyle} className="mb-2 items-center">
           <Text
-            className="font-extrabold text-[#e8eaf0]"
-            style={{ fontSize: 26 }}
+            className="font-extrabold"
+            style={{ fontSize: 26, color: theme.text }}
           >
             Session Complete!
           </Text>
-          <Text className="mt-2 text-[15px] text-[#6b7080]">
+          <Text className="mt-2 text-[15px]" style={{ color: theme.textMuted }}>
             You reviewed all {totalCards} cards
           </Text>
         </Animated.View>
 
         {/* Stats card */}
         <Animated.View
-          style={[statsStyle, styles.statsCard]}
+          style={[
+            statsStyle,
+            styles.statsCard,
+            { backgroundColor: theme.surface2, borderColor: theme.border },
+          ]}
           className="mt-6 w-full flex-row items-center rounded-2xl px-5 py-4"
         >
           <Text style={{ fontSize: 28 }} className="mr-4">
@@ -123,14 +150,19 @@ export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionSc
           </Text>
           <View className="flex-1">
             <Text
-              className="font-extrabold text-[#5b6cff]"
-              style={{ fontSize: 30 }}
+              className="font-extrabold"
+              style={{ fontSize: 30, color: theme.accentStart }}
             >
               {totalCards}
             </Text>
             <Text
-              className="font-bold text-[#6b7080]"
-              style={{ fontSize: 11, letterSpacing: 1, textTransform: "uppercase" }}
+              className="font-bold"
+              style={{
+                fontSize: 11,
+                letterSpacing: 1,
+                textTransform: "uppercase",
+                color: theme.textMuted,
+              }}
             >
               Cards Completed
             </Text>
@@ -141,7 +173,13 @@ export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionSc
         <Animated.View style={buttonsStyle} className="mt-8 w-full gap-3">
           <Pressable
             onPress={onRestart}
-            style={styles.primaryButton}
+            style={[
+              styles.primaryButton,
+              {
+                backgroundColor: theme.accentStart,
+                shadowColor: `${theme.accentStart}4D`,
+              },
+            ]}
             className="flex-row items-center justify-center rounded-xl py-4"
           >
             <Ionicons name="refresh" size={18} color="#fff" />
@@ -152,11 +190,14 @@ export function CompletionScreen({ totalCards, onRestart, onBack }: CompletionSc
 
           <Pressable
             onPress={onBack}
-            style={styles.secondaryButton}
+            style={[styles.secondaryButton, { borderColor: theme.border }]}
             className="flex-row items-center justify-center rounded-xl py-4"
           >
-            <Ionicons name="chevron-back" size={18} color="#a0a4b8" />
-            <Text className="ml-1 text-base font-semibold text-[#a0a4b8]">
+            <Ionicons name="chevron-back" size={18} color={theme.textFaint} />
+            <Text
+              className="ml-1 text-base font-semibold"
+              style={{ color: theme.textFaint }}
+            >
               Back to Set
             </Text>
           </Pressable>
@@ -172,16 +213,11 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 90,
-    backgroundColor: "rgba(91,108,255,0.15)",
   },
   statsCard: {
-    backgroundColor: "rgba(255,255,255,0.03)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
   },
   primaryButton: {
-    backgroundColor: "#5b6cff",
-    shadowColor: "rgba(91,108,255,0.3)",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 12,
@@ -190,6 +226,5 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
   },
 });

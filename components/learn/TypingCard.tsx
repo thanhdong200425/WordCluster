@@ -1,6 +1,7 @@
 import { CorrectAnswerBox } from "@/components/learn/CorrectAnswerBox";
 import { QuestionTypeBadge } from "@/components/learn/QuestionTypeBadge";
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import type { Question } from "@/types/learn";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
@@ -13,6 +14,7 @@ interface TypingCardProps {
 type CheckState = "idle" | "correct" | "wrong";
 
 export function TypingCard({ question, onAnswer }: TypingCardProps) {
+  const theme = useAppTheme();
   const [input, setInput] = useState("");
   const [checkState, setCheckState] = useState<CheckState>("idle");
   const inputRef = useRef<TextInput>(null);
@@ -32,10 +34,19 @@ export function TypingCard({ question, onAnswer }: TypingCardProps) {
 
   const inputStyle =
     checkState === "correct"
-      ? styles.inputCorrect
+      ? {
+          backgroundColor: "rgba(0,188,125,0.08)",
+          borderColor: "#00bc7d",
+        }
       : checkState === "wrong"
-        ? styles.inputWrong
-        : styles.inputDefault;
+        ? {
+            backgroundColor: "rgba(255,107,138,0.08)",
+            borderColor: "#ff6b8a",
+          }
+        : {
+            backgroundColor: theme.surface2,
+            borderColor: theme.border,
+          };
 
   return (
     <View className="px-5">
@@ -43,12 +54,15 @@ export function TypingCard({ question, onAnswer }: TypingCardProps) {
 
       <Text
         className="mb-1 font-bold uppercase"
-        style={{ fontSize: 10, letterSpacing: 1.5, color: "rgba(255,255,255,0.3)" }}
+        style={{ fontSize: 10, letterSpacing: 1.5, color: theme.textFaint }}
       >
         {question.promptLabel}
       </Text>
 
-      <Text className="mb-6 text-lg font-semibold text-[#e8eaf0]">
+      <Text
+        className="mb-6 text-lg font-semibold"
+        style={{ color: theme.text }}
+      >
         {question.prompt}
       </Text>
 
@@ -58,11 +72,15 @@ export function TypingCard({ question, onAnswer }: TypingCardProps) {
         onChangeText={setInput}
         onSubmitEditing={handleCheck}
         placeholder="Type your answer..."
-        placeholderTextColor="#4a4d5e"
+        placeholderTextColor={theme.textMuted}
         editable={checkState === "idle"}
         autoCapitalize="none"
         autoCorrect={false}
-        style={[styles.inputBase, inputStyle]}
+        style={[
+          styles.inputBase,
+          inputStyle,
+          { color: theme.text },
+        ]}
       />
 
       {checkState === "wrong" && (
@@ -75,7 +93,11 @@ export function TypingCard({ question, onAnswer }: TypingCardProps) {
         className="mt-4 items-center rounded-xl py-4"
         style={[
           styles.checkButton,
-          { opacity: !input.trim() || checkState !== "idle" ? 0.4 : 1 },
+          {
+            backgroundColor: theme.accentStart,
+            shadowColor: `${theme.accentStart}40`,
+            opacity: !input.trim() || checkState !== "idle" ? 0.4 : 1,
+          },
         ]}
       >
         <Text className="text-[15px] font-bold text-white">Check</Text>
@@ -92,23 +114,8 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     fontSize: 17,
     fontWeight: "500",
-    color: "#e8eaf0",
-  },
-  inputDefault: {
-    backgroundColor: "rgba(255,255,255,0.04)",
-    borderColor: "rgba(255,255,255,0.1)",
-  },
-  inputCorrect: {
-    backgroundColor: "rgba(0,188,125,0.08)",
-    borderColor: "#00bc7d",
-  },
-  inputWrong: {
-    backgroundColor: "rgba(255,107,138,0.08)",
-    borderColor: "#ff6b8a",
   },
   checkButton: {
-    backgroundColor: "#5b6cff",
-    shadowColor: "rgba(91,108,255,0.25)",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 12,

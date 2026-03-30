@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/constants/appTheme";
 import { Pressable, StyleSheet, View } from "react-native";
 
 interface SubmitBarProps {
@@ -12,19 +13,36 @@ export function SubmitBar({
   totalCount,
   onSubmit,
 }: SubmitBarProps) {
+  const theme = useAppTheme();
   const allAnswered = answeredCount >= totalCount;
 
   return (
-    <View style={styles.container} className="px-5 pb-6 pt-3">
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.bg,
+          borderTopColor: theme.border,
+        },
+      ]}
+      className="px-5 pb-6 pt-3"
+    >
       <Text
         className="mb-2 text-center font-semibold"
-        style={{ fontSize: 11, color: "#6b7080" }}
+        style={{ fontSize: 11, color: theme.textMuted }}
       >
         {answeredCount} of {totalCount} answered
       </Text>
       <Pressable
         onPress={onSubmit}
-        style={[styles.button, !allAnswered && { opacity: 0.7 }]}
+        style={[
+          styles.button,
+          {
+            backgroundColor: theme.accentStart,
+            shadowColor: `${theme.accentStart}40`,
+          },
+          !allAnswered && { opacity: 0.7 },
+        ]}
         className="items-center rounded-2xl py-4"
       >
         <Text className="text-[16px] font-extrabold text-white">
@@ -39,13 +57,9 @@ export function SubmitBar({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#121318",
     borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.04)",
   },
   button: {
-    backgroundColor: "#00bc7d",
-    shadowColor: "rgba(0,188,125,0.2)",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 12,
