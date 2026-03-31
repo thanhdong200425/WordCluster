@@ -10,7 +10,6 @@ import { HeroUINativeProvider } from "heroui-native/provider";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
-import Toast from "react-native-toast-message";
 import "../global.css";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -89,7 +88,6 @@ export default function RootLayout() {
                   options={{ headerShown: false }}
                 />
               </Stack>
-              <Toast />
             </SafeAreaView>
             <PortalHost />
           </HeroUINativeProvider>

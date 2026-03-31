@@ -3,7 +3,7 @@ import useUserStorage from "@/stores/userStorage";
 import { PressableFeedback } from "heroui-native/pressable-feedback";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import Toast from "react-native-toast-message";
+import { useToast } from "heroui-native";
 
 interface ProfileNameSectionProps {
   t: AppTheme;
@@ -12,6 +12,7 @@ interface ProfileNameSectionProps {
 export function ProfileNameSection({ t }: ProfileNameSectionProps) {
   const { userName, setUserName } = useUserStorage();
   const [name, setName] = useState(userName);
+  const { toast } = useToast();
 
   useEffect(() => {
     setName(userName);
@@ -22,7 +23,7 @@ export function ProfileNameSection({ t }: ProfileNameSectionProps) {
   const handleSave = () => {
     if (!name.trim()) return;
     setUserName(name);
-    Toast.show({ type: "success", text1: "Name updated" });
+    toast.show({ variant: "success", label: "Name updated" });
   };
 
   return (

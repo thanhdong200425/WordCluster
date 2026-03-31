@@ -4,11 +4,12 @@ import { Text } from "@/components/ui/text";
 import useUserStorage from "@/stores/userStorage";
 import { useEffect, useState } from "react";
 import { Image, View } from "react-native";
-import Toast from "react-native-toast-message";
+import { useToast } from "heroui-native";
 
 export function ProfileSection() {
   const { userName, setUserName } = useUserStorage();
   const [name, setName] = useState(userName);
+  const { toast } = useToast();
 
   useEffect(() => {
     setName(userName);
@@ -19,7 +20,7 @@ export function ProfileSection() {
   const handleSave = () => {
     if (!name.trim()) return;
     setUserName(name);
-    Toast.show({ type: "success", text1: "Name updated" });
+    toast.show({ variant: "success", label: "Name updated" });
   };
 
   const hasChanges = name.trim() !== userName;

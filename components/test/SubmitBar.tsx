@@ -47,7 +47,7 @@ export function SubmitBar({
       >
         <Text className="text-[16px] font-extrabold text-white">
           {allAnswered
-            ? "Submit Test ✓"
+            ? "Submit Test"
             : `Submit (${totalCount - answeredCount} unanswered)`}
         </Text>
       </Pressable>

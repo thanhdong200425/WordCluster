@@ -21,7 +21,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import Toast from "react-native-toast-message";
+import { useToast } from "heroui-native";
 import { useShallow } from "zustand/react/shallow";
 import NotFoundScreen from "./+not-found";
 
@@ -36,6 +36,7 @@ export default function CreateSetScreen({
 }: CreateSetScreenProps) {
   const [showDescription, setShowDescription] = useState<boolean>(true);
   const [isMissingSet, setIsMissingSet] = useState<boolean>(false);
+  const { toast } = useToast();
   const t = useAppTheme();
   const colorScheme = useColorScheme();
   const { createSet, updateSet, isLoading, storedSets } = useSetsStorage(
@@ -112,9 +113,9 @@ export default function CreateSetScreen({
 
   const handleDeleteTerm = (index: number) => {
     if (fields.length === 1) {
-      Toast.show({
-        type: "error",
-        text1: "At least 1 term is required",
+      toast.show({
+        variant: "danger",
+        label: "At least 1 term is required",
       });
       return;
     }
@@ -130,9 +131,9 @@ export default function CreateSetScreen({
     } else {
       await createSet(data);
     }
-    Toast.show({
-      type: "success",
-      text1: isEditMode
+    toast.show({
+      variant: "success",
+      label: isEditMode
         ? "Set updated successfully"
         : "Set created successfully",
     });

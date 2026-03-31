@@ -181,11 +181,11 @@ export function TestResultsScreen({
             <View>
               <Text
                 className="text-[36px] font-black"
-                style={{ color: theme.accentStart }}
+                style={{ color: theme.text }}
               >
                 {percentage}%
               </Text>
-              <Text className="text-xs" style={{ color: theme.textMuted }}>
+              <Text className="text-xs" style={{ color: theme.text }}>
                 {correctCount} of {totalCount} correct
               </Text>
             </View>

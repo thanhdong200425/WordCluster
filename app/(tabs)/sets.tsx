@@ -12,13 +12,14 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
-import Toast from "react-native-toast-message";
+import { useToast } from "heroui-native";
 import { useShallow } from "zustand/react/shallow";
 
 export default function SetsScreen() {
   const theme = useAppTheme();
   const colorScheme = useColorScheme();
   const statusBarStyle = colorScheme === "dark" ? "light" : "dark";
+  const { toast } = useToast();
   const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
   const [foundSets, setFoundSets] = useState<StoredSet[]>([]);
   const {
@@ -56,9 +57,9 @@ export default function SetsScreen() {
   const handleDeleteSet = (id: string) => {
     deleteSet(id);
     setSelectedSetId(null);
-    Toast.show({
-      type: "success",
-      text1: "Set deleted successfully",
+    toast.show({
+      variant: "success",
+      label: "Set deleted successfully",
     });
   };
 
