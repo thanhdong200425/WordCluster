@@ -1,8 +1,10 @@
 import { AppTheme } from "@/constants/appTheme";
-import { purchaseProMonthly, restorePurchases } from "@/services/purchasing";
+import { purchasePackage, restorePurchases } from "@/services/purchasing";
 import { LinearGradient } from "expo-linear-gradient";
 import * as WebBrowser from "expo-web-browser";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useToast } from "heroui-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { PurchasesPackage } from "react-native-purchases";
 
 const PRIVACY_POLICY_URL =
   "https://thanhdong200425.github.io/WordCluster/public/privacy.html";
@@ -11,24 +13,81 @@ const TERMS_OF_SERVICE_URL =
 
 interface PaywallFooterProps {
   t: AppTheme;
+  pkg: PurchasesPackage | null;
+  ctaLabel: string;
+  loading: boolean;
+  error: string | null;
+  onRetry: () => void;
 }
 
-export function PaywallFooter({ t }: PaywallFooterProps) {
+export function PaywallFooter({
+  t,
+  pkg,
+  ctaLabel,
+  loading,
+  error,
+  onRetry,
+}: PaywallFooterProps) {
+  const { toast } = useToast();
+  const isDisabled = loading || (!pkg && !error);
+
+  const handleCta = async () => {
+    if (error) {
+      onRetry();
+      return;
+    }
+    if (!pkg) return;
+    try {
+      await purchasePackage(pkg);
+    } catch {
+      toast.show({
+        variant: "danger",
+        label: "Purchase failed",
+        description: "Something went wrong. Please try again.",
+      });
+    }
+  };
+
+  const handleRestore = async () => {
+    try {
+      await restorePurchases();
+      toast.show({
+        variant: "success",
+        label: "Restored",
+        description: "Your purchases have been restored.",
+      });
+    } catch {
+      toast.show({
+        variant: "danger",
+        label: "Restore failed",
+        description: "Could not restore purchases. Please try again.",
+      });
+    }
+  };
+
   return (
     <View style={[styles.container, { borderTopColor: t.border }]}>
-      <Pressable onPress={purchaseProMonthly} style={styles.ctaPressable}>
+      <Pressable
+        onPress={handleCta}
+        disabled={isDisabled}
+        style={[styles.ctaPressable, isDisabled && styles.ctaDisabled]}
+      >
         <LinearGradient
           colors={["#5B6BF8", "#4B5BF0"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.ctaGradient}
         >
-          <Text style={styles.ctaText}>Get Pro - $2.99 / month</Text>
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.ctaText}>{ctaLabel}</Text>
+          )}
         </LinearGradient>
       </Pressable>
 
       <View style={styles.linksRow}>
-        <FooterLink label="Restore Purchase" onPress={restorePurchases} t={t} />
+        <FooterLink label="Restore Purchase" onPress={handleRestore} t={t} />
         <Text style={[styles.dot, { color: t.textFaint }]}>·</Text>
         <FooterLink
           label="Terms of Service"
@@ -80,6 +139,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.35,
     shadowRadius: 14,
     elevation: 6,
+  },
+  ctaDisabled: {
+    opacity: 0.6,
   },
   ctaGradient: {
     height: 56,

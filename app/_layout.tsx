@@ -16,8 +16,8 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 // import { initializeAds } from "@/lib/ads";
 import useRevenueCatStorage from "@/stores/revenueCatStorage";
 import useThemePreferenceStorage from "@/stores/themePreferenceStorage";
-import { KeyboardProvider } from "react-native-keyboard-controller";
 import { Appearance } from "react-native";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
@@ -32,7 +32,9 @@ export default function RootLayout() {
       initialize: state.initialize,
     })),
   );
-  const themePreference = useThemePreferenceStorage((state) => state.preference);
+  const themePreference = useThemePreferenceStorage(
+    (state) => state.preference,
+  );
 
   useEffect(() => {
     // initializeAds();
@@ -83,14 +85,8 @@ export default function RootLayout() {
                   name="settings"
                   options={{ headerShown: false }}
                 />
-                <Stack.Screen
-                  name="profile"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="paywall"
-                  options={{ headerShown: false }}
-                />
+                <Stack.Screen name="profile" options={{ headerShown: false }} />
+                <Stack.Screen name="paywall" options={{ headerShown: false }} />
               </Stack>
             </SafeAreaView>
             <PortalHost />

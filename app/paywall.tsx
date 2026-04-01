@@ -4,6 +4,7 @@ import { PaywallHeader } from "@/components/paywall/PaywallHeader";
 import { PaywallHero } from "@/components/paywall/PaywallHero";
 import { useAppTheme } from "@/constants/appTheme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { usePaywallOfferings } from "@/hooks/use-paywall-offerings";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -14,6 +15,7 @@ export default function PaywallScreen() {
   const t = useAppTheme();
   const scheme = useColorScheme();
   const insets = useSafeAreaInsets();
+  const { pkg, loading, error, ctaLabel, refetch } = usePaywallOfferings();
 
   return (
     <>
@@ -35,7 +37,14 @@ export default function PaywallScreen() {
           <PaywallComparisonTable t={t} />
         </ScrollView>
 
-        <PaywallFooter t={t} />
+        <PaywallFooter
+          t={t}
+          pkg={pkg}
+          ctaLabel={ctaLabel}
+          loading={loading}
+          error={error}
+          onRetry={refetch}
+        />
       </View>
     </>
   );
