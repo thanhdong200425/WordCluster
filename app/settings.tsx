@@ -2,6 +2,7 @@ import { AppearanceSection } from "@/components/settings/AppearanceSection";
 import { FeedbackSection } from "@/components/settings/FeedbackSection";
 import { LegalSection } from "@/components/settings/LegalSection";
 import { SettingsHeader } from "@/components/settings/SettingsHeader";
+import { UpgradeSection } from "@/components/settings/UpgradeSection";
 import { useAppTheme } from "@/constants/appTheme";
 import useThemePreferenceStorage from "@/stores/themePreferenceStorage";
 import { useFocusEffect } from "expo-router";
@@ -32,6 +33,7 @@ export default function SettingsScreen() {
       >
         <SettingsHeader t={t} />
         <View style={{ gap: 8 }}>
+          <UpgradeSection t={t} />
           <AppearanceSection
             preference={preference}
             onSelect={setPreference}

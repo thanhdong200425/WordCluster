@@ -87,6 +87,10 @@ export default function RootLayout() {
                   name="profile"
                   options={{ headerShown: false }}
                 />
+                <Stack.Screen
+                  name="paywall"
+                  options={{ headerShown: false }}
+                />
               </Stack>
             </SafeAreaView>
             <PortalHost />
