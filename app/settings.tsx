@@ -4,6 +4,7 @@ import { LegalSection } from "@/components/settings/LegalSection";
 import { SettingsHeader } from "@/components/settings/SettingsHeader";
 import { UpgradeSection } from "@/components/settings/UpgradeSection";
 import { useAppTheme } from "@/constants/appTheme";
+import { useSubscriptionDetails } from "@/hooks/use-subscription-details";
 import useThemePreferenceStorage from "@/stores/themePreferenceStorage";
 import { useFocusEffect } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -13,6 +14,8 @@ import { ScrollView, View } from "react-native";
 export default function SettingsScreen() {
   const t = useAppTheme();
   const { preference, setPreference } = useThemePreferenceStorage();
+  const { isPro, renewalDateLabel, pricePerMonthLabel, refetch: refetchSubscription } =
+    useSubscriptionDetails();
   const [statusBarStyle, setStatusBarStyle] = useState<"dark" | "light">(
     "dark",
   );
@@ -20,8 +23,9 @@ export default function SettingsScreen() {
   useFocusEffect(
     useCallback(() => {
       setStatusBarStyle("dark");
+      refetchSubscription();
       return () => setStatusBarStyle("light");
-    }, []),
+    }, [refetchSubscription]),
   );
 
   return (
@@ -33,7 +37,12 @@ export default function SettingsScreen() {
       >
         <SettingsHeader t={t} />
         <View style={{ gap: 8 }}>
-          <UpgradeSection t={t} />
+          <UpgradeSection
+            t={t}
+            isPro={isPro}
+            renewalDateLabel={renewalDateLabel}
+            pricePerMonthLabel={pricePerMonthLabel}
+          />
           <AppearanceSection
             preference={preference}
             onSelect={setPreference}

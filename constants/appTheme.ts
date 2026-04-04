@@ -3,6 +3,11 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 const ACCENT_START = "#5B6BF8";
 const ACCENT_END = "#4B5BF0";
 
+// Pro gold palette — shared across schemes (gradient is same; fills are alpha-based)
+const PRO_GRADIENT_START = "#F9C74F";
+const PRO_GRADIENT_END = "#F4A020";
+const PRO_ACCENT = "#F4A020";
+
 const lightTokens = {
   bg: "#F4F4F7",
   surface: "#FFFFFF",
@@ -18,6 +23,14 @@ const lightTokens = {
   tooltip: "#3A3C4E",
   accentStart: ACCENT_START,
   accentEnd: ACCENT_END,
+  // Pro tokens
+  proAccent: PRO_ACCENT,
+  proGradientStart: PRO_GRADIENT_START,
+  proGradientEnd: PRO_GRADIENT_END,
+  proPillBorder: "rgba(244, 160, 32, 0.45)",
+  proPillFillStart: "rgba(249, 199, 79, 0.22)",
+  proPillFillEnd: "rgba(244, 160, 32, 0.22)",
+  proChipBg: "rgba(244, 160, 32, 0.15)",
 };
 
 const darkTokens = {
@@ -35,6 +48,14 @@ const darkTokens = {
   tooltip: "#2A2D3A",
   accentStart: ACCENT_START,
   accentEnd: ACCENT_END,
+  // Pro tokens
+  proAccent: PRO_ACCENT,
+  proGradientStart: PRO_GRADIENT_START,
+  proGradientEnd: PRO_GRADIENT_END,
+  proPillBorder: "rgba(244, 160, 32, 0.3)",
+  proPillFillStart: "rgba(249, 199, 79, 0.15)",
+  proPillFillEnd: "rgba(244, 160, 32, 0.15)",
+  proChipBg: "rgba(244, 160, 32, 0.12)",
 };
 
 export type AppTheme = typeof lightTokens;

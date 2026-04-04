@@ -1,7 +1,8 @@
+import { RC_PRO_ENTITLEMENT } from "@/constants/revenuecat";
 import Purchases, { CustomerInfo, LOG_LEVEL } from "react-native-purchases";
 import { create } from "zustand";
 
-export const RC_PRO_ENTITLEMENT = "pro";
+export { RC_PRO_ENTITLEMENT };
 
 // const TEST_API_KEY = process.env.EXPO_PUBLIC_RC_TEST_API_KEY ?? "";
 const PROD_API_KEY = process.env.EXPO_PUBLIC_RC_PLAY_STORE_API_KEY ?? "";

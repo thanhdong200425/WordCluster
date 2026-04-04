@@ -1,3 +1,4 @@
+import { RC_PRO_ENTITLEMENT } from "@/constants/revenuecat";
 import { useCallback, useEffect, useState } from "react";
 import Purchases from "react-native-purchases";
 
@@ -7,15 +8,10 @@ interface ActiveSubscriptionState {
   refetchSubscription: () => Promise<void>;
 }
 
-const RC_PRO_ENTITLEMENT = "Lexio Pro";
-
 export function useActiveSubscription(): ActiveSubscriptionState {
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [loadingSubscription, setLoadingSubscription] = useState(true);
 
-  useEffect(() => {
-    console.log("hasActiveSubscription", hasActiveSubscription);
-  }, [hasActiveSubscription]);
   const refetchSubscription = useCallback(async () => {
     setLoadingSubscription(true);
     try {
@@ -30,6 +26,10 @@ export function useActiveSubscription(): ActiveSubscriptionState {
       setLoadingSubscription(false);
     }
   }, []);
+
+  useEffect(() => {
+    refetchSubscription();
+  }, [refetchSubscription]);
 
   return { hasActiveSubscription, loadingSubscription, refetchSubscription };
 }
