@@ -18,6 +18,8 @@ interface PaywallFooterProps {
   loading: boolean;
   error: string | null;
   onRetry: () => void;
+  hasActiveSubscription?: boolean;
+  onPurchaseSuccess?: () => Promise<void>;
 }
 
 export function PaywallFooter({
@@ -27,9 +29,11 @@ export function PaywallFooter({
   loading,
   error,
   onRetry,
+  hasActiveSubscription = false,
+  onPurchaseSuccess,
 }: PaywallFooterProps) {
   const { toast } = useToast();
-  const isDisabled = loading || (!pkg && !error);
+  const isDisabled = loading || (!pkg && !error) || hasActiveSubscription;
 
   const handleCta = async () => {
     if (error) {
@@ -39,6 +43,7 @@ export function PaywallFooter({
     if (!pkg) return;
     try {
       await purchasePackage(pkg);
+      await onPurchaseSuccess?.();
     } catch {
       toast.show({
         variant: "danger",
@@ -81,7 +86,9 @@ export function PaywallFooter({
           {loading ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.ctaText}>{ctaLabel}</Text>
+            <Text style={styles.ctaText}>
+              {hasActiveSubscription ? "Already Subscribed" : ctaLabel}
+            </Text>
           )}
         </LinearGradient>
       </Pressable>

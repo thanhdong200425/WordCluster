@@ -3,10 +3,12 @@ import { PaywallFooter } from "@/components/paywall/PaywallFooter";
 import { PaywallHeader } from "@/components/paywall/PaywallHeader";
 import { PaywallHero } from "@/components/paywall/PaywallHero";
 import { useAppTheme } from "@/constants/appTheme";
+import { useActiveSubscription } from "@/hooks/use-active-subscription";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { usePaywallOfferings } from "@/hooks/use-paywall-offerings";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useCallback } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -16,6 +18,14 @@ export default function PaywallScreen() {
   const scheme = useColorScheme();
   const insets = useSafeAreaInsets();
   const { pkg, loading, error, ctaLabel, refetch } = usePaywallOfferings();
+  const { hasActiveSubscription, loadingSubscription, refetchSubscription } =
+    useActiveSubscription();
+
+  useFocusEffect(
+    useCallback(() => {
+      refetchSubscription();
+    }, [refetchSubscription]),
+  );
 
   return (
     <>
@@ -41,9 +51,11 @@ export default function PaywallScreen() {
           t={t}
           pkg={pkg}
           ctaLabel={ctaLabel}
-          loading={loading}
+          loading={loading || loadingSubscription}
           error={error}
           onRetry={refetch}
+          hasActiveSubscription={hasActiveSubscription}
+          onPurchaseSuccess={refetchSubscription}
         />
       </View>
     </>
