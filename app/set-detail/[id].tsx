@@ -2,6 +2,9 @@ import { ProUpsellSheet } from "@/components/paywall/ProUpsellSheet";
 import { FlashCardDeck } from "@/components/set-detail/FlashCardDeck";
 import { StudyModeCard } from "@/components/set-detail/StudyModeCard";
 import { Text } from "@/components/ui/text";
+import { HiddenCopilotStepNumber } from "@/components/walkthrough/HiddenCopilotStepNumber";
+import { WalkthroughController } from "@/components/walkthrough/WalkthroughController";
+import { WalkthroughTooltip } from "@/components/walkthrough/WalkthroughTooltip";
 import { useAppTheme } from "@/constants/appTheme";
 import {
   FREE_LEARN_SESSIONS_PER_SET,
@@ -20,7 +23,10 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SquarePen } from "lucide-react-native";
 import { Pressable, ScrollView, View } from "react-native";
+import { CopilotProvider, CopilotStep, walkthroughable } from "react-native-copilot";
 import { useShallow } from "zustand/react/shallow";
+
+const WalkthroughView = walkthroughable(View);
 
 export default function SetDetailScreen() {
   const theme = useAppTheme();
@@ -110,7 +116,11 @@ export default function SetDetailScreen() {
   }
 
   return (
-    <>
+    <CopilotProvider
+      tooltipComponent={WalkthroughTooltip}
+      stepNumberComponent={HiddenCopilotStepNumber}
+    >
+      <WalkthroughController walkthroughKey="setDetail" />
       <StatusBar style={statusBarStyle} />
       <ScrollView className="flex-1" style={{ backgroundColor: theme.bg }}>
         {/* Header */}
@@ -135,9 +145,15 @@ export default function SetDetailScreen() {
         </View>
 
         {/* Flashcard Deck */}
-        <View className="mb-8 mt-4">
-          <FlashCardDeck items={set.items} />
-        </View>
+        <CopilotStep
+          text="Swipe through these cards to preview all words in this set"
+          order={1}
+          name="set-detail-deck"
+        >
+          <WalkthroughView className="mb-8 mt-4">
+            <FlashCardDeck items={set.items} />
+          </WalkthroughView>
+        </CopilotStep>
 
         {/* Study Mode Section */}
         <View className="mb-6">
@@ -148,30 +164,56 @@ export default function SetDetailScreen() {
             CHOOSE A STUDY MODE
           </Text>
 
-          <StudyModeCard
-            title="Flashcards"
-            description="Review terms with flip cards"
-            iconName="albums-outline"
-            iconColor={theme.accentStart}
-            iconBgColor={theme.accentSurface}
-            onPress={handleStartFlashcardSession}
-          />
-          <StudyModeCard
-            title="Learn"
-            description="Adaptive learning with spaced repetition"
-            iconName="school-outline"
-            iconColor="#ad46ff"
-            iconBgColor="rgba(173,70,255,0.1)"
-            onPress={handleStartLearnSession}
-          />
-          <StudyModeCard
-            title="Test"
-            description="Test your knowledge with a quiz"
-            iconName="checkmark-circle-outline"
-            iconColor="#00bc7d"
-            iconBgColor="rgba(0,188,125,0.1)"
-            onPress={handleStartTestSession}
-          />
+          <CopilotStep
+            text="Flip-card mode — tap a card to reveal the definition"
+            order={2}
+            name="set-detail-flashcards"
+          >
+            <WalkthroughView>
+              <StudyModeCard
+                title="Flashcards"
+                description="Review terms with flip cards"
+                iconName="albums-outline"
+                iconColor={theme.accentStart}
+                iconBgColor={theme.accentSurface}
+                onPress={handleStartFlashcardSession}
+              />
+            </WalkthroughView>
+          </CopilotStep>
+
+          <CopilotStep
+            text="Adaptive learning with multiple question types to reinforce memory"
+            order={3}
+            name="set-detail-learn"
+          >
+            <WalkthroughView>
+              <StudyModeCard
+                title="Learn"
+                description="Adaptive learning with spaced repetition"
+                iconName="school-outline"
+                iconColor="#ad46ff"
+                iconBgColor="rgba(173,70,255,0.1)"
+                onPress={handleStartLearnSession}
+              />
+            </WalkthroughView>
+          </CopilotStep>
+
+          <CopilotStep
+            text="Take a quiz and see how well you know this set"
+            order={4}
+            name="set-detail-test"
+          >
+            <WalkthroughView>
+              <StudyModeCard
+                title="Test"
+                description="Test your knowledge with a quiz"
+                iconName="checkmark-circle-outline"
+                iconColor="#00bc7d"
+                iconBgColor="rgba(0,188,125,0.1)"
+                onPress={handleStartTestSession}
+              />
+            </WalkthroughView>
+          </CopilotStep>
         </View>
       </ScrollView>
 
@@ -180,6 +222,6 @@ export default function SetDetailScreen() {
         title={sheetProps.title}
         description={sheetProps.description}
       />
-    </>
+    </CopilotProvider>
   );
 }

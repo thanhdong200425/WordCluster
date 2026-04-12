@@ -3,6 +3,7 @@ import { HomeHeader } from "@/components/home/HomeHeader";
 import { RecentSetsSection } from "@/components/home/RecentSetsSection";
 import { SectionTitle } from "@/components/home/SectionTitle";
 import { ProUpsellSheet } from "@/components/paywall/ProUpsellSheet";
+import { WalkthroughController } from "@/components/walkthrough/WalkthroughController";
 import { useAppTheme } from "@/constants/appTheme";
 import { FREE_LEARN_SESSIONS_PER_SET } from "@/constants/limits";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -95,6 +96,8 @@ export default function HomeScreen() {
         ))}
         <View className="h-8" />
       </ScrollView>
+
+      <WalkthroughController walkthroughKey="home" />
 
       <ProUpsellSheet
         sheetRef={sheetRef}

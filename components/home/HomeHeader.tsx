@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import { PressableFeedback } from "heroui-native/pressable-feedback";
 import { useRef, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import { CopilotStep, walkthroughable } from "react-native-copilot";
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -13,6 +14,8 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+
+const WalkthroughView = walkthroughable(View);
 
 interface HomeHeaderProps {
   searchQuery: string;
@@ -74,17 +77,30 @@ export function HomeHeader({ searchQuery, onSearchChange }: HomeHeaderProps) {
         pointerEvents={isExpanded ? "none" : "auto"}
       >
         {/* Search icon button */}
-        <PressableFeedback
-          onPress={expand}
-          style={[styles.iconBtn, { backgroundColor: theme.surface }, SHADOW]}
+        <CopilotStep
+          text="Search your word sets by name or keyword"
+          order={1}
+          name="home-search"
         >
-          <Ionicons name="search" size={16} color={theme.textMuted} />
-        </PressableFeedback>
+          <WalkthroughView>
+            <PressableFeedback
+              onPress={expand}
+              style={[styles.iconBtn, { backgroundColor: theme.surface }, SHADOW]}
+            >
+              <Ionicons name="search" size={16} color={theme.textMuted} />
+            </PressableFeedback>
+          </WalkthroughView>
+        </CopilotStep>
 
         <View style={{ flex: 1 }} />
 
         {/* Initials pill + Settings */}
-        <View style={styles.rightGroup}>
+        <CopilotStep
+          text="View your profile and learning streak"
+          order={2}
+          name="home-profile"
+        >
+          <WalkthroughView style={styles.rightGroup}>
           <PressableFeedback
             onPress={() => router.push("/profile")}
             style={styles.initialsGradient}
@@ -110,7 +126,8 @@ export function HomeHeader({ searchQuery, onSearchChange }: HomeHeaderProps) {
           >
             <Ionicons name="settings-outline" size={16} color={theme.textMuted} />
           </PressableFeedback>
-        </View>
+        </WalkthroughView>
+        </CopilotStep>
       </Animated.View>
 
       {/* ── Expanded row ───────────────────────────────────────── */}

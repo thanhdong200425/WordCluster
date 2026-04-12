@@ -6,11 +6,17 @@ import { MultipleChoiceCard } from "@/components/learn/MultipleChoiceCard";
 import { ProgressHeader } from "@/components/learn/ProgressHeader";
 import { TypeMatchCard } from "@/components/learn/TypeMatchCard";
 import { TypingCard } from "@/components/learn/TypingCard";
+import { HiddenCopilotStepNumber } from "@/components/walkthrough/HiddenCopilotStepNumber";
+import { WalkthroughController } from "@/components/walkthrough/WalkthroughController";
+import { WalkthroughTooltip } from "@/components/walkthrough/WalkthroughTooltip";
 import { useAppTheme } from "@/constants/appTheme";
 import type { Question, QuestionItem } from "@/types/learn";
 import { generateQuestions } from "@/utils/question-generator";
 import { useCallback, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import { CopilotProvider, CopilotStep, walkthroughable } from "react-native-copilot";
+
+const WalkthroughView = walkthroughable(View);
 
 interface LearnScreenProps {
   items: QuestionItem[];
@@ -18,6 +24,17 @@ interface LearnScreenProps {
 }
 
 export function LearnScreen({ items, onBack }: LearnScreenProps) {
+  return (
+    <CopilotProvider
+      tooltipComponent={WalkthroughTooltip}
+      stepNumberComponent={HiddenCopilotStepNumber}
+    >
+      <LearnScreenContent items={items} onBack={onBack} />
+    </CopilotProvider>
+  );
+}
+
+function LearnScreenContent({ items, onBack }: LearnScreenProps) {
   const theme = useAppTheme();
   const [questions] = useState<Question[]>(() => generateQuestions(items));
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -121,13 +138,24 @@ export function LearnScreen({ items, onBack }: LearnScreenProps) {
       style={{ backgroundColor: theme.bg }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ProgressHeader
-        current={currentIndex + 1}
-        total={questions.length}
-        streak={streak}
-        onClose={onBack}
-      />
+      <WalkthroughController walkthroughKey="learn" />
 
+      <CopilotStep
+        text="Track your progress and answer streak here"
+        order={1}
+        name="learn-progress-header"
+      >
+        <WalkthroughView>
+          <ProgressHeader
+            current={currentIndex + 1}
+            total={questions.length}
+            streak={streak}
+            onClose={onBack}
+          />
+        </WalkthroughView>
+      </CopilotStep>
+
+      
       <ScrollView
         className="flex-1"
         contentContainerClassName="pb-20 pt-4"

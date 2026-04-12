@@ -3,6 +3,9 @@ import { FlashcardFaceLayoutModal } from "@/components/flashcard/FlashcardFaceLa
 import { FlipCard } from "@/components/flashcard/FlipCard";
 import { ProUpsellSheet } from "@/components/paywall/ProUpsellSheet";
 import { Text } from "@/components/ui/text";
+import { HiddenCopilotStepNumber } from "@/components/walkthrough/HiddenCopilotStepNumber";
+import { WalkthroughController } from "@/components/walkthrough/WalkthroughController";
+import { WalkthroughTooltip } from "@/components/walkthrough/WalkthroughTooltip";
 import { useAppTheme } from "@/constants/appTheme";
 import { useProGate } from "@/hooks/use-pro-gate";
 import {
@@ -16,6 +19,7 @@ import { useRouter } from "expo-router";
 import { Fragment, useState } from "react";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { CopilotProvider, CopilotStep, walkthroughable } from "react-native-copilot";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -26,6 +30,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 import { useShallow } from "zustand/react/shallow";
 
+const WalkthroughView = walkthroughable(View);
+
 interface FlashcardScreenProps {
   setId: string;
 }
@@ -33,6 +39,17 @@ interface FlashcardScreenProps {
 const SWIPE_THRESHOLD = 80;
 
 export function FlashcardScreen({ setId }: FlashcardScreenProps) {
+  return (
+    <CopilotProvider
+      tooltipComponent={WalkthroughTooltip}
+      stepNumberComponent={HiddenCopilotStepNumber}
+    >
+      <FlashcardScreenContent setId={setId} />
+    </CopilotProvider>
+  );
+}
+
+function FlashcardScreenContent({ setId }: FlashcardScreenProps) {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const storedSets = useSetsStorage(useShallow((state) => state.storedSets));
@@ -174,104 +191,118 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
 
   return (
     <Fragment>
-    <View className="flex-1" style={{ backgroundColor: theme.bg }}>
-      <View
-        className="flex-row items-center border-b px-5 pb-3"
-        style={{
-          borderBottomColor: theme.border,
-          paddingTop: insets.top * 0.2,
-        }}
-      >
-        <Pressable
-          onPress={() => router.back()}
-          style={({ pressed }) => [
-            ...headerIconButtonStyle,
-            { opacity: pressed ? 0.85 : 1 },
-          ]}
+      <WalkthroughController walkthroughKey="flashcard" />
+      <View className="flex-1" style={{ backgroundColor: theme.bg }}>
+        <View
+          className="flex-row items-center border-b px-5 pb-3"
+          style={{
+            borderBottomColor: theme.border,
+            paddingTop: insets.top * 0.2,
+          }}
         >
-          <Ionicons name="chevron-back" size={18} color={theme.text} />
-        </Pressable>
-        <View className="min-w-0 flex-1 items-center px-2">
-          <Text
-            className="text-[17px] font-bold"
-            style={{ color: theme.text }}
-            numberOfLines={1}
-          >
-            Flashcards
-          </Text>
-        </View>
-        <Pressable
-          onPress={() => setLayoutModalOpen(true)}
-          style={({ pressed }) => [
-            ...headerIconButtonStyle,
-            { opacity: pressed ? 0.7 : 1 },
-          ]}
-          accessibilityLabel="Flashcard layout settings"
-        >
-          <Ionicons name="options-outline" size={18} color={theme.textMuted} />
-        </Pressable>
-      </View>
-
-      <FlashcardFaceLayoutModal
-        visible={layoutModalOpen}
-        onClose={() => setLayoutModalOpen(false)}
-      />
-
-      <View className="flex-1 justify-center">
-        <GestureDetector gesture={panGesture}>
-          <Animated.View style={cardAnimatedStyle}>
-            <FlipCard
-              item={items[currentIndex]}
-              isFlipped={isFlipped}
-              onFlip={() => setIsFlipped((prev) => !prev)}
-              height={cardHeight}
-            />
-          </Animated.View>
-        </GestureDetector>
-      </View>
-
-      <View
-        className="border-t px-[22px] pt-3"
-        style={{
-          borderTopColor: theme.border,
-          backgroundColor: theme.surface,
-          paddingBottom: Math.max(insets.bottom, 20),
-        }}
-      >
-        <View className="flex-row items-center justify-center gap-10">
           <Pressable
-            onPress={isFirst ? undefined : goToPrevious}
-            disabled={isFirst}
+            onPress={() => router.back()}
             style={({ pressed }) => [
-              ...navCircleStyle,
-              {
-                opacity: isFirst ? 0.3 : pressed ? 0.9 : 1,
-              },
+              ...headerIconButtonStyle,
+              { opacity: pressed ? 0.85 : 1 },
             ]}
           >
-            <Ionicons name="chevron-back" size={22} color={theme.textMuted} />
+            <Ionicons name="chevron-back" size={18} color={theme.text} />
           </Pressable>
-
-          <Text
-            className="min-w-[48px] text-center text-base"
-            style={{ color: theme.textMuted }}
-          >
-            {currentIndex + 1} / {items.length}
-          </Text>
-
+          <View className="min-w-0 flex-1 items-center px-2">
+            <Text
+              className="text-[17px] font-bold"
+              style={{ color: theme.text }}
+              numberOfLines={1}
+            >
+              Flashcards
+            </Text>
+          </View>
           <Pressable
-            onPress={goToNext}
+            onPress={() => setLayoutModalOpen(true)}
             style={({ pressed }) => [
-              ...navCircleStyle,
-              { opacity: pressed ? 0.9 : 1 },
+              ...headerIconButtonStyle,
+              { opacity: pressed ? 0.7 : 1 },
             ]}
+            accessibilityLabel="Flashcard layout settings"
           >
-            <Ionicons name="chevron-forward" size={22} color={theme.text} />
+            <Ionicons name="options-outline" size={18} color={theme.textMuted} />
           </Pressable>
         </View>
+
+        <FlashcardFaceLayoutModal
+          visible={layoutModalOpen}
+          onClose={() => setLayoutModalOpen(false)}
+        />
+
+        <CopilotStep
+          text="Tap the card to flip between term and definition. Swipe left to move forward"
+          order={1}
+          name="flashcard-flip-card"
+        >
+          <WalkthroughView className="flex-1 justify-center">
+            <GestureDetector gesture={panGesture}>
+              <Animated.View style={cardAnimatedStyle}>
+                <FlipCard
+                  item={items[currentIndex]}
+                  isFlipped={isFlipped}
+                  onFlip={() => setIsFlipped((prev) => !prev)}
+                  height={cardHeight}
+                />
+              </Animated.View>
+            </GestureDetector>
+          </WalkthroughView>
+        </CopilotStep>
+
+        <CopilotStep
+          text="Use these buttons or swipe left/right to navigate between cards"
+          order={2}
+          name="flashcard-nav-bar"
+        >
+          <WalkthroughView
+            style={{
+              borderTopWidth: 1,
+              borderTopColor: theme.border,
+              backgroundColor: theme.surface,
+              paddingBottom: Math.max(insets.bottom, 20),
+            }}
+            className="px-[22px] pt-3"
+          >
+            <View className="flex-row items-center justify-center gap-10">
+              <Pressable
+                onPress={isFirst ? undefined : goToPrevious}
+                disabled={isFirst}
+                style={({ pressed }) => [
+                  ...navCircleStyle,
+                  {
+                    opacity: isFirst ? 0.3 : pressed ? 0.9 : 1,
+                  },
+                ]}
+              >
+                <Ionicons name="chevron-back" size={22} color={theme.textMuted} />
+              </Pressable>
+
+              <Text
+                className="min-w-[48px] text-center text-base"
+                style={{ color: theme.textMuted }}
+              >
+                {currentIndex + 1} / {items.length}
+              </Text>
+
+              <Pressable
+                onPress={goToNext}
+                style={({ pressed }) => [
+                  ...navCircleStyle,
+                  { opacity: pressed ? 0.9 : 1 },
+                ]}
+              >
+                <Ionicons name="chevron-forward" size={22} color={theme.text} />
+              </Pressable>
+            </View>
+          </WalkthroughView>
+        </CopilotStep>
       </View>
-    </View>
-    {paywallSheet}
+      {paywallSheet}
     </Fragment>
   );
 }
