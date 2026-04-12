@@ -44,7 +44,7 @@ export default function CreateSetScreen({
   const t = useAppTheme();
   const colorScheme = useColorScheme();
   const isPro = useRevenueCatStorage((s) => s.isPro);
-  const { sheetRef, sheetProps, checkGate } = useProGate();
+  const { sheetRef, sheetProps, tryProceed } = useProGate();
   const { createSet, updateSet, isLoading, storedSets } = useSetsStorage(
     useShallow((state) => ({
       createSet: state.createSet,
@@ -229,7 +229,7 @@ export default function CreateSetScreen({
                   t={t}
                   isPro={isPro}
                   onFieldLimitReached={() =>
-                    checkGate(true, {
+                    tryProceed(true, {
                       title: "Field limit reached",
                       description: `Free sets allow examples and types on up to ${FREE_TERMS_PER_SET} terms. Go Pro for unlimited.`,
                     })
@@ -249,7 +249,7 @@ export default function CreateSetScreen({
         <View className="px-4 pb-8 pt-2">
           <Button
             onPress={() => {
-              const allowed = checkGate(fields.length >= FREE_TERMS_PER_SET, {
+              const allowed = tryProceed(fields.length >= FREE_TERMS_PER_SET, {
                 title: "Term limit reached",
                 description: `Free sets are capped at ${FREE_TERMS_PER_SET} terms. Go Pro to add as many as you need.`,
               });

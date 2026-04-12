@@ -23,7 +23,7 @@ export default function HomeScreen() {
   const theme = useAppTheme();
   const colorScheme = useColorScheme();
   const statusBarStyle = colorScheme === "dark" ? "light" : "dark";
-  const { sheetRef, sheetProps, checkGate } = useProGate();
+  const { sheetRef, sheetProps, tryProceed } = useProGate();
   const { learnSessionsToday, ensureFreshDay, incrementLearnSession } =
     useLimitsStorage();
 
@@ -82,7 +82,7 @@ export default function HomeScreen() {
             onStartSession={() => {
               ensureFreshDay();
               const count = learnSessionsToday[set.id] ?? 0;
-              const allowed = checkGate(count >= FREE_LEARN_SESSIONS_PER_SET, {
+              const allowed = tryProceed(count >= FREE_LEARN_SESSIONS_PER_SET, {
                 title: "Learn session limit reached",
                 description: `You've used all ${FREE_LEARN_SESSIONS_PER_SET} free learn sessions for this set today. Go Pro for unlimited.`,
               });

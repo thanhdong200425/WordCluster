@@ -1,6 +1,6 @@
+import { ProUpsellSheet } from "@/components/paywall/ProUpsellSheet";
 import { FlashCardDeck } from "@/components/set-detail/FlashCardDeck";
 import { StudyModeCard } from "@/components/set-detail/StudyModeCard";
-import { ProUpsellSheet } from "@/components/paywall/ProUpsellSheet";
 import { Text } from "@/components/ui/text";
 import { useAppTheme } from "@/constants/appTheme";
 import {
@@ -32,7 +32,7 @@ export default function SetDetailScreen() {
   );
   const set = storedSets.find((set) => set.id === id);
 
-  const { sheetRef, sheetProps, checkGate } = useProGate();
+  const { sheetRef, sheetProps, tryProceed } = useProGate();
   const {
     flashcardSetsToday,
     learnSessionsToday,
@@ -49,6 +49,50 @@ export default function SetDetailScreen() {
       pathname: "/edit/[id]",
       params: { id },
     });
+  };
+
+  const handleStartFlashcardSession = () => {
+    ensureFreshDay();
+    const alreadyOpenedThisSetToday = flashcardSetsToday.includes(id ?? "");
+    const limitReached =
+      alreadyOpenedThisSetToday &&
+      flashcardSetsToday.length >= FREE_FLASHCARD_SETS_PER_DAY;
+    const allowed = tryProceed(limitReached, {
+      title: "Daily flashcard limit reached",
+      description: `Free users can open up to ${FREE_FLASHCARD_SETS_PER_DAY} sets in Flashcard mode per day. Go Pro for unlimited.`,
+    });
+    if (allowed) {
+      recordFlashcardSet(id ?? "");
+      router.push(`/flashcard/${id}`);
+    }
+  };
+
+  const handleStartLearnSession = () => {
+    if (!id) return;
+    ensureFreshDay();
+    const count = learnSessionsToday[id] ?? 0;
+    const allowed = tryProceed(count >= FREE_LEARN_SESSIONS_PER_SET, {
+      title: "Learn session limit reached",
+      description: `You've used all ${FREE_LEARN_SESSIONS_PER_SET} free learn sessions for this set today. Go Pro for unlimited.`,
+    });
+    if (allowed) {
+      incrementLearnSession(id);
+      router.push(`/learn/${id}`);
+    }
+  };
+
+  const handleStartTestSession = () => {
+    if (!id) return;
+    ensureFreshDay();
+    const count = testSessionsToday[id] ?? 0;
+    const allowed = tryProceed(count >= FREE_TEST_SESSIONS_PER_SET, {
+      title: "Test session limit reached",
+      description: `You've used all ${FREE_TEST_SESSIONS_PER_SET} free test sessions for this set today. Go Pro for unlimited.`,
+    });
+    if (allowed) {
+      incrementTestSession(id);
+      router.push(`/test/${id}`);
+    }
   };
 
   if (!set) {
@@ -110,22 +154,7 @@ export default function SetDetailScreen() {
             iconName="albums-outline"
             iconColor={theme.accentStart}
             iconBgColor={theme.accentSurface}
-            onPress={() => {
-              ensureFreshDay();
-              const isNewSet = !flashcardSetsToday.includes(id ?? "");
-              const allowed = checkGate(
-                isNewSet &&
-                  flashcardSetsToday.length >= FREE_FLASHCARD_SETS_PER_DAY,
-                {
-                  title: "Daily flashcard limit reached",
-                  description: `Free users can open up to ${FREE_FLASHCARD_SETS_PER_DAY} sets in Flashcard mode per day. Go Pro for unlimited.`,
-                },
-              );
-              if (allowed) {
-                recordFlashcardSet(id ?? "");
-                router.push(`/flashcard/${id}`);
-              }
-            }}
+            onPress={handleStartFlashcardSession}
           />
           <StudyModeCard
             title="Learn"
@@ -133,21 +162,7 @@ export default function SetDetailScreen() {
             iconName="school-outline"
             iconColor="#ad46ff"
             iconBgColor="rgba(173,70,255,0.1)"
-            onPress={() => {
-              ensureFreshDay();
-              const count = learnSessionsToday[id ?? ""] ?? 0;
-              const allowed = checkGate(
-                count >= FREE_LEARN_SESSIONS_PER_SET,
-                {
-                  title: "Learn session limit reached",
-                  description: `You've used all ${FREE_LEARN_SESSIONS_PER_SET} free learn sessions for this set today. Go Pro for unlimited.`,
-                },
-              );
-              if (allowed) {
-                incrementLearnSession(id ?? "");
-                router.push(`/learn/${id}`);
-              }
-            }}
+            onPress={handleStartLearnSession}
           />
           <StudyModeCard
             title="Test"
@@ -155,21 +170,7 @@ export default function SetDetailScreen() {
             iconName="checkmark-circle-outline"
             iconColor="#00bc7d"
             iconBgColor="rgba(0,188,125,0.1)"
-            onPress={() => {
-              ensureFreshDay();
-              const count = testSessionsToday[id ?? ""] ?? 0;
-              const allowed = checkGate(
-                count >= FREE_TEST_SESSIONS_PER_SET,
-                {
-                  title: "Test session limit reached",
-                  description: `You've used all ${FREE_TEST_SESSIONS_PER_SET} free test sessions for this set today. Go Pro for unlimited.`,
-                },
-              );
-              if (allowed) {
-                incrementTestSession(id ?? "");
-                router.push(`/test/${id}`);
-              }
-            }}
+            onPress={handleStartTestSession}
           />
         </View>
       </ScrollView>

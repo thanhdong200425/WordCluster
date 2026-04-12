@@ -11,10 +11,10 @@ interface ProGateReturn {
   sheetRef: React.RefObject<BottomSheetModal | null>;
   sheetProps: GateConfig;
   /**
-   * Returns true if the action is allowed (user is Pro or limit not reached).
-   * When blocked, opens the upsell sheet automatically.
+   * Try to proceed past the free-tier gate. Returns true if the user may continue
+   * (Pro subscriber, or `limitReached` is false). If blocked, sets sheet copy and presents it.
    */
-  checkGate: (limitReached: boolean, config: GateConfig) => boolean;
+  tryProceed: (limitReached: boolean, config: GateConfig) => boolean;
 }
 
 export function useProGate(): ProGateReturn {
@@ -25,7 +25,7 @@ export function useProGate(): ProGateReturn {
     description: "",
   });
 
-  const checkGate = useCallback(
+  const tryProceed = useCallback(
     (limitReached: boolean, config: GateConfig): boolean => {
       if (isPro || !limitReached) return true;
       if (!sheetRef.current) return false;
@@ -36,5 +36,5 @@ export function useProGate(): ProGateReturn {
     [isPro],
   );
 
-  return { sheetRef, sheetProps, checkGate };
+  return { sheetRef, sheetProps, tryProceed };
 }
