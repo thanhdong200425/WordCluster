@@ -18,7 +18,7 @@ export interface PaywallRow {
 
 export const paywallRows: PaywallRow[] = [
   {
-    label: "Study sets per day",
+    label: "Flashcard sets per day",
     free: { kind: "text", value: "5 sets" },
     pro: { kind: "text", value: "Unlimited" },
   },
@@ -38,8 +38,8 @@ export const paywallRows: PaywallRow[] = [
     pro: { kind: "text", value: "Unlimited" },
   },
   {
-    label: "Examples & usage per term",
-    free: { kind: "text", value: "3 included" },
+    label: "Examples & type per term",
+    free: { kind: "text", value: "3 terms" },
     pro: { kind: "text", value: "Unlimited" },
   },
   {

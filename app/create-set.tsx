@@ -3,25 +3,29 @@ import { CreateSetHeader } from "@/components/create-set/CreateSetHeader";
 import DescriptionSection from "@/components/create-set/DescriptionSection";
 import { TermCard } from "@/components/create-set/TermCard";
 import { TitleSection } from "@/components/create-set/TitleSection";
+import { ProUpsellSheet } from "@/components/paywall/ProUpsellSheet";
 import { Text } from "@/components/ui/text";
 import { useAppTheme } from "@/constants/appTheme";
+import { FREE_TERMS_PER_SET } from "@/constants/limits";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useProGate } from "@/hooks/use-pro-gate";
 import {
   CreateSetFormData,
   createSetSchema,
 } from "@/schemas/create-set-schema";
+import useRevenueCatStorage from "@/stores/revenueCatStorage";
 import useSetsStorage from "@/stores/setsStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useToast } from "heroui-native";
 import { Button } from "heroui-native/button";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import { useToast } from "heroui-native";
 import { useShallow } from "zustand/react/shallow";
 import NotFoundScreen from "./+not-found";
 
@@ -39,6 +43,8 @@ export default function CreateSetScreen({
   const { toast } = useToast();
   const t = useAppTheme();
   const colorScheme = useColorScheme();
+  const isPro = useRevenueCatStorage((s) => s.isPro);
+  const { sheetRef, sheetProps, checkGate } = useProGate();
   const { createSet, updateSet, isLoading, storedSets } = useSetsStorage(
     useShallow((state) => ({
       createSet: state.createSet,
@@ -221,6 +227,13 @@ export default function CreateSetScreen({
                   control={control}
                   errors={errors.items?.[index]}
                   t={t}
+                  isPro={isPro}
+                  onFieldLimitReached={() =>
+                    checkGate(true, {
+                      title: "Field limit reached",
+                      description: `Free sets allow examples and types on up to ${FREE_TERMS_PER_SET} terms. Go Pro for unlimited.`,
+                    })
+                  }
                 />
               </View>
             </ReanimatedSwipeable>
@@ -235,7 +248,13 @@ export default function CreateSetScreen({
 
         <View className="px-4 pb-8 pt-2">
           <Button
-            onPress={() => append({ term: "", definition: "" })}
+            onPress={() => {
+              const allowed = checkGate(fields.length >= FREE_TERMS_PER_SET, {
+                title: "Term limit reached",
+                description: `Free sets are capped at ${FREE_TERMS_PER_SET} terms. Go Pro to add as many as you need.`,
+              });
+              if (allowed) append({ term: "", definition: "" });
+            }}
             variant="outline"
             feedbackVariant="scale-highlight"
             className="w-full rounded-2xl border-dashed px-4 py-0"
@@ -258,6 +277,12 @@ export default function CreateSetScreen({
           </Button>
         </View>
       </KeyboardAwareScrollView>
+
+      <ProUpsellSheet
+        sheetRef={sheetRef}
+        title={sheetProps.title}
+        description={sheetProps.description}
+      />
     </View>
   );
 }

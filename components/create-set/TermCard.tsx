@@ -36,9 +36,18 @@ interface TermCardProps {
   control: Control<CreateSetFormData>;
   errors?: FieldErrors<CreateSetFormData["items"][number]>;
   t: AppTheme;
+  isPro?: boolean;
+  onFieldLimitReached?: () => void;
 }
 
-export function TermCard({ index, control, errors, t }: TermCardProps) {
+export function TermCard({
+  index,
+  control,
+  errors,
+  t,
+  isPro = false,
+  onFieldLimitReached,
+}: TermCardProps) {
   const watchedFields = useWatch({
     control,
     name: `items.${index}`,
@@ -69,7 +78,14 @@ export function TermCard({ index, control, errors, t }: TermCardProps) {
     }
   }, [errors?.definition, errors?.example, errors?.term, errors?.type]);
 
+  const FREE_FIELD_LIMIT = 3;
+  const isFieldLocked = !isPro && index >= FREE_FIELD_LIMIT;
+
   const handleAddField = (type: AddFieldType) => {
+    if (isFieldLocked) {
+      onFieldLimitReached?.();
+      return;
+    }
     setVisibleFields((prev) => new Set(prev).add(type));
     setIsExpanded(true);
   };

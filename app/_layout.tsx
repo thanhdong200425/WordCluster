@@ -3,6 +3,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { PortalHost } from "heroui-native/portal";
@@ -53,6 +54,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <KeyboardProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
+          <BottomSheetModalProvider>
           <HeroUINativeProvider>
             <SafeAreaView style={{ flex: 1 }} className="bg-[#121318]">
               <Stack>
@@ -91,6 +93,7 @@ export default function RootLayout() {
             </SafeAreaView>
             <PortalHost />
           </HeroUINativeProvider>
+          </BottomSheetModalProvider>
         </GestureHandlerRootView>
         <StatusBar style="light" />
       </KeyboardProvider>

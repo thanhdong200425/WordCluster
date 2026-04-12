@@ -1,8 +1,16 @@
 import { FlashCardDeck } from "@/components/set-detail/FlashCardDeck";
 import { StudyModeCard } from "@/components/set-detail/StudyModeCard";
+import { ProUpsellSheet } from "@/components/paywall/ProUpsellSheet";
 import { Text } from "@/components/ui/text";
 import { useAppTheme } from "@/constants/appTheme";
+import {
+  FREE_FLASHCARD_SETS_PER_DAY,
+  FREE_LEARN_SESSIONS_PER_SET,
+  FREE_TEST_SESSIONS_PER_SET,
+} from "@/constants/limits";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useProGate } from "@/hooks/use-pro-gate";
+import useLimitsStorage from "@/stores/limitsStorage";
 import useSetsStorage from "@/stores/setsStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -23,6 +31,17 @@ export default function SetDetailScreen() {
     })),
   );
   const set = storedSets.find((set) => set.id === id);
+
+  const { sheetRef, sheetProps, checkGate } = useProGate();
+  const {
+    flashcardSetsToday,
+    learnSessionsToday,
+    testSessionsToday,
+    ensureFreshDay,
+    recordFlashcardSet,
+    incrementLearnSession,
+    incrementTestSession,
+  } = useLimitsStorage();
 
   const handleNavigateToEdit = () => {
     if (!id) return;
@@ -91,7 +110,22 @@ export default function SetDetailScreen() {
             iconName="albums-outline"
             iconColor={theme.accentStart}
             iconBgColor={theme.accentSurface}
-            onPress={() => router.push(`/flashcard/${id}`)}
+            onPress={() => {
+              ensureFreshDay();
+              const isNewSet = !flashcardSetsToday.includes(id ?? "");
+              const allowed = checkGate(
+                isNewSet &&
+                  flashcardSetsToday.length >= FREE_FLASHCARD_SETS_PER_DAY,
+                {
+                  title: "Daily flashcard limit reached",
+                  description: `Free users can open up to ${FREE_FLASHCARD_SETS_PER_DAY} sets in Flashcard mode per day. Go Pro for unlimited.`,
+                },
+              );
+              if (allowed) {
+                recordFlashcardSet(id ?? "");
+                router.push(`/flashcard/${id}`);
+              }
+            }}
           />
           <StudyModeCard
             title="Learn"
@@ -99,7 +133,21 @@ export default function SetDetailScreen() {
             iconName="school-outline"
             iconColor="#ad46ff"
             iconBgColor="rgba(173,70,255,0.1)"
-            onPress={() => router.push(`/learn/${id}`)}
+            onPress={() => {
+              ensureFreshDay();
+              const count = learnSessionsToday[id ?? ""] ?? 0;
+              const allowed = checkGate(
+                count >= FREE_LEARN_SESSIONS_PER_SET,
+                {
+                  title: "Learn session limit reached",
+                  description: `You've used all ${FREE_LEARN_SESSIONS_PER_SET} free learn sessions for this set today. Go Pro for unlimited.`,
+                },
+              );
+              if (allowed) {
+                incrementLearnSession(id ?? "");
+                router.push(`/learn/${id}`);
+              }
+            }}
           />
           <StudyModeCard
             title="Test"
@@ -107,10 +155,30 @@ export default function SetDetailScreen() {
             iconName="checkmark-circle-outline"
             iconColor="#00bc7d"
             iconBgColor="rgba(0,188,125,0.1)"
-            onPress={() => router.push(`/test/${id}`)}
+            onPress={() => {
+              ensureFreshDay();
+              const count = testSessionsToday[id ?? ""] ?? 0;
+              const allowed = checkGate(
+                count >= FREE_TEST_SESSIONS_PER_SET,
+                {
+                  title: "Test session limit reached",
+                  description: `You've used all ${FREE_TEST_SESSIONS_PER_SET} free test sessions for this set today. Go Pro for unlimited.`,
+                },
+              );
+              if (allowed) {
+                incrementTestSession(id ?? "");
+                router.push(`/test/${id}`);
+              }
+            }}
           />
         </View>
       </ScrollView>
+
+      <ProUpsellSheet
+        sheetRef={sheetRef}
+        title={sheetProps.title}
+        description={sheetProps.description}
+      />
     </>
   );
 }

@@ -15,7 +15,10 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_RC_PLAY_STORE_API_KEY": "goog_nHCNxPtWDwEsrCwrvIdiUMYiiQK"
+      }
     }
   },
   "submit": {
