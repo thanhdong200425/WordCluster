@@ -1,6 +1,7 @@
 import { SettingsMenuItem } from "@/components/settings/SettingsMenuItem";
 import { AppTheme } from "@/constants/appTheme";
-import { MessageSquare } from "lucide-react-native";
+import { requestAppRating } from "@/services/storeReview";
+import { MessageSquare, Star } from "lucide-react-native";
 import { Linking, StyleSheet, Text, View } from "react-native";
 
 const FEEDBACK_EMAIL = "thanhdong200425@gmail.com";
@@ -19,6 +20,14 @@ export function FeedbackSection({ t }: FeedbackSectionProps) {
   return (
     <View>
       <Text style={[styles.sectionTitle, { color: t.textFaint }]}>SUPPORT</Text>
+      <SettingsMenuItem
+        icon={Star}
+        label="Rate Lexio"
+        onPress={() => {
+          void requestAppRating();
+        }}
+        t={t}
+      />
       <SettingsMenuItem
         icon={MessageSquare}
         label="Send Feedback"
