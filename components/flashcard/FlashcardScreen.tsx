@@ -1,12 +1,19 @@
 import { CompletionScreen } from "@/components/flashcard/CompletionScreen";
 import { FlashcardFaceLayoutModal } from "@/components/flashcard/FlashcardFaceLayoutModal";
 import { FlipCard } from "@/components/flashcard/FlipCard";
+import { ProUpsellSheet } from "@/components/paywall/ProUpsellSheet";
 import { Text } from "@/components/ui/text";
 import { useAppTheme } from "@/constants/appTheme";
+import { useProGate } from "@/hooks/use-pro-gate";
+import {
+  FLASHCARD_DAILY_LIMIT_UPSELL,
+  isFlashcardDailyLimitReached,
+} from "@/services/flashcardLimits";
+import useLimitsStorage from "@/stores/limitsStorage";
 import useSetsStorage from "@/stores/setsStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -41,6 +48,16 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
   const cardAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
   }));
+
+  const { sheetRef, sheetProps, tryProceed } = useProGate();
+  const { flashcardSetsToday, ensureFreshDay, recordFlashcardSet } =
+    useLimitsStorage(
+      useShallow((state) => ({
+        flashcardSetsToday: state.flashcardSetsToday,
+        ensureFreshDay: state.ensureFreshDay,
+        recordFlashcardSet: state.recordFlashcardSet,
+      })),
+    );
 
   const set = storedSets.find((set) => set.id === setId);
 
@@ -82,6 +99,14 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
   };
 
   const handleRestart = () => {
+    ensureFreshDay();
+    const limitReached = isFlashcardDailyLimitReached(
+      setId,
+      flashcardSetsToday,
+    );
+    const allowed = tryProceed(limitReached, FLASHCARD_DAILY_LIMIT_UPSELL);
+    if (!allowed) return;
+    recordFlashcardSet(setId);
     setCurrentIndex(0);
     setIsFlipped(false);
     setIsCompleted(false);
@@ -113,13 +138,24 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
       }
     });
 
+  const paywallSheet = (
+    <ProUpsellSheet
+      sheetRef={sheetRef}
+      title={sheetProps.title}
+      description={sheetProps.description}
+    />
+  );
+
   if (isCompleted) {
     return (
-      <CompletionScreen
-        totalCards={items.length}
-        onRestart={handleRestart}
-        onBack={() => router.back()}
-      />
+      <Fragment>
+        <CompletionScreen
+          totalCards={items.length}
+          onRestart={handleRestart}
+          onBack={() => router.back()}
+        />
+        {paywallSheet}
+      </Fragment>
     );
   }
 
@@ -137,6 +173,7 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
   ];
 
   return (
+    <Fragment>
     <View className="flex-1" style={{ backgroundColor: theme.bg }}>
       <View
         className="flex-row items-center border-b px-5 pb-3"
@@ -234,6 +271,8 @@ export function FlashcardScreen({ setId }: FlashcardScreenProps) {
         </View>
       </View>
     </View>
+    {paywallSheet}
+    </Fragment>
   );
 }
 

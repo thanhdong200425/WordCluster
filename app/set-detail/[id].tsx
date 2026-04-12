@@ -4,12 +4,15 @@ import { StudyModeCard } from "@/components/set-detail/StudyModeCard";
 import { Text } from "@/components/ui/text";
 import { useAppTheme } from "@/constants/appTheme";
 import {
-  FREE_FLASHCARD_SETS_PER_DAY,
   FREE_LEARN_SESSIONS_PER_SET,
   FREE_TEST_SESSIONS_PER_SET,
 } from "@/constants/limits";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useProGate } from "@/hooks/use-pro-gate";
+import {
+  FLASHCARD_DAILY_LIMIT_UPSELL,
+  isFlashcardDailyLimitReached,
+} from "@/services/flashcardLimits";
 import useLimitsStorage from "@/stores/limitsStorage";
 import useSetsStorage from "@/stores/setsStorage";
 import { Ionicons } from "@expo/vector-icons";
@@ -53,14 +56,11 @@ export default function SetDetailScreen() {
 
   const handleStartFlashcardSession = () => {
     ensureFreshDay();
-    const alreadyOpenedThisSetToday = flashcardSetsToday.includes(id ?? "");
-    const limitReached =
-      alreadyOpenedThisSetToday &&
-      flashcardSetsToday.length >= FREE_FLASHCARD_SETS_PER_DAY;
-    const allowed = tryProceed(limitReached, {
-      title: "Daily flashcard limit reached",
-      description: `Free users can open up to ${FREE_FLASHCARD_SETS_PER_DAY} sets in Flashcard mode per day. Go Pro for unlimited.`,
-    });
+    const limitReached = isFlashcardDailyLimitReached(
+      id ?? "",
+      flashcardSetsToday,
+    );
+    const allowed = tryProceed(limitReached, FLASHCARD_DAILY_LIMIT_UPSELL);
     if (allowed) {
       recordFlashcardSet(id ?? "");
       router.push(`/flashcard/${id}`);
