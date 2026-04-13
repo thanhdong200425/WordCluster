@@ -1,4 +1,5 @@
 import BaseAlertDialog from "@/components/common/AlertDialog";
+import { EmptyState } from "@/components/common/EmptyState";
 import RightDeleteAction from "@/components/common/RightDeleteAction";
 import { SearchBar } from "@/components/home/SearchBar";
 import { SetCard } from "@/components/sets/SetCard";
@@ -77,37 +78,47 @@ export default function SetsScreen() {
     );
   }
 
+  const isEmpty = sets.length === 0 && !searchQuery;
+
   return (
     <>
       <StatusBar style={statusBarStyle} />
-      <ScrollView className="flex-1" style={{ backgroundColor: theme.bg }}>
+      <ScrollView
+        className="flex-1"
+        style={{ backgroundColor: theme.bg }}
+        contentContainerStyle={isEmpty ? { flex: 1 } : undefined}
+      >
         <SetsHeader totalSets={sets.length} />
         <SearchBar
           placeholder="Search sets..."
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
-        {(searchQuery ? foundSets : sets).map((set) => (
-          <ReanimatedSwipeable
-            key={set.id}
-            renderRightActions={(prog, drag) =>
-              RightDeleteAction({
-                progress: prog,
-                drag,
-                setId: set.id,
-                onDelete: () => handleSelectSet(set.id),
-              })
-            }
-          >
-            <SetCard
+        {isEmpty ? (
+          <EmptyState />
+        ) : (
+          (searchQuery ? foundSets : sets).map((set) => (
+            <ReanimatedSwipeable
               key={set.id}
-              title={set.title}
-              wordCount={set.items.length}
-              createdAt={set.createdAt}
-              onPress={() => router.push(`/set-detail/${set.id}`)}
-            />
-          </ReanimatedSwipeable>
-        ))}
+              renderRightActions={(prog, drag) =>
+                RightDeleteAction({
+                  progress: prog,
+                  drag,
+                  setId: set.id,
+                  onDelete: () => handleSelectSet(set.id),
+                })
+              }
+            >
+              <SetCard
+                key={set.id}
+                title={set.title}
+                wordCount={set.items.length}
+                createdAt={set.createdAt}
+                onPress={() => router.push(`/set-detail/${set.id}`)}
+              />
+            </ReanimatedSwipeable>
+          ))
+        )}
       </ScrollView>
       {selectedSetId ? (
         <BaseAlertDialog

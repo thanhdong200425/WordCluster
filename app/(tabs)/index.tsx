@@ -1,4 +1,5 @@
 import { AllSetsCard } from "@/components/home/AllSetsCard";
+import { EmptyState } from "@/components/common/EmptyState";
 import { HomeHeader } from "@/components/home/HomeHeader";
 import { RecentSetsSection } from "@/components/home/RecentSetsSection";
 import { SectionTitle } from "@/components/home/SectionTitle";
@@ -66,35 +67,49 @@ export default function HomeScreen() {
   }
 
   const displaySets = searchQuery ? foundSets : sets;
+  const isEmpty = sets.length === 0 && !searchQuery;
 
   return (
     <>
       <StatusBar style={statusBarStyle} />
-      <ScrollView className="flex-1" style={{ backgroundColor: theme.bg }}>
+      <ScrollView
+        className="flex-1"
+        style={{ backgroundColor: theme.bg }}
+        contentContainerStyle={isEmpty ? { flex: 1 } : undefined}
+      >
         <HomeHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-        <RecentSetsSection sets={sets} />
-        {displaySets.length > 0 && <SectionTitle title="All Sets" />}
-        {displaySets.map((set) => (
-          <AllSetsCard
-            key={set.id}
-            title={set.title}
-            wordCount={set.items.length}
-            onPress={() => router.push(`/set-detail/${set.id}`)}
-            onStartSession={() => {
-              ensureFreshDay();
-              const count = learnSessionsToday[set.id] ?? 0;
-              const allowed = tryProceed(count >= FREE_LEARN_SESSIONS_PER_SET, {
-                title: "Learn session limit reached",
-                description: `You've used all ${FREE_LEARN_SESSIONS_PER_SET} free learn sessions for this set today. Go Pro for unlimited.`,
-              });
-              if (allowed) {
-                incrementLearnSession(set.id);
-                router.push(`/learn/${set.id}`);
-              }
-            }}
-          />
-        ))}
-        <View className="h-8" />
+        {isEmpty ? (
+          <EmptyState />
+        ) : (
+          <>
+            <RecentSetsSection sets={sets} />
+            {displaySets.length > 0 && <SectionTitle title="All Sets" />}
+            {displaySets.map((set) => (
+              <AllSetsCard
+                key={set.id}
+                title={set.title}
+                wordCount={set.items.length}
+                onPress={() => router.push(`/set-detail/${set.id}`)}
+                onStartSession={() => {
+                  ensureFreshDay();
+                  const count = learnSessionsToday[set.id] ?? 0;
+                  const allowed = tryProceed(
+                    count >= FREE_LEARN_SESSIONS_PER_SET,
+                    {
+                      title: "Learn session limit reached",
+                      description: `You've used all ${FREE_LEARN_SESSIONS_PER_SET} free learn sessions for this set today. Go Pro for unlimited.`,
+                    },
+                  );
+                  if (allowed) {
+                    incrementLearnSession(set.id);
+                    router.push(`/learn/${set.id}`);
+                  }
+                }}
+              />
+            ))}
+            <View className="h-8" />
+          </>
+        )}
       </ScrollView>
 
       <WalkthroughController walkthroughKey="home" />
