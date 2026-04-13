@@ -10,8 +10,10 @@ export function isFlashcardDailyLimitReached(
   flashcardSetsToday: string[],
 ): boolean {
   const alreadyOpenedThisSetToday = flashcardSetsToday.includes(setId);
+  // Re-visiting a set already counted today is always allowed (no new slot used).
+  // Block only when this is a brand-new set AND the daily cap is already full.
   return (
-    alreadyOpenedThisSetToday &&
+    !alreadyOpenedThisSetToday &&
     flashcardSetsToday.length >= FREE_FLASHCARD_SETS_PER_DAY
   );
 }
