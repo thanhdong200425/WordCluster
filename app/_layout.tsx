@@ -1,6 +1,5 @@
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router";
-import { Stack } from "expo-router";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { PortalHost } from "heroui-native/portal";
 import { HeroUINativeProvider } from "heroui-native/provider";
@@ -44,11 +43,22 @@ export default function RootLayout() {
   }, [initializeRevenueCat]);
 
   useEffect(() => {
-    if (themePreference === "system") {
-      Appearance.setColorScheme(null);
-    } else {
+    if (themePreference !== "system") {
       Appearance.setColorScheme(themePreference);
+      return;
     }
+
+    // RN 0.76+ new arch: setColorScheme(null) crashes on Android (non-null
+    // constraint in Kotlin). Instead, mirror the system scheme and subscribe
+    // to changes so the forced value stays in sync while in "system" mode.
+    const applySystemScheme = () => {
+      const scheme = Appearance.getColorScheme() ?? "light";
+      Appearance.setColorScheme(scheme);
+    };
+
+    applySystemScheme();
+    const subscription = Appearance.addChangeListener(applySystemScheme);
+    return () => subscription.remove();
   }, [themePreference]);
 
   return (
