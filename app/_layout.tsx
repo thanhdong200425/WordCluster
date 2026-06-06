@@ -1,9 +1,5 @@
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { PortalHost } from "heroui-native/portal";

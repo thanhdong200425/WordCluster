@@ -1,7 +1,7 @@
 import { useAppTheme } from "@/constants/appTheme";
 import { Ionicons } from "@expo/vector-icons";
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { PlatformPressable } from "@react-navigation/elements";
+import { BottomTabBarProps } from "expo-router/js-tabs";
+import { PlatformPressable } from "expo-router/react-navigation";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
